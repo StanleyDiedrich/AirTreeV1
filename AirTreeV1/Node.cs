@@ -10,7 +10,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.Creation;
-
+using Autodesk.Revit.UI;
 
 namespace AirTreeV1
 {
@@ -20,7 +20,8 @@ namespace AirTreeV1
         public ElementId ElementId { get; set; }
         public string SystemName { get; set; }
         public string ShortSystemName { get; set; }
-        public PipeSystemType PipeSystemType { get; set; }
+        public DuctSystemType DuctSystemType { get; set; }
+        
 
         public List<CustomConnector> Connectors { get; set; } = new List<CustomConnector>();
         public List<CustomConnector> ConnectorList { get; set; } = new List<CustomConnector>();
@@ -33,19 +34,19 @@ namespace AirTreeV1
         public bool IsSelected { get; set; }
         public bool IsChecked { get; set; }
         public bool IsSplitter { get; set; }
-
+       
         public bool IsOCK { get; set; }
         public bool Reverse { get; set; }
         public int TeeNumber { get; set; }
         public int BranchNumber { get; set; }
 
 
-        public Node(Autodesk.Revit.DB.Document doc, Element element, PipeSystemType pipeSystemType, string shortsystemName, bool reverse)
+        public Node(Autodesk.Revit.DB.Document doc, Element element, DuctSystemType ductSystemType, string shortsystemName, bool reverse)
         {
             Element = element;
             ElementId = Element.Id;
             ShortSystemName = shortsystemName;
-            PipeSystemType = pipeSystemType;
+            DuctSystemType = ductSystemType;
             Reverse = reverse;
 
 
@@ -53,15 +54,15 @@ namespace AirTreeV1
             ConnectorSet connectorSet = null;
             try
             {
-                if (element is Autodesk.Revit.DB.Plumbing.PipeInsulation)
+                if (element is Autodesk.Revit.DB.Mechanical.DuctInsulation)
                 {
                     return;
                 }
-                if (element is Autodesk.Revit.DB.Plumbing.Pipe)
+                if (element is Duct)
                 {
-                    Autodesk.Revit.DB.Plumbing.Pipe pipe = Element as Pipe;
-                    SystemName = pipe.LookupParameter("Имя системы").AsString();
-                    connectorSet = pipe.ConnectorManager.Connectors;
+                    Duct duct = Element as Duct;
+                    SystemName = duct.LookupParameter("Имя системы").AsString();
+                    connectorSet = duct.ConnectorManager.Connectors;
                 }
                 if (element is FamilyInstance)
                 {
@@ -94,282 +95,185 @@ namespace AirTreeV1
                     }
 
                 }
-                List<List<CustomConnector>> branches = new List<List<CustomConnector>>();
-                if (connectorSet.Size >= 4)
+                if (ElementId.IntegerValue==1561539)
                 {
-                    IsManifold = true;
+                    element = element;
+                }
+                List<List<CustomConnector>> branches = new List<List<CustomConnector>>();
+                if (connectorSet.Size >= 2)
+                {
+                    // IsManifold = true;
 
                     List<CustomConnector> customConnectors = new List<CustomConnector>();
+
+                    CustomConnector custom = null;
+                    ConnectorSet nextconnectors = null;
                     foreach (Connector connector in connectorSet)
                     {
-
-                        CustomConnector custom = new CustomConnector(doc, ElementId, PipeSystemType);
-                        ConnectorSet nextconnectors = connector.AllRefs;
-                        foreach (Connector connect in nextconnectors)
+                        if (connector.DuctSystemType == DuctSystemType.SupplyAir)
                         {
-
-                            string sysname = doc.GetElement(connect.Owner.Id).LookupParameter("Имя системы").AsString();
-
-                            if (doc.GetElement(connect.Owner.Id) is PipingSystem || doc.GetElement(connect.Owner.Id) is PipeInsulation)
-                            {
-                                continue;
-                            }
-
-                            else if (connect.Owner.Id == ElementId)
-                            {
-                                continue; // Игнорируем те же элементы
-                            }
-                            else if (connect.Owner.Id == NextOwnerId)
-                            {
-                                continue;
-                            }
-                            else if (sysname.Contains(ShortSystemName))
-                            {
-                                if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
-                                {
-
-                                    if (pipeSystemType == PipeSystemType.SupplyHydronic)
-                                    {
-                                        if (Reverse == false)
-                                        {
-                                            if (connect.Direction == FlowDirectionType.In || connect.Direction == FlowDirectionType.Out)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.In;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                custom.Diameter = connect.Radius * 2;
-                                                custom.Coefficient = connect.Coefficient;
-                                                custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
-                                                NextOwnerId = custom.NextOwnerId;
-
-                                                customConnectors.Add(custom);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (connect.Direction == FlowDirectionType.In || connect.Direction == FlowDirectionType.Out)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.Out;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                custom.Diameter = connect.Radius * 2;
-                                                custom.Coefficient = connect.Coefficient;
-                                                custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
-                                                NextOwnerId = custom.NextOwnerId;
-
-                                                customConnectors.Add(custom);
-                                            }
-                                        }
-
-                                    }
-                                    else if (pipeSystemType == PipeSystemType.ReturnHydronic)
-                                    {
-                                        if (Reverse == false)
-                                        {
-                                            if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.In)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.Out;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                NextOwnerId = custom.NextOwnerId;
-                                                custom.Diameter = connect.Radius * 2;
-                                                custom.Coefficient = connect.Coefficient;
-                                                custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
-                                                customConnectors.Add(custom);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.In)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.In;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                NextOwnerId = custom.NextOwnerId;
-                                                custom.Diameter = connect.Radius * 2;
-                                                custom.Coefficient = connect.Coefficient;
-                                                custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
-                                                customConnectors.Add(custom);
-                                            }
-                                        }
-
-
-                                    }
-                                }
-                            }
-
-
-                        }
-
-
-                    }
-                    Connectors = customConnectors;
-                }
-                else
-                {
-                    foreach (Connector connector in connectorSet)
-                    {
-                        CustomConnector custom = new CustomConnector(doc, ElementId, PipeSystemType);
-                        ConnectorSet nextconnectors = connector.AllRefs;
-                        foreach (Connector connect in nextconnectors)
-                        {
-
-
-                            if (doc.GetElement(connect.Owner.Id) is PipingSystem)
-                            {
-                                continue;
-                            }
-                            else if (connect.Owner.Id == ElementId)
-                            {
-                                continue; // Игнорируем те же элементы
-                            }
-                            else if (connect.Owner.Id == NextOwnerId)
-                            {
-                                continue;
-                            }
-                            else if (!doc.GetElement(connect.Owner.Id).LookupParameter("Имя системы").AsString().Contains(SystemName))
-                            {
-                                continue;
-                            }
-                            else if (connectorSet.Size < 1)
+                            if (connector.Direction == FlowDirectionType.In)
                             {
                                 continue;
                             }
                             else
                             {
+                                custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                                nextconnectors = connector.AllRefs;
+                            }
 
-                                if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
-                                {
-                                    if (Reverse == false)
-                                    {
-                                        if (pipeSystemType == PipeSystemType.SupplyHydronic)
-                                        {
-                                            if (connect.Direction == FlowDirectionType.In)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.In;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                NextOwnerId = custom.NextOwnerId;
-                                                custom.Coefficient = connect.Coefficient;
-
-                                                Connectors.Add(custom);
-                                            }
-                                        }
-
-                                        else if (pipeSystemType == PipeSystemType.ReturnHydronic)
-                                        {
-                                            if (connect.Direction == FlowDirectionType.Out)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.Out;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                custom.Coefficient = connect.Coefficient;
-                                                NextOwnerId = custom.NextOwnerId;
-                                                Connectors.Add(custom);
-                                            }
-
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (pipeSystemType == PipeSystemType.SupplyHydronic)
-                                        {
-                                            if (connect.Direction == FlowDirectionType.Out)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.Out;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                custom.Coefficient = connect.Coefficient;
-                                                NextOwnerId = custom.NextOwnerId;
-
-                                                Connectors.Add(custom);
-                                            }
-                                        }
-
-                                        else if (pipeSystemType == PipeSystemType.ReturnHydronic)
-                                        {
-                                            if (connect.Direction == FlowDirectionType.In)
-                                            {
-                                                custom.Flow = connect.Flow;
-                                                custom.Domain = Domain.DomainPiping;
-                                                custom.DirectionType = FlowDirectionType.In;
-                                                custom.NextOwnerId = connect.Owner.Id;
-                                                NextOwnerId = custom.NextOwnerId;
-                                                custom.Coefficient = connect.Coefficient;
-                                                Connectors.Add(custom);
-                                            }
-
-                                        }
-                                    }
-
-
-                                }
+                        }
+                        else if (connector.DuctSystemType == DuctSystemType.ExhaustAir)
+                        {
+                            if (connector.Direction == FlowDirectionType.Out)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                                nextconnectors = connector.AllRefs;
                             }
                         }
 
+                        /* CustomConnector custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                          ConnectorSet nextconnectors = connector.AllRefs;*/
+                        foreach (Connector connect in nextconnectors)
+                        {
+                            
+
+                            string sysname = doc.GetElement(connect.Owner.Id).LookupParameter("Сокращение для системы").AsString();
+                            if (sysname==null || sysname==string.Empty)
+                            {
+                                continue;
+                            }
+
+                            if (doc.GetElement(connect.Owner.Id) is MechanicalSystem || doc.GetElement(connect.Owner.Id) is DuctInsulation)
+                            {
+                                continue;
+                            }
+
+                            else if (connect.Owner.Id == ElementId)
+                            {
+                                continue; // Игнорируем те же элементы
+                            }
+                            else if (connect.Owner.Id == NextOwnerId)
+                            {
+                                continue;
+                            }
+                          
+                            else if (sysname.Contains(ShortSystemName))
+                            {
+                                if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
+                                {
+
+                                    if (ductSystemType == DuctSystemType.SupplyAir)
+                                    {
+                                       
+
+                                        if (connect.Direction == FlowDirectionType.In)
+                                        {
+                                            custom.Flow = connect.Flow;
+                                            custom.Domain = Domain.DomainHvac;
+                                            custom.DirectionType = FlowDirectionType.In;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            custom.Shape = connect.Shape;
+                                            custom.Type = connect.ConnectorType;
+                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            {
+                                                custom.Diameter = connect.Radius * 2;
+                                            }
+                                            else
+                                            {
+                                                custom.Width = connect.Width;
+                                                custom.Height = connect.Height;
+                                            }
+                                            custom.Coefficient = connect.Coefficient;
+                                            custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
+                                            NextOwnerId = custom.NextOwnerId;
+
+                                            customConnectors.Add(custom);
+                                        }
+
+
+
+                                    }
+                                    else if (ductSystemType == DuctSystemType.ExhaustAir)
+                                    {
+
+                                        if (connect.Direction == FlowDirectionType.Out)
+                                        {
+                                            custom.Flow = connect.Flow;
+                                            custom.Domain = Domain.DomainHvac;
+                                            custom.DirectionType = FlowDirectionType.Out;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            custom.Shape = connect.Shape;
+                                            NextOwnerId = custom.NextOwnerId;
+                                            custom.Type = connect.ConnectorType;
+                                            custom.Shape = connect.Shape;
+                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            {
+                                                custom.Diameter = connect.Radius * 2;
+                                            }
+                                            else
+                                            {
+                                                custom.Width = connect.Width;
+                                                custom.Height = connect.Height;
+                                            }
+                                            custom.Coefficient = connect.Coefficient;
+                                            custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
+                                            customConnectors.Add(custom);
+                                        }
+
+                                    }
+                                   
+                                }
+                            }
+
+
+                        }
+                        
 
 
                     }
-                }
-            }
+                    Connectors = customConnectors;
+                    double maxVolume = double.MinValue;
+                    double maxCoefficient = double.MinValue;
+                    CustomConnector selectedConnector = null;
 
 
+                    List<CustomConnector> connectorsWithMaxVolume = new List<CustomConnector>();
 
-            catch
-            {
 
-            }
-
-            double maxVolume = double.MinValue;
-            double maxCoefficient = double.MinValue;
-            CustomConnector selectedConnector = null;
-
-            // Сначала ищем максимальный расход и учитываем, сколько коннекторов его имеют 
-            List<CustomConnector> connectorsWithMaxVolume = new List<CustomConnector>();
-            //selectedConnector = Connectors.Select(x => x).Where(x => x.Coefficient == 0).FirstOrDefault();
-            if (Connectors.Count > 1)
-            {
-                if (ElementId.IntegerValue == 2948086)
-                {
-                    selectedConnector = selectedConnector;
-                }
-
-            }
-            foreach (CustomConnector customConnector in Connectors)
-            {
-                if (customConnector.Coefficient == 0)
-                {
-                    if (customConnector.Flow > maxVolume)
+                    foreach (CustomConnector customConnector in Connectors)
                     {
-                        maxVolume = customConnector.Flow;
-                        selectedConnector = customConnector;
+
+                        if (customConnector.Flow > maxVolume && customConnector.Type == ConnectorType.End)
+                        {
+                            maxVolume = customConnector.Flow;
+                            selectedConnector = customConnector;
+                        }
+
+
+                    }
+                    if (selectedConnector != null)
+                    {
+                        selectedConnector.IsSelected = true;
+                        NextOwnerId = selectedConnector.NextOwnerId;
                     }
 
-
-                    break;
-                }
-                else if (customConnector.Coefficient > maxCoefficient)
-                {
-                    maxCoefficient = customConnector.Coefficient;
-                    selectedConnector = customConnector;
-
                 }
 
+
+
+                
             }
-            if (selectedConnector != null)
+            catch(Exception ex)
             {
-                selectedConnector.IsSelected = true;
-                NextOwnerId = selectedConnector.NextOwnerId;
+
+               
             }
 
-           
 
 
 
