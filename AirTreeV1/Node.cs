@@ -25,7 +25,7 @@ namespace AirTreeV1
 
         public List<CustomConnector> Connectors { get; set; } = new List<CustomConnector>();
         public List<CustomConnector> ConnectorList { get; set; } = new List<CustomConnector>();
-
+        public List<Branch> AdditionalNodes { get; set; } = new List<Branch>();
         public ElementId NextOwnerId { get; set; }
         public ElementId Neighbourg { get; set; }
         public bool IsManifold { get; set; }
@@ -37,18 +37,19 @@ namespace AirTreeV1
        
         public bool IsOCK { get; set; }
         public bool Reverse { get; set; }
+        public bool Regime { get; set; }
         public int TeeNumber { get; set; }
         public int BranchNumber { get; set; }
 
 
-        public Node(Autodesk.Revit.DB.Document doc, Element element, DuctSystemType ductSystemType, string shortsystemName, bool reverse)
+        public Node(Autodesk.Revit.DB.Document doc, Element element, DuctSystemType ductSystemType, string shortsystemName, bool regime, List<Branch>mainnodes)
         {
             Element = element;
             ElementId = Element.Id;
             ShortSystemName = shortsystemName;
             DuctSystemType = ductSystemType;
-            Reverse = reverse;
-
+            //Reverse = reverse;
+            Regime = regime;
 
 
             ConnectorSet connectorSet = null;
@@ -95,7 +96,7 @@ namespace AirTreeV1
                     }
 
                 }
-                if (ElementId.IntegerValue==1561539)
+                if (ElementId.IntegerValue== 6246754)
                 {
                     element = element;
                 }
@@ -194,6 +195,29 @@ namespace AirTreeV1
 
                                             customConnectors.Add(custom);
                                         }
+                                       else  if (connect.Direction == FlowDirectionType.Out)
+                                        {
+                                            custom.Flow = connect.Flow;
+                                            custom.Domain = Domain.DomainHvac;
+                                            custom.DirectionType = FlowDirectionType.Out;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            custom.Shape = connect.Shape;
+                                            custom.Type = connect.ConnectorType;
+                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            {
+                                                custom.Diameter = connect.Radius * 2;
+                                            }
+                                            else
+                                            {
+                                                custom.Width = connect.Width;
+                                                custom.Height = connect.Height;
+                                            }
+                                            custom.Coefficient = connect.Coefficient;
+                                            custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
+                                            NextOwnerId = custom.NextOwnerId;
+
+                                            customConnectors.Add(custom);
+                                        }
 
 
 
@@ -206,6 +230,29 @@ namespace AirTreeV1
                                             custom.Flow = connect.Flow;
                                             custom.Domain = Domain.DomainHvac;
                                             custom.DirectionType = FlowDirectionType.Out;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            custom.Shape = connect.Shape;
+                                            NextOwnerId = custom.NextOwnerId;
+                                            custom.Type = connect.ConnectorType;
+                                            custom.Shape = connect.Shape;
+                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            {
+                                                custom.Diameter = connect.Radius * 2;
+                                            }
+                                            else
+                                            {
+                                                custom.Width = connect.Width;
+                                                custom.Height = connect.Height;
+                                            }
+                                            custom.Coefficient = connect.Coefficient;
+                                            custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
+                                            customConnectors.Add(custom);
+                                        }
+                                        else if (connect.Direction == FlowDirectionType.In)
+                                        {
+                                            custom.Flow = connect.Flow;
+                                            custom.Domain = Domain.DomainHvac;
+                                            custom.DirectionType = FlowDirectionType.In;
                                             custom.NextOwnerId = connect.Owner.Id;
                                             custom.Shape = connect.Shape;
                                             NextOwnerId = custom.NextOwnerId;
@@ -244,22 +291,60 @@ namespace AirTreeV1
 
                     List<CustomConnector> connectorsWithMaxVolume = new List<CustomConnector>();
 
-
+                    CustomConnector maxConnector = Connectors.Select(x => x).OrderByDescending(x => x.Flow).FirstOrDefault();
+                    maxVolume = Connectors.Select(x => x.Flow).OrderByDescending(x => x).First();
                     foreach (CustomConnector customConnector in Connectors)
                     {
-
-                        if (customConnector.Flow > maxVolume && customConnector.Type == ConnectorType.End)
+                        if (customConnector.NextOwnerId.IntegerValue==maxConnector.NextOwnerId.IntegerValue)
                         {
-                            maxVolume = customConnector.Flow;
+                            customConnector.IsSelected = true;
                             selectedConnector = customConnector;
                         }
+                       /* else if (customConnector.Flow > maxVolume && customConnector.Type == ConnectorType.End)
+                        {
 
+                            maxVolume = customConnector.Flow;
+                            selectedConnector = customConnector;
 
+                            // Снимаем это свойство с предыдущего выбранного коннектора, если нужно
+                            if (selectedConnector != null)
+                            {
+                                selectedConnector.IsSelected = false;
+                            }
+
+                            // Устанавливаем IsSelected для текущего коннектора
+                            customConnector.IsSelected = true;
+                        }*/
+                        else if (customConnector.Flow == maxVolume && customConnector.Type == ConnectorType.End)
+                        {
+                            // Если flow равен maxVolume, устанавливаем IsSelected в true
+                            customConnector.IsSelected = true;
+                            selectedConnector = customConnector;
+                        }
+                        
                     }
+
                     if (selectedConnector != null)
                     {
                         selectedConnector.IsSelected = true;
                         NextOwnerId = selectedConnector.NextOwnerId;
+                    }
+
+                    foreach (CustomConnector customConnector1 in Connectors)
+                    {
+                        if (customConnector1.NextOwnerId.IntegerValue== 5632232)
+                        {
+                            CustomConnector customConnector2 = customConnector1;
+                        }
+                         if (customConnector1.IsSelected==false )
+                        {
+                            Branch newBranch = new Branch();
+                            newBranch = Main.GetNewAdditionalBranches(doc, customConnector1.NextOwnerId, mainnodes);
+                            AdditionalNodes.Add(newBranch);
+                        }
+                         
+                            
+                        
                     }
 
                 }

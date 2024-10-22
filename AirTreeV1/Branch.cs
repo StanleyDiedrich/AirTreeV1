@@ -35,18 +35,49 @@ namespace AirTreeV1
                 }
 
             }
-            public void Add(Node node)
+
+        public void Add(Node node)
+        {
+            if (node != null)
             {
-                Nodes.Add(node);
-            }
-            public void AddRange(Branch branch)
-            {
-                foreach (var node in branch.Nodes)
+                // Находим индекс узла с таким же ElementId
+                var existingNodeIndex = Nodes.FindIndex(n => n.ElementId == node.ElementId);
+
+                if (existingNodeIndex >= 0)
                 {
+                    // Если найден, заменяем существующий узел
+                    Nodes[existingNodeIndex] = node;
+                }
+                else
+                {
+                    // Если не найден, добавляем новый узел
                     Nodes.Add(node);
                 }
             }
-            public List<Node> GetNodes()
+        }
+
+        public void AddRange(Branch branch)
+        {
+            if (branch != null)
+            {
+                foreach (var node in branch.Nodes)
+                {
+                    Add(node); // Использует метод Add, который уже включает логику уникальности
+                }
+            }
+        }
+        /*public void Add(Node node)
+        {
+            Nodes.Add(node);
+        }
+        public void AddRange(Branch branch)
+        {
+            foreach (var node in branch.Nodes)
+            {
+                Nodes.Add(node);
+            }
+        }*/
+        public List<Node> GetNodes()
             {
                 return Nodes;
             }
