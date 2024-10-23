@@ -236,6 +236,7 @@ namespace AirTreeV1
             return startDuct;
         }
 
+
         private List<Branch> AlgorithmDuctTraverse(Document doc, List<ElementId> startelements)
         {
             List<Branch> mainnodes = new List<Branch>(); // тут стояк 
@@ -442,22 +443,29 @@ namespace AirTreeV1
             //var systemelements = mainViewModel.SystemElements;
 
             List<ElementId> startelements = new List<ElementId>();
-
+            List<ElementId> selectedterminals = new List<ElementId>();
+            List<ElementId> selectedelements = new List<ElementId>();
             //Ну тут вроде норм
             foreach (var systemname in systemnames)
             {
                 string systemName = systemname.SystemName;
 
-                var maxpipe = GetStartDuct(doc, systemName);
-                startelements.Add(maxpipe);
+                //var maxpipe = GetStartDuct(doc, systemName);
 
+                selectedterminals = GetAirTerminals(doc, systemName);
+                CustomCollection collection = GetCollection(doc, selectedterminals);
+                selectedelements = collection.ShowElements(0);
             }
+            
+            uIDocument.Selection.SetElementIds(selectedelements);
 
-            List<Branch> mainnodes = new List<Branch>();
+            // List<Branch> mainnodes = new List<Branch>();
 
 
-            mainnodes = AlgorithmDuctTraverse(doc, startelements);
-            SelectAllNodes(uIDocument, mainnodes);
+            // mainnodes = AlgorithmDuctTraverse(doc, startelements);
+
+
+            //SelectAllNodes(uIDocument, mainnodes);
             /*var selectedMode = mainViewModel.CalculationModes
             .FirstOrDefault(x => x.IsMode == true);
 
@@ -485,6 +493,49 @@ namespace AirTreeV1
             return Result.Succeeded;
         }
 
-        
+        private CustomCollection GetCollection(Document doc, List<ElementId> selectedterminals)
+        {
+            CustomCollection collection = new CustomCollection(doc);
+            foreach (var terminal in selectedterminals)
+            {
+                collection.CreateBranch(doc, terminal);
+            }
+            
+            return collection;
+        }
+
+        private List<ElementId> GetAirTerminals(Document doc, string systemName)
+        {
+            List<ElementId> resultterminals = new List<ElementId>();
+            var airterminals = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctTerminal).WhereElementIsNotElementType().ToElementIds().ToList();
+            foreach (var airterminal in airterminals)
+            {
+                if (airterminal.IntegerValue== 5982031)
+                {
+                   var airterminal2 = airterminal;
+                }
+                if (doc.GetElement(airterminal)!=null)
+                {
+                    FamilyInstance fI = doc.GetElement(airterminal) as FamilyInstance;
+                    if (fI!=null)
+                    {
+                        var checksystem = fI.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
+                        if (checksystem == null)
+                        {
+                            continue;
+                        }
+                        else if (checksystem.Equals(systemName))
+                        {
+                            resultterminals.Add(airterminal);
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+            return resultterminals;
+        }
     }
 }

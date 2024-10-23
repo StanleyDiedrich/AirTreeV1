@@ -111,31 +111,39 @@ namespace AirTreeV1
                     ConnectorSet nextconnectors = null;
                     foreach (Connector connector in connectorSet)
                     {
-                        if (connector.DuctSystemType == DuctSystemType.SupplyAir)
+                        if (connector.Domain!=Domain.DomainHvac)
                         {
-                            if (connector.Direction == FlowDirectionType.In)
+                            continue;
+                        }
+                        else
+                        {
+                            if (connector.DuctSystemType == DuctSystemType.SupplyAir)
                             {
-                                continue;
-                            }
-                            else
-                            {
-                                custom = new CustomConnector(doc, ElementId, DuctSystemType);
-                                nextconnectors = connector.AllRefs;
-                            }
+                                if (connector.Direction == FlowDirectionType.In)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                                    nextconnectors = connector.AllRefs;
+                                }
 
-                        }
-                        else if (connector.DuctSystemType == DuctSystemType.ExhaustAir)
-                        {
-                            if (connector.Direction == FlowDirectionType.Out)
-                            {
-                                continue;
                             }
-                            else
+                            else if (connector.DuctSystemType == DuctSystemType.ExhaustAir)
                             {
-                                custom = new CustomConnector(doc, ElementId, DuctSystemType);
-                                nextconnectors = connector.AllRefs;
+                                if (connector.Direction == FlowDirectionType.Out)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                                    nextconnectors = connector.AllRefs;
+                                }
                             }
                         }
+                        
 
                         /* CustomConnector custom = new CustomConnector(doc, ElementId, DuctSystemType);
                           ConnectorSet nextconnectors = connector.AllRefs;*/

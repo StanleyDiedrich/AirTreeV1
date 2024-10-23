@@ -5,16 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Autodesk.Revit.DB;
 
 namespace AirTreeV1
 {
     public class CustomBranch
     {
+        public Autodesk.Revit.DB.Document Document { get; set; }
         private static int _counter = 0;
         public int Number { get; set; }
         public double Pressure { get; set; }
-        public List<CustomElement> Elements { get; set; }
-
+        public List<CustomElement> Elements { get; set; } = new List<CustomElement>();
+        public CustomBranch (Autodesk.Revit.DB.Document document, ElementId elementId)
+        {
+            Document = document;
+            Number = _counter;
+            _counter++;
+        }
         public void Add (CustomElement customElement)
         {
             if (customElement != null)
@@ -46,5 +53,21 @@ namespace AirTreeV1
             }
         }
 
+        public void CreateNewBranch(Document document, ElementId airterminal)
+        {
+            ElementId nextElement=null;
+            CustomElement customElement = new CustomElement(document, airterminal);
+            do
+            {
+                
+                Elements.Add(customElement);
+                nextElement = customElement.NextElementId;
+                customElement = new CustomElement(document, nextElement);
+            }
+            while (nextElement != null);
+
+        }
+
+        
     }
 }

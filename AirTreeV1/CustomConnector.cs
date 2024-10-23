@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Media3D;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 
@@ -28,6 +29,9 @@ namespace AirTreeV1
         public ConnectorProfileType Shape { get; set; }
         public ConnectorType Type { get; set; }
 
+        public double EquiDiameter { get; set; }
+        
+
         public double PressureDrop { get; set; }
         List<CustomConnector> Connectors { get; set; } = new List<CustomConnector>();
 
@@ -35,6 +39,7 @@ namespace AirTreeV1
         {
             OwnerId = elementId;
 
+           
 
         }
 
