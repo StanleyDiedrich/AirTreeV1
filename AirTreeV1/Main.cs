@@ -454,9 +454,13 @@ namespace AirTreeV1
 
                 selectedterminals = GetAirTerminals(doc, systemName);
                 CustomCollection collection = GetCollection(doc, selectedterminals);
-                selectedelements = collection.ShowElements(0);
+
+                //selectedelements = collection.ShowElements(0);
+                 collection.MarkCollection();
+                selectedelements = collection.ShowControlElements();
+                //selectedelements = collection;
             }
-            
+
             uIDocument.Selection.SetElementIds(selectedelements);
 
             // List<Branch> mainnodes = new List<Branch>();

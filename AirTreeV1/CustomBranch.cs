@@ -41,7 +41,17 @@ namespace AirTreeV1
                 }
             }
         }
+        public void Remove(CustomElement customElement)
+        {
+            // Находим индекс узла с указанным ElementId
+            var nodeIndex = Elements.FindIndex(n => n.ElementId == customElement.ElementId);
 
+            if (nodeIndex >= 0)
+            {
+                // Если найден, удаляем узел
+                Elements.RemoveAt(nodeIndex);
+            }
+        }
         public void AddRange(CustomBranch branch)
         {
             if (branch != null)
@@ -67,6 +77,8 @@ namespace AirTreeV1
             while (nextElement != null);
 
         }
+
+
 
         
     }
