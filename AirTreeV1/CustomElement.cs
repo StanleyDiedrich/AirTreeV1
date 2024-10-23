@@ -44,6 +44,7 @@ namespace AirTreeV1
                 OwnConnectors = (Element as FamilyInstance).MEPModel.ConnectorManager.Connectors;
                 foreach (Connector connector in OwnConnectors)
                 {
+                    newnewnewnew 
 
                 }
                
