@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB;
@@ -58,85 +59,120 @@ namespace AirTreeV1
 
             return elements;
         }
-        public List<ElementId> ShowControlElements()
+       
+
+        public void  Calcualate()
         {
-            // Параметр number должен находиться в допустимом диапазоне
-           /* if (number < 0 || number >= Collection.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(number), "Значение number должно быть в пределах диапазона коллекции.");
-            }*/
-
-            List<ElementId> elements = new List<ElementId>();
-
-            // Перебираем все ветви в указанной коллекции
-
-
-
-            // Перебираем все элементы в текущей ветви
             foreach (var branch in Collection)
             {
                 foreach (var element in branch.Elements)
                 {
-                    if (element != null) // проверяем, что элемент не null
+                    if (element.DetailType==CustomElement.Detail.AirTerminal)
                     {
-                        elements.Add(element.ElementId);
+                        branch.Pressure += 10;
+                    }
+                    else if (element.DetailType==CustomElement.Detail.Elbow)
+                    {
+                        branch.Pressure += 5;
+                    }
+                    else if (element.DetailType==CustomElement.Detail.Tee)
+                    {
+                        branch.Pressure += 7;
+                    }
+                    else if (element.DetailType==CustomElement.Detail.TapAdjustable)
+                    {
+                        branch.Pressure += 1;
+                    }
+                    else if (element.DetailType == CustomElement.Detail.Transition)
+                    {
+                        branch.Pressure += 2;
+                    }
+                    else if (element.DetailType==CustomElement.Detail.Duct)
+                    {
+                        branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
+                    }
+                    else if (element.DetailType==CustomElement.Detail.FireProtectValve)
+                    {
+                        branch.Pressure += 6;
                     }
                 }
-                
             }
-
-
-            return elements;
         }
-        public CustomCollection MarkCollection()
+
+        public CustomBranch SelectMainBranch()
         {
-            var branchWithMostElements = Collection
-                .OrderByDescending(branch => branch.Elements?.Count ?? 0)
-                .FirstOrDefault();
-
-            if (branchWithMostElements == null || branchWithMostElements.Elements == null)
-            {
-                throw new Exception("No Branches!!!");
-            }
-
-            var mostElements = new HashSet<ElementId>();
-
-            // Сохраняем ElementId элементов, находящихся в ветви с наибольшими элементами
-            foreach (var element in branchWithMostElements.Elements)
-            {
-                mostElements.Add(element.ElementId);
-            }
-
-            // Создаем новую коллекцию для возвращаемых ветвей
-            var newCollection =new CustomCollection(Document);
-
-            // Проходим по всем ветвям коллекции
+            List<CustomBranch> branches = new List<CustomBranch>();
             foreach (var branch in Collection)
             {
-                if (branch == branchWithMostElements || branch.Elements == null)
+                branches.Add(branch);
+            }
+            var maxbranch = branches.OrderByDescending(x => x.Pressure).FirstOrDefault();
+            return maxbranch;
+        }
+
+        public void MarkCollection(CustomBranch customBranch)
+        {
+            List<CustomBranch> newCustomCollection = new List<CustomBranch>();
+            foreach (var branch in Collection)
+            {
+
+                if (branch.Number == customBranch.Number)
                 {
-                    newCollection.Add(branch); // Добавляем ветвь с наибольшими элементами в новую коллекцию
-                    continue;
+                    int trackcounter = 0;
+                    foreach (var element in branch.Elements)
+                    {
+                        element.TrackNumber = trackcounter;
+                        element.BranchNumber = branch.Number;
+                        element.MainTrack = true;
+                        trackcounter++;
+
+                    }
+                    newCustomCollection.Add(branch);
                 }
+            }
+            foreach (var branch in Collection)
+            {
+                 
+                    CustomBranch newcustomBranch = new CustomBranch(Document);
+                    foreach (var element in branch.Elements)
+                    {
+                        if (customBranch.Elements.Select(x => x.ElementId).ToList().Contains(element.ElementId))
+                        {
+                            continue;
+                        }
+                    }
+                    int trackcounter = 0;
+                    foreach (var element in branch.Elements)
+                    {
+                        element.TrackNumber = trackcounter;
+                        element.BranchNumber = branch.Number;
+                        trackcounter++;
+                        newcustomBranch.Add(element);
+                    }
+                    
+                    newCustomCollection.Add(newcustomBranch);
+                 
+            }
+            Collection = newCustomCollection;  
+        }
 
-                // Создаем новую коллекцию для элементов данной ветви
-                var newElements = new CustomBranch(Document,branch.Elements.First().ElementId);
+         public    
+        
 
-                // Добавляем только те элементы, которые не содержатся в mostElements
+        public List<ElementId> ShowElements()
+        {
+            List<ElementId> selectedelements = new List<ElementId>();
+            foreach (var branch in Collection)
+            {
                 foreach (var element in branch.Elements)
                 {
-                    if (!mostElements.Contains(element.ElementId))
+                    if (!selectedelements.Contains(element.ElementId))
                     {
-                        newElements.Add(element);
+                        selectedelements.Add(element.ElementId);
                     }
                 }
-
-                // Создаем новую ветвь с отфильтрованными элементами и добавляем её в новую коллекцию
-                newCollection.Add(newElements);
             }
-
-            // Возвращаем новую коллекцию с изменениями
-            return newCollection;
+            return selectedelements;
         }
     }
 }

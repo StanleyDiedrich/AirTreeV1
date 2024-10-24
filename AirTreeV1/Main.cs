@@ -456,11 +456,22 @@ namespace AirTreeV1
                 CustomCollection collection = GetCollection(doc, selectedterminals);
 
                 //selectedelements = collection.ShowElements(0);
-                 collection.MarkCollection();
-                selectedelements = collection.ShowControlElements();
+                //collection.MarkCollection();
+                collection.Calcualate();
+                CustomBranch selectedbranch = collection.SelectMainBranch();
+                /*foreach (var element in selectedbranch.Elements)
+                {
+                    selectedelements.Add(element.ElementId);
+                }*/
+
+                collection.MarkCollection(selectedbranch);
+                selectedelements=  collection.ShowElements();
+                
+                //selectedelements = collection.ShowControlElements();
                 //selectedelements = collection;
             }
 
+            
             uIDocument.Selection.SetElementIds(selectedelements);
 
             // List<Branch> mainnodes = new List<Branch>();

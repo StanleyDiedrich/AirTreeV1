@@ -35,12 +35,16 @@ namespace AirTreeV1
             FireProtectValve,
             AirTerminal,
             Drossel,
-            Cap
+            Cap,
+            TapAdjustable,
+            Transition
 
         }
 
         public Detail DetailType { get; private set; }
-
+        public int TrackNumber { get; set; }
+        public int BranchNumber { get; set; }
+        public bool MainTrack { get; set; }
 
         public CustomElement (Autodesk.Revit.DB.Document doc, ElementId elementId)
         {
@@ -50,7 +54,10 @@ namespace AirTreeV1
             }
             ElementId = elementId;
             Element = doc.GetElement(ElementId);
-            
+            if (ElementId.IntegerValue==4657641)
+            {
+                Element = Element;
+            }
             if (Element is Duct)
             {
                 System = (Element as MEPCurve).MEPSystem;
@@ -200,8 +207,21 @@ namespace AirTreeV1
                     {
                         DetailType = Detail.Tee;
                     }
+                    else if ((Model as MechanicalFitting).PartType==PartType.TapAdjustable)
+                    {
+                        DetailType = Detail.TapAdjustable;
+                    }
+                    else if ((Model as MechanicalFitting).PartType == PartType.Transition)
+                    {
+                        DetailType = Detail.Transition;
+                    }
+                    
+
                 }
-                
+                else if (Element.Category.Id.IntegerValue == -2008016)
+                {
+                    DetailType = Detail.FireProtectValve;
+                }
                 else if (Element.Category.Id.IntegerValue==-2008013)
                 {
                     DetailType = Detail.AirTerminal;

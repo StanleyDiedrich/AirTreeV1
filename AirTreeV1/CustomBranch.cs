@@ -22,6 +22,10 @@ namespace AirTreeV1
             Number = _counter;
             _counter++;
         }
+        public CustomBranch (Autodesk.Revit.DB.Document document)
+        {
+            Document = document;
+        }
         public void Add (CustomElement customElement)
         {
             if (customElement != null)
@@ -78,6 +82,7 @@ namespace AirTreeV1
 
         }
 
+        
 
 
         
