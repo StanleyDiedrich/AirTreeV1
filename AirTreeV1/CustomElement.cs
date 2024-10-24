@@ -7,28 +7,43 @@ using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB;
 using System.Runtime.Remoting.Contexts;
 using System.Windows.Media.Media3D;
+using Autodesk.Revit.Creation;
+using System.Text.RegularExpressions;
 
 namespace AirTreeV1
 {
-   public  class CustomElement
+
+    public class CustomElement
     {
         public Element Element { get; set; }
         public ElementId ElementId { get; set; }
         public ElementId NextElementId { get; set; }
-        public MEPSystem System { get; set; }
+        public MEPSystem MSystem { get; set; }
         public MEPModel Model { get; set; }
         public string SystemName { get; set; }
         public string ShortSystemName { get; set; }
+        public string Lvl { get; set; }
         public DuctSystemType SystemType { get; set; }
 
         public CustomConnector SelectedConnector { get; set; }
         public List<CustomConnector> SecondaryConnectors { get; set; }
 
         public ConnectorSet OwnConnectors { get; set; }
+        public string Volume { get; set; }
+        public string ModelWidth { get; set; }
+        public string ModelHeight { get; set; }
+        public string ModelLength { get; set; }
+        public string ModelDiameter { get; set; }
+        public string ModelVelocity { get; set; }
+        public string ModelHydraulicDiameter { get; set; }
+        public double EquiDiameter { get; set; }
+        public string ModelHydraulicArea { get; set; }
+
 
         public enum Detail
         {
-            Duct,
+            RectangularDuct,
+            RoundDuct,
             Tee,
             Elbow,
             Silencer,
@@ -45,26 +60,49 @@ namespace AirTreeV1
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
         public bool MainTrack { get; set; }
-
-        public CustomElement (Autodesk.Revit.DB.Document doc, ElementId elementId)
+        private string GetValue(string primaryvolume)
         {
-            if (elementId==null)
+            // Используем регулярное выражение, чтобы найти и вернуть только числовую часть
+            var match = System.Text.RegularExpressions.Regex.Match(primaryvolume, @"\d+(\.\d+)?");
+            return match.Success ? match.Value : string.Empty; // Вернуть число или пустую строку, если числ
+        }
+        public CustomElement(Autodesk.Revit.DB.Document doc, ElementId elementId)
+        {
+            if (elementId == null)
             {
                 return;
             }
             ElementId = elementId;
             Element = doc.GetElement(ElementId);
-            if (ElementId.IntegerValue==4657641)
+            SystemName = Element.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
+
+            if (Element.LookupParameter("Базовый уровень") != null)
             {
-                Element = Element;
+                Lvl = Element.LookupParameter("Базовый уровень").AsValueString();
             }
+
+            else
+            {
+                Lvl = Element.LookupParameter("Уровень").AsValueString();
+            }
+
+
+
+
+
             if (Element is Duct)
             {
-                System = (Element as MEPCurve).MEPSystem;
-                SystemType = (System as MechanicalSystem).SystemType;
+                MSystem = (Element as MEPCurve).MEPSystem;
+                SystemType = (MSystem as MechanicalSystem).SystemType;
                 ShortSystemName = Element.LookupParameter("Сокращение для системы").AsString();
-                DetailType = Detail.Duct;
+
                 OwnConnectors = ((Element as Duct) as MEPCurve).ConnectorManager.Connectors;
+                string primaryvolume = Element.get_Parameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM).AsValueString();
+                Volume = GetValue(primaryvolume);
+                string primarylength = Element.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsValueString();
+                ModelLength = primarylength;
+                string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
+                ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in OwnConnectors)
                 {
                     ConnectorSet nextconnectors = connector.AllRefs;
@@ -129,19 +167,33 @@ namespace AirTreeV1
                                                 custom.Type = connect.ConnectorType;
                                                 if (custom.Shape == ConnectorProfileType.Round)
                                                 {
+                                                    DetailType = Detail.RoundDuct;
                                                     custom.Diameter = connect.Radius * 2;
                                                     custom.EquiDiameter = custom.Diameter;
+                                                    string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
+                                                    ModelDiameter = primarydiameter;
+
+                                                    ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
+                                                    ModelHydraulicArea = ((Math.PI*Math.Pow(Convert.ToDouble(ModelHydraulicDiameter),2) / 4)/1000000).ToString();
                                                 }
                                                 else
                                                 {
+                                                    DetailType = Detail.RectangularDuct;
                                                     custom.Width = connect.Width;
                                                     custom.Height = connect.Height;
                                                     custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                    string primarywidth = Element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsValueString();
+                                                    ModelWidth = primarywidth;
+                                                    string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
+                                                    ModelHeight = primaryheight;
+                                                    ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
+                                                    ModelHydraulicArea = (Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4).ToString();
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
                                                 custom.NextOwnerId = custom.NextOwnerId;
                                                 NextElementId = custom.NextOwnerId;
+                                                EquiDiameter = custom.EquiDiameter * 304.8;
                                                 //SecondaryConnectors.Add(custom);
                                             }
 
@@ -158,19 +210,30 @@ namespace AirTreeV1
                                                 custom.Type = connect.ConnectorType;
                                                 if (custom.Shape == ConnectorProfileType.Round)
                                                 {
+                                                    DetailType = Detail.RoundDuct;
                                                     custom.Diameter = connect.Radius * 2;
                                                     custom.EquiDiameter = custom.Diameter;
+                                                    string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
+                                                    ModelDiameter = primarydiameter;
+                                                    ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
                                                 }
                                                 else
                                                 {
+                                                    DetailType = Detail.RectangularDuct;
                                                     custom.Width = connect.Width;
                                                     custom.Height = connect.Height;
                                                     custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                    string primarywidth = Element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsValueString();
+                                                    ModelWidth = primarywidth;
+                                                    string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
+                                                    ModelHeight = primaryheight;
+                                                    ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
                                                 custom.NextOwnerId = custom.NextOwnerId;
                                                 NextElementId = custom.NextOwnerId;
+                                                EquiDiameter = custom.EquiDiameter * 304.8;
                                                 //SecondaryConnectors.Add(custom);
                                             }
                                         }
@@ -178,22 +241,22 @@ namespace AirTreeV1
                                     }
                                 }
                             }
-                            
+
                         }
 
-                    
+
 
 
                     }
                 }
 
-            
 
-        }
+
+            }
             if (Element is FamilyInstance)
             {
                 Model = (Element as FamilyInstance).MEPModel;
-                if ((Model as MechanicalFitting)!=null)
+                if ((Model as MechanicalFitting) != null)
                 {
                     if ((Model as MechanicalFitting).PartType == PartType.Cap)
                     {
@@ -207,7 +270,7 @@ namespace AirTreeV1
                     {
                         DetailType = Detail.Tee;
                     }
-                    else if ((Model as MechanicalFitting).PartType==PartType.TapAdjustable)
+                    else if ((Model as MechanicalFitting).PartType == PartType.TapAdjustable)
                     {
                         DetailType = Detail.TapAdjustable;
                     }
@@ -215,14 +278,14 @@ namespace AirTreeV1
                     {
                         DetailType = Detail.Transition;
                     }
-                    
+
 
                 }
                 else if (Element.Category.Id.IntegerValue == -2008016)
                 {
                     DetailType = Detail.FireProtectValve;
                 }
-                else if (Element.Category.Id.IntegerValue==-2008013)
+                else if (Element.Category.Id.IntegerValue == -2008013)
                 {
                     DetailType = Detail.AirTerminal;
                 }
@@ -232,11 +295,11 @@ namespace AirTreeV1
                 }*/
 
                 OwnConnectors = (Element as FamilyInstance).MEPModel.ConnectorManager.Connectors;
-                
+
                 foreach (Connector connector in OwnConnectors)
                 {
 
-                    if (connector.Domain!=Domain.DomainHvac)
+                    if (connector.Domain != Domain.DomainHvac)
                     {
                         continue;
                     }
@@ -312,6 +375,8 @@ namespace AirTreeV1
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
                                                 custom.NextOwnerId = custom.NextOwnerId;
                                                 NextElementId = custom.NextOwnerId;
+                                                EquiDiameter = custom.EquiDiameter;
+
                                                 //SecondaryConnectors.Add(custom);
                                             }
 
@@ -341,6 +406,7 @@ namespace AirTreeV1
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
                                                 custom.NextOwnerId = custom.NextOwnerId;
                                                 NextElementId = custom.NextOwnerId;
+                                                EquiDiameter = custom.EquiDiameter;
                                                 //SecondaryConnectors.Add(custom);
                                             }
                                         }
@@ -348,18 +414,19 @@ namespace AirTreeV1
                                     }
                                 }
                             }
-                            
-                        }
-                    
-
 
                         }
+
+
+
                     }
-
                 }
-               
 
             }
-           
+
+
         }
+
+
     }
+}

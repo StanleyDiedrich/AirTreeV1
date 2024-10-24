@@ -144,58 +144,7 @@ namespace AirTreeV1
             uidoc.Selection.SetElementIds(totalids);
         }
 
-        public string GetContent(Autodesk.Revit.DB.Document doc, List<Branch> mainnodes)
-        {
-            List<ElementId> checkednodes = new List<ElementId>();
-            string csvcontent = "";
-            int branchcounter = 0;
-            foreach (var mainnode in mainnodes)
-            {
-                int counter = 0;
-                foreach (var node in mainnode.Nodes)
-                {
-                    if (checkednodes.Contains(node.ElementId))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        ModelElement modelelement = new ModelElement(doc, node, branchcounter, counter);
-                        checkednodes.Add(node.ElementId);
-                        string a = $"{modelelement.ModelElementId};{modelelement.ModelTrack};{modelelement.ModelLvl};{modelelement.ModelBranchNumber};{modelelement.ModelTrackNumber};{modelelement.ModelName};{modelelement.ModelDiameter};{modelelement.ModelLength};{modelelement.ModelVolume};{modelelement.Type.ToString()};{modelelement.ModelTrack}-{modelelement.ModelLvl}-{modelelement.ModelBranchNumber}-{modelelement.ModelTrackNumber}\n";
-                        csvcontent += a;
-                        counter++;
-                    }
-
-
-
-                }
-                branchcounter++;
-            }
-            return csvcontent;
-        }
-        public void SaveFile(string content) // спрятали функцию сохранения 
-        {
-            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            saveFileDialog.Filter = "CSV files (*.csv)|*.csv";
-            saveFileDialog.Title = "Save CSV File";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
-                    {
-                        writer.Write(content);
-                    }
-
-                    Console.WriteLine("CSV file saved successfully.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error saving CSV file: " + ex.Message);
-                }
-            }
-        }
+        
 
         private ElementId GetStartDuct(Autodesk.Revit.DB.Document document, string selectedSystemNumber)
         {
@@ -465,14 +414,16 @@ namespace AirTreeV1
                 }*/
 
                 collection.MarkCollection(selectedbranch);
-                selectedelements=  collection.ShowElements();
+                string content = collection.GetContent();
+                collection.SaveFile(content);
+                //selectedelements=  collection.ShowElements();
                 
                 //selectedelements = collection.ShowControlElements();
                 //selectedelements = collection;
             }
 
             
-            uIDocument.Selection.SetElementIds(selectedelements);
+            //uIDocument.Selection.SetElementIds(selectedelements);
 
             // List<Branch> mainnodes = new List<Branch>();
 

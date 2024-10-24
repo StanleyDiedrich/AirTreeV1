@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Autodesk.Revit.DB;
 
 namespace AirTreeV1
@@ -87,7 +89,7 @@ namespace AirTreeV1
                     {
                         branch.Pressure += 2;
                     }
-                    else if (element.DetailType==CustomElement.Detail.Duct)
+                    else if (element.DetailType==CustomElement.Detail.RectangularDuct || element.DetailType == CustomElement.Detail.RoundDuct)
                     {
                         branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
                     }
@@ -113,51 +115,108 @@ namespace AirTreeV1
         public void MarkCollection(CustomBranch customBranch)
         {
             List<CustomBranch> newCustomCollection = new List<CustomBranch>();
+            HashSet<ElementId> checkedElements = new HashSet<ElementId>();
+
+            // Сначала обрабатываем основную ветвь 
             foreach (var branch in Collection)
             {
-
                 if (branch.Number == customBranch.Number)
                 {
-                    int trackcounter = 0;
+                    int trackCounter = 0;
                     foreach (var element in branch.Elements)
                     {
-                        element.TrackNumber = trackcounter;
+                        element.TrackNumber = trackCounter;
                         element.BranchNumber = branch.Number;
                         element.MainTrack = true;
-                        trackcounter++;
-
+                        checkedElements.Add(element.ElementId);
+                        trackCounter++;
                     }
                     newCustomCollection.Add(branch);
+                    break; // Прекращаем дальнейший обход после нахождения основной ветви 
                 }
             }
+
+            // Обрабатываем остальные ветви 
             foreach (var branch in Collection)
             {
-                 
-                    CustomBranch newcustomBranch = new CustomBranch(Document);
-                    foreach (var element in branch.Elements)
+                if (branch.Number == customBranch.Number)
+                {
+                    continue;
+                }
+
+                CustomBranch newCustomBranch = new CustomBranch(Document);
+                int trackCounter = 0;
+
+                foreach (var element in branch.Elements)
+                {
+                    // Если элемент уже есть в основной ветви, пропускаем его 
+                    if (checkedElements.Contains(element.ElementId))
                     {
-                        if (customBranch.Elements.Select(x => x.ElementId).ToList().Contains(element.ElementId))
-                        {
-                            continue;
-                        }
+                        continue;
                     }
-                    int trackcounter = 0;
-                    foreach (var element in branch.Elements)
-                    {
-                        element.TrackNumber = trackcounter;
-                        element.BranchNumber = branch.Number;
-                        trackcounter++;
-                        newcustomBranch.Add(element);
-                    }
-                    
-                    newCustomCollection.Add(newcustomBranch);
-                 
+
+                    // Устанавливаем номера и добавляем элемент в новую ветвь 
+                    element.TrackNumber = trackCounter;
+                    element.BranchNumber = branch.Number;
+                    newCustomBranch.Add(element);
+                    checkedElements.Add(element.ElementId);
+                    trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
+                }
+
+                newCustomCollection.Add(newCustomBranch);
             }
-            Collection = newCustomCollection;  
+
+            // Обновляем коллекцию 
+            Collection = newCustomCollection;
         }
 
-         public    
-        
+
+
+        public string GetContent()
+        {
+            
+            string csvcontent = "ElementId;DetailType;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;HydraulicDiameter;HydraulicArea;Velocity;Code;MainTrack\n";
+            
+            foreach (var branch in Collection)
+            {
+                
+                foreach (var element in branch.Elements)
+                {
+
+                    string a = $"{element.ElementId};{element.DetailType};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                         $"{element.Volume}; { element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelHydraulicDiameter}; {element.ModelHydraulicArea};{element.ModelVelocity};"+
+                    
+                        $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}\n";
+                   csvcontent += a;
+                        
+                }
+               
+            }
+            return csvcontent;
+        }
+        public void SaveFile(string content) // спрятали функцию сохранения 
+        {
+            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog.Filter = "CSV files (*.csv)|*.csv";
+            saveFileDialog.Title = "Save CSV File";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        writer.Write(content);
+                    }
+
+                    Console.WriteLine("CSV file saved successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error saving CSV file: " + ex.Message);
+                }
+            }
+        }
+
 
         public List<ElementId> ShowElements()
         {
