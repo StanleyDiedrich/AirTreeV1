@@ -75,7 +75,9 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType==CustomElement.Detail.Elbow)
                     {
-                        branch.Pressure += 5;
+                        CustomElbow customElbow = new CustomElbow(Document, element);
+                        element.LocRes = customElbow.LocRes;
+                        //branch.Pressure += 5;
                     }
                     else if (element.DetailType==CustomElement.Detail.Tee)
                     {
@@ -174,25 +176,21 @@ namespace AirTreeV1
 
         public string GetContent()
         {
-            
-            string csvcontent = "ElementId;DetailType;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;HydraulicDiameter;HydraulicArea;Velocity;Code;MainTrack\n";
-            
+            var csvcontent = new StringBuilder();
+            csvcontent.AppendLine("ElementId;DetailType;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;KMS;Code;MainTrack");
+
             foreach (var branch in Collection)
             {
-                
                 foreach (var element in branch.Elements)
                 {
-
                     string a = $"{element.ElementId};{element.DetailType};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
-                         $"{element.Volume}; { element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelHydraulicDiameter}; {element.ModelHydraulicArea};{element.ModelVelocity};"+
-                    
-                        $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}\n";
-                   csvcontent += a;
-                        
+                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.LocRes};" +
+                         $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
+                    csvcontent.AppendLine(a);
                 }
-               
             }
-            return csvcontent;
+
+            return csvcontent.ToString();
         }
         public void SaveFile(string content) // спрятали функцию сохранения 
         {

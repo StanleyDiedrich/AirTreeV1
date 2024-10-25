@@ -38,7 +38,7 @@ namespace AirTreeV1
         public string ModelHydraulicDiameter { get; set; }
         public double EquiDiameter { get; set; }
         public string ModelHydraulicArea { get; set; }
-
+        public double LocRes { get; set; }
 
         public enum Detail
         {
@@ -364,12 +364,25 @@ namespace AirTreeV1
                                                 {
                                                     custom.Diameter = connect.Radius * 2;
                                                     custom.EquiDiameter = custom.Diameter;
+                                                    ModelDiameter = Math.Round(custom.Diameter * 304.8, 0).ToString();
                                                 }
                                                 else
                                                 {
                                                     custom.Width = connect.Width;
                                                     custom.Height = connect.Height;
                                                     custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                    try
+                                                    {
+                                                        ModelWidth = doc.GetElement(ElementId).LookupParameter("Ширина воздуховода").AsValueString();
+                                                        ModelHeight = doc.GetElement(ElementId).LookupParameter("Высота воздуховода").AsValueString();
+                                                        double mwidth = Convert.ToDouble(ModelWidth);
+                                                        double mheight = Convert.ToDouble(ModelHeight);
+                                                        ModelHydraulicDiameter = Convert.ToInt32(2 * mwidth * mheight / (mwidth + mheight)).ToString();
+                                                    }
+                                                    catch
+                                                    {
+
+                                                    }
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -395,12 +408,25 @@ namespace AirTreeV1
                                                 {
                                                     custom.Diameter = connect.Radius * 2;
                                                     custom.EquiDiameter = custom.Diameter;
+                                                    ModelDiameter = Math.Round(custom.Diameter * 304.8, 0).ToString();
                                                 }
                                                 else
                                                 {
                                                     custom.Width = connect.Width;
                                                     custom.Height = connect.Height;
                                                     custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                    try
+                                                    {
+                                                        ModelWidth = doc.GetElement(ElementId).LookupParameter("Ширина воздуховода").AsValueString();
+                                                        ModelHeight = doc.GetElement(ElementId).LookupParameter("Высота воздуховода").AsValueString();
+                                                        double mwidth = Convert.ToDouble(ModelWidth);
+                                                        double mheight = Convert.ToDouble(ModelHeight);
+                                                        ModelHydraulicDiameter = Convert.ToInt32(2 * mwidth * mheight / (mwidth + mheight)).ToString();
+                                                    }
+                                                    catch
+                                                    {
+
+                                                    }
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1

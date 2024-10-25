@@ -29,22 +29,76 @@ namespace AirTreeV1
             };
         }
 
-        public double Interpolation(double hw,double rw)
+        public double Interpolation(double hw, double rw)
         {
             double result = 0;
-            double valueA1 = 0;
-            double valueA2 = 0;
-            double valueB1 = 0;
-            double ValueB2 = 0;
-            for (int h =1;h<11;h++)
+            double Y1 = 0;
+            double Y2 = 0;
+            double X1 = 0;
+            double X2 = 0;
+            for (int h = 1; h < 11; h++)
             {
-                if (hw == Values[0,h])
+                if (hw == Values[0, h])
                 {
-                    for (int w =1;w<7;w++)
+                    for (int w = 1; w < 8; w++)
                     {
-                        if (rw == Values[w,0])
+                        if (rw == Values[w, 0])
                         {
                             result = Values[w, h];
+                            break;
+                        }
+                        else if (rw > Values[w - 1, 0] && rw < Values[w, 0])
+                        {
+                            double contr1 = Values[w - 1, 0];
+                            double contr2 = Values[w, 0];
+                            X1 = Values[w - 1, 0];
+                            X2 = Values[w, 0];
+                            Y1 = Values[w - 1, h];
+                            Y2 = Values[w, h];
+
+                            result = Y2 + (Y1 - Y2) / (X1 - X2) * (rw - X1);
+                            break;
+
+                        }
+                    }
+                }
+                else if (hw > Values[0, h - 1] && hw < Values[0, h])
+                {
+                    for (int w = 1; w < 8; w++)
+                    {
+                        if (rw == Values[w, 0])
+                        {
+                            double contr1 = Values[w, h - 1];
+                            double contr2 = Values[w, h];
+                            X1 = Values[0, h - 1];
+                            X2 = Values[0, h];
+                            Y1 = Values[w, h - 1];
+                            Y2 = Values[w, h];
+
+                            result = Y1 + ((hw - X1) * (Y2 - Y1)) / (X2 - X1);
+                            break;
+
+                        }
+
+                        else if (rw > Values[w - 1, 0] && rw < Values[w, 0])
+                        {
+                            double A1 = Values[w - 1, 0];
+                            double A2 = Values[w, 0];
+                            double A = rw;
+                            double B1 = Values[0, h - 1];
+                            double B2 = Values[0, h];
+                            double B = hw;
+                            double C11 = Values[w - 1, h - 1];
+                            double C12 = Values[w - 1, h];
+                            double C21 = Values[w, h - 1];
+                            double C22 = Values[w, h];
+
+                            double res1 = (((B2 - B) / (B2 - B1) * C11) + (B - B1) / (B2 - B1) * C12) * ((A2 - A) / (A2 - A1));
+                            double res2 = (((B2 - B) / (B2 - B1) * C21) + (B - B1) / (B2 - B1) * C22) * (A - A1) / (A2 - A1);
+
+                            result = res1 + res2;
+                            break;
+
                         }
                     }
                 }
