@@ -49,17 +49,6 @@ namespace AirTreeV1
                 shortsystemname = (doc.GetElement(elementId) as Duct).LookupParameter("Сокращение для системы").AsString();
                 Node newnode = new Node(doc, doc.GetElement(elementId), systemtype, shortsystemname, mode, mainnodes);
                 additionalNodes.Add(newnode);
-                foreach (var node in additionalNodes.Nodes)
-                {
-                    if (node.AdditionalNodes.Count > 0)
-                    {
-                        foreach (var branch in node.AdditionalNodes)
-                        {
-                            mainnodes.Add(branch);
-                        }
-
-                    }
-                }
             }
             else if (doc.GetElement(elementId) is FamilyInstance)
             {
@@ -70,17 +59,6 @@ namespace AirTreeV1
                     systemtype = connector.DuctSystemType;
                     Node newnode = new Node(doc, doc.GetElement(elementId), systemtype, shortsystemname, mode,mainnodes);
                     additionalNodes.Add(newnode);
-                    foreach (var node in additionalNodes.Nodes)
-                    {
-                        if (node.AdditionalNodes.Count > 0)
-                        {
-                            foreach (var branch in node.AdditionalNodes)
-                            {
-                                mainnodes.Add(branch);
-                            }
-
-                        }
-                    }
                 }
             }
 
@@ -108,17 +86,7 @@ namespace AirTreeV1
                         systemtype2 = connector.DuctSystemType;
                         Node newnode = new Node(doc, doc.GetElement(elementId), systemtype2, shortsystemname2, mode, mainnodes);
                         additionalNodes.Add(newnode);
-                        foreach (var node in additionalNodes.Nodes)
-                        {
-                            if (node.AdditionalNodes.Count > 0)
-                            {
-                                foreach (var branch in node.AdditionalNodes)
-                                {
-                                    mainnodes.Add(branch);
-                                }
-
-                            }
-                        }
+                        
 
                     }
                 }
@@ -130,17 +98,17 @@ namespace AirTreeV1
                     var nextElement = doc.GetElement(lastnode.NextOwnerId);
                     Node newnode = new Node(doc, nextElement, lastnode.DuctSystemType, shortsystemname2, mode, mainnodes);
                     additionalNodes.Add(newnode);
-                    foreach (var node  in additionalNodes.Nodes)
+                    /*foreach (var node in additionalNodes.Nodes)
                     {
-                        if (node.AdditionalNodes.Count>0)
+                        if (node.AdditionalNodes.Count > 0)
                         {
                             foreach (var branch in node.AdditionalNodes)
                             {
                                 mainnodes.Add(branch);
                             }
-                            
+
                         }
-                    }
+                    }*/
                     // Add the new node to the nodes list
                     //lastnode =additionalNodes.Nodes.Last();
                 }
@@ -176,58 +144,7 @@ namespace AirTreeV1
             uidoc.Selection.SetElementIds(totalids);
         }
 
-        public string GetContent(Autodesk.Revit.DB.Document doc, List<Branch> mainnodes)
-        {
-            List<ElementId> checkednodes = new List<ElementId>();
-            string csvcontent = "";
-            int branchcounter = 0;
-            foreach (var mainnode in mainnodes)
-            {
-                int counter = 0;
-                foreach (var node in mainnode.Nodes)
-                {
-                    if (checkednodes.Contains(node.ElementId))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        ModelElement modelelement = new ModelElement(doc, node, branchcounter, counter);
-                        checkednodes.Add(node.ElementId);
-                        string a = $"{modelelement.ModelElementId};{modelelement.ModelTrack};{modelelement.ModelLvl};{modelelement.ModelBranchNumber};{modelelement.ModelTrackNumber};{modelelement.ModelName};{modelelement.ModelDiameter};{modelelement.ModelLength};{modelelement.ModelVolume};{modelelement.Type.ToString()};{modelelement.ModelTrack}-{modelelement.ModelLvl}-{modelelement.ModelBranchNumber}-{modelelement.ModelTrackNumber}\n";
-                        csvcontent += a;
-                        counter++;
-                    }
-
-
-
-                }
-                branchcounter++;
-            }
-            return csvcontent;
-        }
-        public void SaveFile(string content) // спрятали функцию сохранения 
-        {
-            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            saveFileDialog.Filter = "CSV files (*.csv)|*.csv";
-            saveFileDialog.Title = "Save CSV File";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
-                    {
-                        writer.Write(content);
-                    }
-
-                    Console.WriteLine("CSV file saved successfully.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error saving CSV file: " + ex.Message);
-                }
-            }
-        }
+        
 
         private ElementId GetStartDuct(Autodesk.Revit.DB.Document document, string selectedSystemNumber)
         {
@@ -268,6 +185,7 @@ namespace AirTreeV1
             return startDuct;
         }
 
+
         private List<Branch> AlgorithmDuctTraverse(Document doc, List<ElementId> startelements)
         {
             List<Branch> mainnodes = new List<Branch>(); // тут стояк 
@@ -290,55 +208,7 @@ namespace AirTreeV1
 
             
 
-            foreach (var branch in mainnodes)
-            {
-                foreach (var node in branch.Nodes)
-                {
-                    if (node.Connectors.Count == 2 && node.Connectors.Any(x => x.IsSelected == false) && node.Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_PipeFitting)
-                    {
-                        addnodes.Add(node);
-                    }
-                }
-            }
-            var totalIds = new HashSet<int>();
-            foreach (var el in addnodes.Nodes)
-            {
-                el.IsOCK = false;
-            }
-            foreach (var startelement in addnodes.Nodes)
-            {
-                var nextStartelement = startelement.ElementId;
-                (secondarynodes, secAdditionalNodes) = GetNewBranches(doc, nextStartelement);
-
-                foreach (var secondarynode in secondarynodes)
-                {
-                    Branch branch = new Branch();
-                    foreach (var node in secondarynode.Nodes)
-                    {
-                        node.IsOCK = false;
-                        if (totalIds.Add(node.ElementId.IntegerValue))
-                        {
-                            branch.Add(node);
-                        }
-                    }
-                    // Добавляем только уникальные элементы
-                    if (branch.Nodes.Count != 0)
-                    {
-                        secondarySupernodes.Add(branch);
-                    }
-                    else
-                    { continue; }
-
-                }
-            }
-            mainnodes.AddRange(secondarySupernodes);
-
-            foreach (var branch in additionalNodes)
-            {
-               
-                    mainnodes.Add(branch);
-                
-            }
+           
             return mainnodes;
         }
 
@@ -357,16 +227,15 @@ namespace AirTreeV1
                 systemtype = ((((doc.GetElement(elementId) as Duct) as MEPCurve).MEPSystem as MechanicalSystem)).SystemType;
                 shortsystemname = (doc.GetElement(elementId) as Duct).LookupParameter("Сокращение для системы").AsString();
                 Node newnode = new Node(doc, doc.GetElement(elementId), systemtype, shortsystemname, mode, mainnodes);
+                
                 mainnode.Add(newnode);
                 if (newnode.AdditionalNodes.Count > 0)
                 {
-                    foreach (var branch in newnode.AdditionalNodes)
+                    foreach (var node in newnode.AdditionalNodes)
                     {
-                        additionalNodes.Add(branch);
-
+                        additionalNodes.Add(node);
                     }
                 }
-
 
             }
             else if (doc.GetElement(elementId) is FamilyInstance)
@@ -380,13 +249,11 @@ namespace AirTreeV1
                     mainnode.Add(newnode);
                     if (newnode.AdditionalNodes.Count > 0)
                     {
-                        foreach (var branch in newnode.AdditionalNodes)
+                        foreach (var node in newnode.AdditionalNodes)
                         {
-                            additionalNodes.Add(branch);
-
+                            additionalNodes.Add(node);
                         }
                     }
-
                 }
             }
 
@@ -403,15 +270,14 @@ namespace AirTreeV1
                     shortsystemname2 = (doc.GetElement(elementId) as Duct).LookupParameter("Сокращение для системы").AsString();
                     Node newnode = new Node(doc, doc.GetElement(elementId), systemtype2, shortsystemname2, mode, mainnodes);
                     mainnode.Add(newnode);
+
                     if (newnode.AdditionalNodes.Count > 0)
                     {
-                        foreach (var branch in newnode.AdditionalNodes)
+                        foreach (var node in newnode.AdditionalNodes)
                         {
-                            additionalNodes.Add(branch);
-
+                            additionalNodes.Add(node);
                         }
                     }
-
 
                 }
                 else if (doc.GetElement(elementId) is FamilyInstance)
@@ -425,12 +291,12 @@ namespace AirTreeV1
                         mainnode.Add(newnode);
                         if (newnode.AdditionalNodes.Count > 0)
                         {
-                            foreach (var branch in newnode.AdditionalNodes)
+                            foreach (var node in newnode.AdditionalNodes)
                             {
-                                additionalNodes.Add(branch);
-
+                                additionalNodes.Add(node);
                             }
                         }
+
                     }
                 }
 
@@ -438,167 +304,32 @@ namespace AirTreeV1
 
                 try
                 {
-                    if(lastnode.ElementId.IntegerValue== 5632232)
-                    {
-                        lastnode = lastnode;
-                    }
                     var nextElement = doc.GetElement(lastnode.NextOwnerId);
                     Node newnode = new Node(doc, nextElement, lastnode.DuctSystemType, shortsystemname2, mode, mainnodes);
                     mainnode.Add(newnode); // Add the new node to the nodes list
                     if (newnode.AdditionalNodes.Count > 0)
                     {
-                        foreach (var branch in newnode.AdditionalNodes)
+                        foreach (var node in newnode.AdditionalNodes)
                         {
-                            additionalNodes.Add(branch);
-
+                            additionalNodes.Add(node);
                         }
                     }
-                    lastnode = mainnode.Nodes.Last();
                 }
                 catch
                 {
                     break;
                 }
 
-                
+
 
             }
             while (lastnode.NextOwnerId != null);
             mainnodes.Add(mainnode);
-           /* string a = "";
-            foreach (var branch in additionalNodes)
+            foreach (var node in additionalNodes)
             {
-                foreach (var node in branch.Nodes)
-                {
-                    a += node.ElementId.ToString() + ";";
-                }
-            }
-            TaskDialog.Show("R", a);
-            foreach (var branch in additionalNodes)
-            {
-                mainnodes.Add(branch);
-            }
-            string a = "";
-            foreach (var branch in mainnodes)
-            {
-                foreach (var node in branch.Nodes)
-                {
-                    a += node.ElementId.ToString() + ";";
-                }
-            }
-            TaskDialog.Show("R", a);*/
-
-            var additionalConnectors = mainnodes.SelectMany(branch => branch.Nodes)
-            .SelectMany(node => node.Connectors)
-            .Where(connector => connector.IsSelected == false)
-            .ToList();
-            List<ElementId> additionalElements = additionalConnectors.Select(x => x).Where(x => x.IsSelected == false).Select(x => x.NextOwnerId).ToList();
-
-            List<ElementId> startelement = new List<ElementId>();
-            foreach (var addel in additionalElements)
-            {
-
-                if (doc.GetElement(addel) is Duct)
-                {
-                    systemtype = ((((doc.GetElement(addel) as Duct) as MEPCurve).MEPSystem as MechanicalSystem)).SystemType;
-                    shortsystemname = (doc.GetElement(addel) as Duct).LookupParameter("Сокращение для системы").AsString();
-                    Node newnode = new Node(doc, doc.GetElement(addel), systemtype, shortsystemname, mode, mainnodes);
-                    if (newnode.AdditionalNodes.Count > 0)
-                    {
-                        foreach (var branch in newnode.AdditionalNodes)
-                        {
-                            additionalNodes.Add(branch);
-
-                        }
-                    }
-                    additionalBranch.Add(newnode);
-
-                }
-                else
-                {
-                    shortsystemname = (doc.GetElement(addel) as FamilyInstance).LookupParameter("Сокращение для системы").AsString();
-                    var connectors = ((doc.GetElement(addel) as FamilyInstance)).MEPModel.ConnectorManager.Connectors;
-                    foreach (Connector connector in connectors)
-                    {
-                        systemtype = connector.DuctSystemType;
-                        Node newnode = new Node(doc, doc.GetElement(addel), systemtype, shortsystemname, mode, mainnodes);
-                        if (newnode.AdditionalNodes.Count > 0)
-                        {
-                            foreach (var branch in newnode.AdditionalNodes)
-                            {
-                                additionalNodes.Add(branch);
-
-                            }
-                        }
-
-                        additionalBranch.Add(newnode);
-
-                    }
-                }
-
+                mainnodes.Add(node);
             }
 
-            mainnodes.Add(additionalBranch);
-
-
-
-
-
-            var secadditionalNodes = additionalNodes.SelectMany(x => x.Nodes).SelectMany(x => x.Connectors).Where(connector => connector.IsSelected == false).Select(x => x.NextOwnerId).ToList();
-
-            foreach (var addel in secadditionalNodes)
-            {
-                /*if (addel.IntegerValue == 6246778)
-                {
-                    ElementId addel2 = addel;
-                }*/
-                if (addel != null)
-                {
-                    if (doc.GetElement(addel) is Duct)
-                    {
-                        systemtype = ((((doc.GetElement(addel) as Duct) as MEPCurve).MEPSystem as MechanicalSystem)).SystemType;
-                        shortsystemname = (doc.GetElement(addel) as Duct).LookupParameter("Сокращение для системы").AsString();
-                        Node newnode = new Node(doc, doc.GetElement(addel), systemtype, shortsystemname, mode, mainnodes);
-                        if (newnode.AdditionalNodes.Count > 0)
-                        {
-                            foreach (var branch in newnode.AdditionalNodes)
-                            {
-                                additionalNodes.Add(branch);
-
-                            }
-                        }
-                        additionalBranch.Add(newnode);
-
-
-                    }
-                    else
-                    {
-                        shortsystemname = (doc.GetElement(addel) as FamilyInstance).LookupParameter("Сокращение для системы").AsString();
-                        var connectors = ((doc.GetElement(addel) as FamilyInstance)).MEPModel.ConnectorManager.Connectors;
-                        foreach (Connector connector in connectors)
-                        {
-                            systemtype = connector.DuctSystemType;
-                            Node newnode = new Node(doc, doc.GetElement(addel), systemtype, shortsystemname, mode, mainnodes);
-                            if (newnode.AdditionalNodes.Count > 0)
-                            {
-                                foreach (var branch in newnode.AdditionalNodes)
-                                {
-                                    additionalNodes.Add(branch);
-
-                                }
-                            }
-                            additionalBranch.Add(newnode);
-
-                        }
-                    }
-                }
-                else
-                {
-                    continue;
-                }
-            }
-            additionalNodes.Add(additionalBranch);
-            // Continue while NextOwnerId is not null
             return (mainnodes, additionalNodes);
         }
 
@@ -661,22 +392,46 @@ namespace AirTreeV1
             //var systemelements = mainViewModel.SystemElements;
 
             List<ElementId> startelements = new List<ElementId>();
-
+            List<ElementId> selectedterminals = new List<ElementId>();
+            List<ElementId> selectedelements = new List<ElementId>();
             //Ну тут вроде норм
             foreach (var systemname in systemnames)
             {
                 string systemName = systemname.SystemName;
 
-                var maxpipe = GetStartDuct(doc, systemName);
-                startelements.Add(maxpipe);
+                //var maxpipe = GetStartDuct(doc, systemName);
 
+                selectedterminals = GetAirTerminals(doc, systemName);
+                CustomCollection collection = GetCollection(doc, selectedterminals);
+
+                //selectedelements = collection.ShowElements(0);
+                //collection.MarkCollection();
+                collection.Calcualate();
+                CustomBranch selectedbranch = collection.SelectMainBranch();
+                /*foreach (var element in selectedbranch.Elements)
+                {
+                    selectedelements.Add(element.ElementId);
+                }*/
+
+                collection.MarkCollection(selectedbranch);
+                string content = collection.GetContent();
+                collection.SaveFile(content);
+                //selectedelements=  collection.ShowElements();
+                
+                //selectedelements = collection.ShowControlElements();
+                //selectedelements = collection;
             }
 
-            List<Branch> mainnodes = new List<Branch>();
+            
+            //uIDocument.Selection.SetElementIds(selectedelements);
+
+            // List<Branch> mainnodes = new List<Branch>();
 
 
-            mainnodes = AlgorithmDuctTraverse(doc, startelements);
-            SelectAllNodes(uIDocument, mainnodes);
+            // mainnodes = AlgorithmDuctTraverse(doc, startelements);
+
+
+            //SelectAllNodes(uIDocument, mainnodes);
             /*var selectedMode = mainViewModel.CalculationModes
             .FirstOrDefault(x => x.IsMode == true);
 
@@ -704,6 +459,49 @@ namespace AirTreeV1
             return Result.Succeeded;
         }
 
-        
+        private CustomCollection GetCollection(Document doc, List<ElementId> selectedterminals)
+        {
+            CustomCollection collection = new CustomCollection(doc);
+            foreach (var terminal in selectedterminals)
+            {
+                collection.CreateBranch(doc, terminal);
+            }
+            
+            return collection;
+        }
+
+        private List<ElementId> GetAirTerminals(Document doc, string systemName)
+        {
+            List<ElementId> resultterminals = new List<ElementId>();
+            var airterminals = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctTerminal).WhereElementIsNotElementType().ToElementIds().ToList();
+            foreach (var airterminal in airterminals)
+            {
+                if (airterminal.IntegerValue== 5982031)
+                {
+                   var airterminal2 = airterminal;
+                }
+                if (doc.GetElement(airterminal)!=null)
+                {
+                    FamilyInstance fI = doc.GetElement(airterminal) as FamilyInstance;
+                    if (fI!=null)
+                    {
+                        var checksystem = fI.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
+                        if (checksystem == null)
+                        {
+                            continue;
+                        }
+                        else if (checksystem.Equals(systemName))
+                        {
+                            resultterminals.Add(airterminal);
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+            return resultterminals;
+        }
     }
 }

@@ -111,31 +111,39 @@ namespace AirTreeV1
                     ConnectorSet nextconnectors = null;
                     foreach (Connector connector in connectorSet)
                     {
-                        if (connector.DuctSystemType == DuctSystemType.SupplyAir)
+                        if (connector.Domain!=Domain.DomainHvac)
                         {
-                            if (connector.Direction == FlowDirectionType.In)
+                            continue;
+                        }
+                        else
+                        {
+                            if (connector.DuctSystemType == DuctSystemType.SupplyAir)
                             {
-                                continue;
-                            }
-                            else
-                            {
-                                custom = new CustomConnector(doc, ElementId, DuctSystemType);
-                                nextconnectors = connector.AllRefs;
-                            }
+                                if (connector.Direction == FlowDirectionType.In)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                                    nextconnectors = connector.AllRefs;
+                                }
 
-                        }
-                        else if (connector.DuctSystemType == DuctSystemType.ExhaustAir)
-                        {
-                            if (connector.Direction == FlowDirectionType.Out)
-                            {
-                                continue;
                             }
-                            else
+                            else if (connector.DuctSystemType == DuctSystemType.ExhaustAir)
                             {
-                                custom = new CustomConnector(doc, ElementId, DuctSystemType);
-                                nextconnectors = connector.AllRefs;
+                                if (connector.Direction == FlowDirectionType.Out)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    custom = new CustomConnector(doc, ElementId, DuctSystemType);
+                                    nextconnectors = connector.AllRefs;
+                                }
                             }
                         }
+                        
 
                         /* CustomConnector custom = new CustomConnector(doc, ElementId, DuctSystemType);
                           ConnectorSet nextconnectors = connector.AllRefs;*/
@@ -332,19 +340,19 @@ namespace AirTreeV1
 
                     foreach (CustomConnector customConnector1 in Connectors)
                     {
-                        if (customConnector1.NextOwnerId.IntegerValue== 5632232)
+                        if (customConnector1.NextOwnerId.IntegerValue == 4614644)
                         {
                             CustomConnector customConnector2 = customConnector1;
                         }
-                         if (customConnector1.IsSelected==false )
+                        if (customConnector1.IsSelected == false)
                         {
                             Branch newBranch = new Branch();
                             newBranch = Main.GetNewAdditionalBranches(doc, customConnector1.NextOwnerId, mainnodes);
                             AdditionalNodes.Add(newBranch);
                         }
-                         
-                            
-                        
+
+
+
                     }
 
                 }
