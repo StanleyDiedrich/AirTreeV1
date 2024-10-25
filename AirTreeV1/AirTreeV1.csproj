@@ -59,7 +59,9 @@
     <Compile Include="CustomBranch.cs" />
     <Compile Include="CustomCollection.cs" />
     <Compile Include="CustomConnector.cs" />
+    <Compile Include="CustomElbow.cs" />
     <Compile Include="CustomElement.cs" />
+    <Compile Include="ElbowData.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="ModelElement.cs" />
