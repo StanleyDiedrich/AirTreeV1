@@ -18,10 +18,13 @@ namespace AirTreeV1
         public double Width { get; set; }
         public double Height { get; set; }
         public double Radius { get; set; }
+        public double Diameter { get; set; }
+        public double ElbowRadius { get; set; }
         public CustomConnector InletConnector { get; set; }
         public CustomConnector OutletConnector { get; set; }
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
+        public ConnectorProfileType ProfileType { get; set; }
 
         public CustomElbow(Autodesk.Revit.DB.Document document, CustomElement element)
         {
@@ -29,121 +32,146 @@ namespace AirTreeV1
             Element = element;
             ElementId = element.ElementId;
             SystemType = element.SystemType;
-            
-            foreach (Connector connector in Element.OwnConnectors)
+            if (document.GetElement(ElementId) is FamilyInstance)
             {
-                if (connector.Domain != Domain.DomainHvac)
+                foreach (Connector connector in Element.OwnConnectors)
                 {
-                    continue;
+                    if (connector.Domain != Domain.DomainHvac)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        ConnectorSet nextconnectors = connector.AllRefs;
+
+                        foreach (Connector connect in nextconnectors)
+                        {
+                            if (connect.Domain != Domain.DomainHvac)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                SystemType = connect.DuctSystemType;
+                                CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
+
+                                if (Document.GetElement(connect.Owner.Id) is MechanicalSystem || Document.GetElement(connect.Owner.Id) is DuctInsulation)
+                                {
+                                    continue;
+                                }
+
+                                else if (connect.Owner.Id == ElementId)
+                                {
+                                    continue; // Игнорируем те же элементы
+                                }
+                                /*else if (connect.Owner.Id == NextElementId)
+                                {
+                                    continue;
+                                }*/
+
+
+                                if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
+                                {
+
+                                    if (SystemType == DuctSystemType.SupplyAir)
+                                    {
+
+                                        if (connect.Direction == FlowDirectionType.Out)
+                                        {
+                                            custom.Flow = connect.Flow;
+                                            custom.Domain = Domain.DomainHvac;
+                                            //custom.DirectionType = FlowDirectionType.Out;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            custom.Shape = connect.Shape;
+                                            custom.Type = connect.ConnectorType;
+                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            {
+                                                ProfileType = ConnectorProfileType.Round;
+                                                custom.Diameter = connect.Radius * 2;
+                                                custom.EquiDiameter = custom.Diameter;
+                                                try
+                                                {
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                }
+                                                catch { }
+                                            }
+                                            else
+                                            {
+                                                ProfileType = ConnectorProfileType.Rectangular;
+                                                custom.Width = connect.Width;
+                                                custom.Height = connect.Height;
+                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                            }
+                                            custom.Coefficient = connect.Coefficient;
+                                            custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
+                                            OutletConnector = custom;
+
+
+                                            //SecondaryConnectors.Add(custom);
+                                        }
+
+
+                                    }
+                                    else if (SystemType == DuctSystemType.ExhaustAir)
+                                    {
+                                        if (connect.Direction == FlowDirectionType.In)
+                                        {
+                                            custom.Flow = connect.Flow;
+                                            custom.Domain = Domain.DomainHvac;
+                                            //custom.DirectionType = FlowDirectionType.In;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            custom.Shape = connect.Shape;
+                                            custom.Type = connect.ConnectorType;
+                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            {
+                                                custom.Diameter = connect.Radius * 2;
+                                                Diameter = custom.Diameter;
+                                                custom.EquiDiameter = custom.Diameter;
+                                                try
+                                                {
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                }
+                                                catch { }
+                                                
+                                            }
+                                            else
+                                            {
+                                                custom.Width = connect.Width;
+                                                custom.Height = connect.Height;
+                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                            }
+                                            custom.Coefficient = connect.Coefficient;
+
+                                            OutletConnector = custom;
+                                            //SecondaryConnectors.Add(custom);
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    }
+
+                }
+                Width = OutletConnector.Width;
+                Height = OutletConnector.Height;
+                Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
+                ElbowData elbowdata = new ElbowData(ProfileType);
+                if (ProfileType == ConnectorProfileType.Rectangular)
+                {
+                    double hw = Height / Radius;
+                    double rw = Radius / Height;
+                    LocRes = elbowdata.Interpolation(hw, rw);
                 }
                 else
                 {
-                    ConnectorSet nextconnectors = connector.AllRefs;
-
-                    foreach (Connector connect in nextconnectors)
-                    {
-                        if (connect.Domain != Domain.DomainHvac)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            SystemType = connect.DuctSystemType;
-                            CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
-
-                            if (Document.GetElement(connect.Owner.Id) is MechanicalSystem || Document.GetElement(connect.Owner.Id) is DuctInsulation)
-                            {
-                                continue;
-                            }
-
-                            else if (connect.Owner.Id == ElementId)
-                            {
-                                continue; // Игнорируем те же элементы
-                            }
-                            /*else if (connect.Owner.Id == NextElementId)
-                            {
-                                continue;
-                            }*/
-
-
-                            if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
-                            {
-
-                                if (SystemType == DuctSystemType.SupplyAir)
-                                {
-
-                                    if (connect.Direction == FlowDirectionType.Out)
-                                    {
-                                        custom.Flow = connect.Flow;
-                                        custom.Domain = Domain.DomainHvac;
-                                        //custom.DirectionType = FlowDirectionType.Out;
-                                        custom.NextOwnerId = connect.Owner.Id;
-                                        custom.Shape = connect.Shape;
-                                        custom.Type = connect.ConnectorType;
-                                        if (custom.Shape == ConnectorProfileType.Round)
-                                        {
-                                            custom.Diameter = connect.Radius * 2;
-                                            custom.EquiDiameter = custom.Diameter;
-                                        }
-                                        else
-                                        {
-                                            custom.Width = connect.Width;
-                                            custom.Height = connect.Height;
-                                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                        }
-                                        custom.Coefficient = connect.Coefficient;
-                                        custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
-                                        OutletConnector = custom;
-
-
-                                        //SecondaryConnectors.Add(custom);
-                                    }
-
-
-                                }
-                                else if (SystemType == DuctSystemType.ExhaustAir)
-                                {
-                                    if (connect.Direction == FlowDirectionType.In)
-                                    {
-                                        custom.Flow = connect.Flow;
-                                        custom.Domain = Domain.DomainHvac;
-                                        //custom.DirectionType = FlowDirectionType.In;
-                                        custom.NextOwnerId = connect.Owner.Id;
-                                        custom.Shape = connect.Shape;
-                                        custom.Type = connect.ConnectorType;
-                                        if (custom.Shape == ConnectorProfileType.Round)
-                                        {
-                                            custom.Diameter = connect.Radius * 2;
-                                            custom.EquiDiameter = custom.Diameter;
-                                        }
-                                        else
-                                        {
-                                            custom.Width = connect.Width;
-                                            custom.Height = connect.Height;
-                                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                        }
-                                        custom.Coefficient = connect.Coefficient;
-
-                                        OutletConnector = custom;
-                                        //SecondaryConnectors.Add(custom);
-                                    }
-                                }
-
-                            }
-
-                        }
-
-                    }
+                    double rd = ElbowRadius / Diameter;
+                    LocRes = elbowdata.Interpolation(rd);
                 }
-
             }
-            Width = OutletConnector.Width;
-            Height = OutletConnector.Height;
-            Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
-            ElbowData elbowdata = new ElbowData();
-            double hw = Height / Radius;
-            double rw = Radius / Height;
-            LocRes = elbowdata.Interpolation(hw, rw);
+            
 
         }
     }
