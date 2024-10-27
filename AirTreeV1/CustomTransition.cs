@@ -24,7 +24,15 @@ namespace AirTreeV1
         public double LocRes { get; set; }
         public ConnectorProfileType ProfileType { get; set; }
 
+        public CustomTransition (Autodesk.Revit.DB.Document document, CustomElement element)
+        {
+            Document = document;
+            Element = element;
+            ElementId = element.ElementId;
+            SystemType = element.SystemType;
 
+
+        }
 
     }
 }
