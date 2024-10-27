@@ -124,6 +124,7 @@ namespace AirTreeV1
                                             custom.Type = connect.ConnectorType;
                                             if (custom.Shape == ConnectorProfileType.Round)
                                             {
+                                                ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2;
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
@@ -136,6 +137,7 @@ namespace AirTreeV1
                                             }
                                             else
                                             {
+                                                ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width;
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);

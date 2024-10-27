@@ -36,7 +36,7 @@ namespace AirTreeV1
             double width1 =Convert.ToDouble( Element.Element.LookupParameter("Ширина воздуховода 1").AsValueString());
             double width2= Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 2").AsValueString());
             double length = Convert.ToDouble(Element.Element.LookupParameter("Длина воздуховода").AsValueString());
-            double d = (2*length /  (width1 - width2));
+            double d = Math.Abs((2*length /  (width1 - width2)));
             double angle = Acot(d);
             Angle = 2 * angle;
             if (document.GetElement(ElementId) is FamilyInstance)
@@ -219,6 +219,7 @@ namespace AirTreeV1
                 }
                 RelA =   OutletConnector.AOutlet/ InletConnector.AInlet;
                 RectTransitionData elbowdata = new RectTransitionData(SystemType,RelA,Angle);
+                elbowdata.Interpolation(100000,RelA,Angle);
                 LocRes = elbowdata.LocRes;
             }
            
