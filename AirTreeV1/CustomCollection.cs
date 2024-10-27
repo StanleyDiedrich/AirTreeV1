@@ -89,7 +89,8 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType == CustomElement.Detail.Transition)
                     {
-                        branch.Pressure += 2;
+                        CustomTransition customTransition = new CustomTransition(Document, element);
+                        element.LocRes = customTransition.LocRes;
                     }
                     else if (element.DetailType==CustomElement.Detail.RectangularDuct || element.DetailType == CustomElement.Detail.RoundDuct)
                     {

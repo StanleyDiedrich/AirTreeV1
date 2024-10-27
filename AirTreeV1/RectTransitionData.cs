@@ -14,7 +14,7 @@ namespace AirTreeV1
         public double LocRes { get; set; }
 
 
-        public RectTransitionData (DuctSystemType ductSystemType)
+        public RectTransitionData (DuctSystemType ductSystemType, double relA, double angle)
         {
             SystemType = ductSystemType;
             if(SystemType==DuctSystemType.ExhaustAir)
@@ -135,13 +135,13 @@ namespace AirTreeV1
 
 
                 }
-
+                
 
 
             }
 
 
-            return result;
+            return LocRes= result;
         }
 
 
