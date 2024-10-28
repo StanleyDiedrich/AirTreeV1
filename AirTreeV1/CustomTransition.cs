@@ -35,32 +35,55 @@ namespace AirTreeV1
             SystemType = element.SystemType;
 
             
-
-            double width1 =Convert.ToDouble( Element.Element.LookupParameter("Ширина воздуховода 1").AsValueString());
-            double width2= Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 2").AsValueString());
-            double length = Convert.ToDouble(Element.Element.LookupParameter("Длина воздуховода").AsValueString());
-            if (width1!=width2)
+            try
             {
-                double d = Math.Abs((2 * length / (width1 - width2)));
-                double angle = Acot(d);
-                Angle = 2 * angle;
-            }
-            else
-            {
-                double height1 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 1").AsValueString());
-                double height2 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 2").AsValueString());
-
-                if (height1==height2)
+                double width1 = Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 1").AsValueString());
+                double width2 = Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 2").AsValueString());
+                double length = Convert.ToDouble(Element.Element.LookupParameter("Длина воздуховода").AsValueString());
+                if (width1 != width2)
                 {
-                    element.DetailType = CustomElement.Detail.RectangularDuct;
+                    double d = Math.Abs((2 * length / (width1 - width2)));
+                    double angle = Acot(d);
+                    Angle = 2 * angle;
+                }
+                else
+                {
+                    double height1 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 1").AsValueString());
+                    double height2 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 2").AsValueString());
+
+                    if (height1 == height2)
+                    {
+                        element.DetailType = CustomElement.Detail.RectangularDuct;
+                        return;
+                    }
+                    double d = Math.Abs((2 * length / (height1 - height2)));
+                    double angle = Acot(d);
+                    Angle = 2 * angle;
+
+
+                }
+            }
+            catch
+            {
+                double length = Convert.ToDouble(Element.Element.LookupParameter("L").AsValueString());
+                double diameter1 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 1").AsValueString());
+                double diameter2 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 2").AsValueString());
+
+                if (diameter1==diameter2)
+                {
+                    element.DetailType = CustomElement.Detail.RoundDuct;
                     return;
                 }
-                double d = Math.Abs((2 * length / (height1 - height2)));
-                double angle = Acot(d);
-                Angle = 2 * angle;
-
-
+                else
+                {
+                    double d = Math.Abs((2 * length / (diameter1 - diameter2)));
+                    double angle = Acot(d);
+                    Angle = 2 * angle;
+                }
+                
             }
+           
+            
             
             
             if (document.GetElement(ElementId) is FamilyInstance)
@@ -120,7 +143,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 4) / 4;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 
                                             }
                                             else
@@ -151,7 +174,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 4) / 4;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
 
                                             }
                                             else
@@ -186,12 +209,13 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 4) / 4;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 
 
                                             }
                                             else
                                             {
+                                                custom.Shape = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width;
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
@@ -216,12 +240,13 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 4) / 4;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
 
 
                                             }
                                             else
                                             {
+                                                custom.Shape = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width;
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
@@ -241,39 +266,81 @@ namespace AirTreeV1
                     }
 
                 }
-                if (SystemType==DuctSystemType.ExhaustAir)
+                if (InletConnector.Shape==ConnectorProfileType.Rectangular && OutletConnector.Shape==ConnectorProfileType.Rectangular)
                 {
-                    RelA = OutletConnector.AOutlet / InletConnector.AInlet;
-                    if (RelA>1)
+                    if (SystemType == DuctSystemType.ExhaustAir)
                     {
-                        element.DetailType = CustomElement.Detail.RectExpansion;
+                        RelA = OutletConnector.AOutlet / InletConnector.AInlet;
+                        if (RelA > 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RectExpansion;
+                        }
+                        else
+                        {
+                            element.DetailType = CustomElement.Detail.RectContraction;
+                        }
+                        RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
+                        elbowdata.Interpolation(100000, RelA, Angle);
+                        LocRes = elbowdata.LocRes;
+                        
+
                     }
                     else
                     {
-                        element.DetailType = CustomElement.Detail.RectContraction;
+                        RelA = InletConnector.AInlet / OutletConnector.AOutlet;
+                        if (RelA > 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RectExpansion;
+                        }
+                        else
+                        {
+                            element.DetailType = CustomElement.Detail.RectContraction;
+                        }
+                        RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
+                        elbowdata.Interpolation(100000, RelA, Angle);
+                        LocRes = elbowdata.LocRes;
+                        
                     }
-                    RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                    elbowdata.Interpolation(100000, RelA, Angle);
-                    LocRes = elbowdata.LocRes;
-                   // element.DetailType = CustomElement.Detail.RectTransition;
-                  
                 }
-                else
+                else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector.Shape == ConnectorProfileType.Round)
                 {
-                    RelA = InletConnector.AInlet/OutletConnector.AOutlet;
-                    if (RelA > 1)
+                    if (SystemType == DuctSystemType.ExhaustAir)
                     {
-                        element.DetailType = CustomElement.Detail.RectExpansion;
+                        RelA = OutletConnector.AOutlet / InletConnector.AInlet;
+                        if (RelA > 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RoundExpansion;
+                        }
+                        else
+                        {
+                            element.DetailType = CustomElement.Detail.RoundContraction;
+                        }
+                        
+                        RoundTransitionData elbowdata = new RoundTransitionData(SystemType, RelA, Angle);
+                        elbowdata.Interpolation(100000, RelA, Angle);
+                        LocRes = elbowdata.LocRes;
+                        
+
                     }
                     else
                     {
-                        element.DetailType = CustomElement.Detail.RectContraction;
+                        RelA = InletConnector.AInlet / OutletConnector.AOutlet;
+                        if (RelA > 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RoundExpansion;
+                        }
+                        else
+                        {
+                            element.DetailType = CustomElement.Detail.RoundContraction;
+                        }
+                        RoundTransitionData elbowdata = new RoundTransitionData(SystemType, RelA, Angle);
+                        elbowdata.Interpolation(100000, RelA, Angle);
+                        LocRes = elbowdata.LocRes;
+                        
                     }
-                    RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                    elbowdata.Interpolation(100000, RelA, Angle);
-                    LocRes = elbowdata.LocRes;
-                    element.DetailType = CustomElement.Detail.RectTransition;
                 }
+
+                
                 
                 
             }

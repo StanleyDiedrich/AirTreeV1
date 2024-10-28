@@ -56,7 +56,9 @@ namespace AirTreeV1
             RectTransition,
             RectExpansion,
             RectContraction,
-            RoundTransition
+            RoundTransition,
+            RoundExpansion,
+            RoundContraction
 
         }
 
