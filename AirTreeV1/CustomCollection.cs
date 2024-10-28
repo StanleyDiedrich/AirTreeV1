@@ -69,6 +69,10 @@ namespace AirTreeV1
             {
                 foreach (var element in branch.Elements)
                 {
+                    if (element.ElementId.IntegerValue == 5193653)
+                    {
+                        var element2 = element;
+                    }
                     if (element.DetailType==CustomElement.Detail.AirTerminal)
                     {
                         branch.Pressure += 10;

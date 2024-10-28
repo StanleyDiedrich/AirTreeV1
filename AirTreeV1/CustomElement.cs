@@ -52,11 +52,15 @@ namespace AirTreeV1
             Drossel,
             Cap,
             TapAdjustable,
-            Transition
+            Transition,
+            RectTransition,
+            RectExpansion,
+            RectContraction,
+            RoundTransition
 
         }
 
-        public Detail DetailType { get; private set; }
+        public Detail DetailType { get;  set; }
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
         public bool MainTrack { get; set; }

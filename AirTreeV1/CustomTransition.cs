@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB;
 using System.Windows.Media.Animation;
+using Autodesk.Revit.DB.Architecture;
 
 namespace AirTreeV1
 {
@@ -33,12 +34,35 @@ namespace AirTreeV1
             ElementId = element.ElementId;
             SystemType = element.SystemType;
 
+            
+
             double width1 =Convert.ToDouble( Element.Element.LookupParameter("Ширина воздуховода 1").AsValueString());
             double width2= Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 2").AsValueString());
             double length = Convert.ToDouble(Element.Element.LookupParameter("Длина воздуховода").AsValueString());
-            double d = Math.Abs((2*length /  (width1 - width2)));
-            double angle = Acot(d);
-            Angle = 2 * angle;
+            if (width1!=width2)
+            {
+                double d = Math.Abs((2 * length / (width1 - width2)));
+                double angle = Acot(d);
+                Angle = 2 * angle;
+            }
+            else
+            {
+                double height1 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 1").AsValueString());
+                double height2 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 2").AsValueString());
+
+                if (height1==height2)
+                {
+                    element.DetailType = CustomElement.Detail.RectangularDuct;
+                    return;
+                }
+                double d = Math.Abs((2 * length / (height1 - height2)));
+                double angle = Acot(d);
+                Angle = 2 * angle;
+
+
+            }
+            
+            
             if (document.GetElement(ElementId) is FamilyInstance)
             {
                 foreach (Connector connector in Element.OwnConnectors)
@@ -217,10 +241,41 @@ namespace AirTreeV1
                     }
 
                 }
-                RelA =   OutletConnector.AOutlet/ InletConnector.AInlet;
-                RectTransitionData elbowdata = new RectTransitionData(SystemType,RelA,Angle);
-                elbowdata.Interpolation(100000,RelA,Angle);
-                LocRes = elbowdata.LocRes;
+                if (SystemType==DuctSystemType.ExhaustAir)
+                {
+                    RelA = OutletConnector.AOutlet / InletConnector.AInlet;
+                    if (RelA>1)
+                    {
+                        element.DetailType = CustomElement.Detail.RectExpansion;
+                    }
+                    else
+                    {
+                        element.DetailType = CustomElement.Detail.RectContraction;
+                    }
+                    RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
+                    elbowdata.Interpolation(100000, RelA, Angle);
+                    LocRes = elbowdata.LocRes;
+                   // element.DetailType = CustomElement.Detail.RectTransition;
+                  
+                }
+                else
+                {
+                    RelA = InletConnector.AInlet/OutletConnector.AOutlet;
+                    if (RelA > 1)
+                    {
+                        element.DetailType = CustomElement.Detail.RectExpansion;
+                    }
+                    else
+                    {
+                        element.DetailType = CustomElement.Detail.RectContraction;
+                    }
+                    RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
+                    elbowdata.Interpolation(100000, RelA, Angle);
+                    LocRes = elbowdata.LocRes;
+                    element.DetailType = CustomElement.Detail.RectTransition;
+                }
+                
+                
             }
            
 
