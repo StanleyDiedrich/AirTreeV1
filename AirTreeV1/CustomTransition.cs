@@ -338,6 +338,63 @@ namespace AirTreeV1
                         LocRes = elbowdata.LocRes;
                         
                     }
+
+                }
+                else if ((InletConnector.Shape==ConnectorProfileType.Round&&OutletConnector.Shape==ConnectorProfileType.Rectangular)||(InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector.Shape == ConnectorProfileType.Round) )
+                {
+                    if (SystemType == DuctSystemType.ExhaustAir)
+                    {
+
+                        if (OutletConnector.Shape == ConnectorProfileType.Rectangular && InletConnector.Shape==ConnectorProfileType.Round && RelA>1)
+                        {
+                            element.DetailType = CustomElement.Detail.RectRoundExpansion;
+                        }
+                        else if (OutletConnector.Shape == ConnectorProfileType.Round && InletConnector.Shape == ConnectorProfileType.Rectangular && RelA>1)
+                        {
+                            element.DetailType = CustomElement.Detail.RoundRectExpansion;
+                        }
+                        else if (OutletConnector.Shape == ConnectorProfileType.Rectangular && InletConnector.Shape == ConnectorProfileType.Round && RelA < 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RoundRectContraction;
+                        }
+                        else if (OutletConnector.Shape == ConnectorProfileType.Round && InletConnector.Shape == ConnectorProfileType.Rectangular && RelA < 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RectRoundContraction;
+                        }
+
+                       /* RelA = OutletConnector.AOutlet / InletConnector.AInlet;
+                        if (RelA > 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RoundExpansion;
+                        }
+                        else
+                        {
+                            element.DetailType = CustomElement.Detail.RoundContraction;
+                        }*/
+
+                        MixedTransitionData elbowdata = new MixedTransitionData(SystemType, RelA, Angle);
+                        elbowdata.Interpolation(100000, RelA, Angle);
+                        LocRes = elbowdata.LocRes;
+
+
+                    }
+                    else
+                    {
+                        RelA = InletConnector.AInlet / OutletConnector.AOutlet;
+                        if (RelA > 1)
+                        {
+                            element.DetailType = CustomElement.Detail.RoundExpansion;
+                        }
+                        else
+                        {
+                            element.DetailType = CustomElement.Detail.RoundContraction;
+                        }
+                        MixedTransitionData elbowdata = new MixedTransitionData(SystemType, RelA, Angle);
+                        elbowdata.Interpolation(100000, RelA, Angle);
+                        LocRes = elbowdata.LocRes;
+
+                    }
+
                 }
 
                 

@@ -65,6 +65,7 @@
     <Compile Include="ElbowData.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="MainViewModel.cs" />
+    <Compile Include="MixedTransitionData.cs" />
     <Compile Include="ModelElement.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
