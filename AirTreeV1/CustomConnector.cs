@@ -33,6 +33,9 @@ namespace AirTreeV1
         
 
         public double PressureDrop { get; set; }
+        public double AInlet { get; set; }
+        public double AOutlet { get; set; }
+        public double Area { get; set; }
         List<CustomConnector> Connectors { get; set; } = new List<CustomConnector>();
 
         public CustomConnector(Autodesk.Revit.DB.Document document, ElementId elementId, Autodesk.Revit.DB.Mechanical.DuctSystemType ductSystemType)
