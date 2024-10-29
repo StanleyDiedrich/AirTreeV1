@@ -24,7 +24,7 @@ namespace AirTreeV1
         public CustomConnector OutletConnector1 { get; set; }
         public CustomConnector OutletConnector2 { get; set; }
 
-        public List<CustomConnector> OutletConnectors { get; set; }
+        public List<CustomConnector> OutletConnectors { get; set; } = new List<CustomConnector>();
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
         public ConnectorProfileType ProfileType { get; set; }
@@ -75,13 +75,13 @@ namespace AirTreeV1
 
             }
 
-            parameter = Element.Element.LookupParameter("Диаметр воздуховода 1");
+            parameter = Element.Element.LookupParameter("Радиус воздуховода 1");
             if (parameter != null && parameter.HasValue)
             {
                 IsDiameter1 = true;
 
             }
-            parameter = Element.Element.LookupParameter("Диаметр воздуховода 3");
+            parameter = Element.Element.LookupParameter("Радиус воздуховода 3");
             if (parameter != null && parameter.HasValue)
             {
                 IsDiameter3 = true;
@@ -103,8 +103,8 @@ namespace AirTreeV1
             }
             else
             {
-                diameter1 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 1").AsValueString());
-                diameter3 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 3").AsValueString());
+                diameter1 = 2*Convert.ToDouble(Element.Element.LookupParameter("Радиус воздуховода 1").AsValueString());
+                diameter3 = 2*Convert.ToDouble(Element.Element.LookupParameter("Радиус воздуховода 3").AsValueString());
             }
 
             if (document.GetElement(ElementId) is FamilyInstance)
@@ -300,15 +300,50 @@ namespace AirTreeV1
 
             OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
             OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
+            if (OutletConnector1.Flow==OutletConnector2.Flow)
+            {
+                InletConnector.Vector = GetVector(InletConnector.Origin, LocPoint);
+                OutletConnector1.Vector = GetVector(OutletConnector1.Origin, LocPoint);
+                OutletConnector2.Vector = GetVector(OutletConnector2.Origin, LocPoint);
+                // After identifying the main connector, set its IsMainConnector property
+                StraightTee(InletConnector, OutletConnector1, OutletConnector2);
+                CustomConnector swapconnector = null;
+                if (OutletConnector2.IsStraight)
+                {
+                    swapconnector = OutletConnector1;
+                    OutletConnector1 = OutletConnector2;
+                    OutletConnector2 = swapconnector;
+                }
+            }
 
-            InletConnector.Vector = GetVector(InletConnector.Origin,LocPoint);
-            OutletConnector1.Vector = GetVector(OutletConnector1.Origin, LocPoint);
-            OutletConnector2.Vector = GetVector(OutletConnector2.Origin, LocPoint);
-            // After identifying the main connector, set its IsMainConnector property
-            StraightTee(InletConnector, OutletConnector1, OutletConnector2);
-            double relA = OutletConnector1.AOutlet/InletConnector.AInlet;
-            double relQ = OutletConnector1.Flow/InletConnector.Flow;
-            RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, OutletConnector1.IsStraight, relA, relQ);
+            else
+            {
+                InletConnector.Vector = GetVector(InletConnector.Origin, LocPoint);
+                OutletConnector1.Vector = GetVector(OutletConnector1.Origin, LocPoint);
+                OutletConnector2.Vector = GetVector(OutletConnector2.Origin, LocPoint);
+                // After identifying the main connector, set its IsMainConnector property
+                StraightTee(InletConnector, OutletConnector1, OutletConnector2);
+            }
+            //Допиши сюда что может быть на отвод
+            double relA;
+            double relQ;
+            if (OutletConnector1.IsStraight==true)
+            {
+                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                 relQ = OutletConnector1.Flow / InletConnector.Flow;
+                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                element.DetailType = CustomElement.Detail.RoundTeeStraight;
+                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+            }
+            else
+            {
+                relA = OutletConnector2.AOutlet / InletConnector.AInlet;
+                relQ = OutletConnector2.Flow / InletConnector.Flow;
+                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
+                element.DetailType = CustomElement.Detail.RoundTeeBranch;
+                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+            }
+            
 
         }
 

@@ -85,6 +85,12 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType==CustomElement.Detail.Tee)
                     {
+                        if (element.ElementId.IntegerValue== 5534030)
+                        {
+                            var element2 = element;
+                        }
+                            CustomTee customTee = new CustomTee(Document, element);
+                        element.LocRes = customTee.LocRes;
                         branch.Pressure += 7;
                     }
                     else if (element.DetailType==CustomElement.Detail.TapAdjustable)
