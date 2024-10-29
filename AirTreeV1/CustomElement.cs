@@ -62,7 +62,9 @@ namespace AirTreeV1
             RectRoundExpansion,
             RoundRectExpansion,
             RectRoundContraction,
-            RoundRectContraction
+            RoundRectContraction,
+            RoundTeeBranch,
+            RoundTeeStraight
 
         }
 
