@@ -407,7 +407,7 @@ namespace AirTreeV1
                     relC = OutletConnector1.Velocity / InletConnector.Velocity;
                     MixedTeeData roundTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ,relC);
                     element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
-                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                    LocRes = roundTeeData.Interpolation(100000);
                 }
                 else
                 {
@@ -416,7 +416,7 @@ namespace AirTreeV1
                     relC = OutletConnector2.Velocity / InletConnector.Velocity;
                     MixedTeeData roundTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ,relC);
                     element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
-                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                    LocRes = roundTeeData.Interpolation(100000);
                 }
             }
             

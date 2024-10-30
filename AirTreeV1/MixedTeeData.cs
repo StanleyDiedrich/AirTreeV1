@@ -14,9 +14,12 @@ namespace AirTreeV1
         public double LocRes { get; set; }
         public double Coeff { get; set; } = 1;
         public bool IsStraight { get; set; }
+        public double RelA { get; set; }
+        public double RelQ { get; set; }
 
         public MixedTeeData(DuctSystemType ductSystemType, bool isstraight, double relA, double relQ, double relC)
         {
+            RelQ = relQ;
             SystemType = ductSystemType;
             if (ductSystemType == DuctSystemType.SupplyAir)
             {
@@ -24,11 +27,11 @@ namespace AirTreeV1
                 {
                     if (relA < 0.4)
                     {
-                        relA = 0.4;
+                        RelA = 0.4;
                     }
                     else if (relA > 0.4)
                     {
-                        relA = 1;
+                        RelA = 1;
                     }
                     Values = new double[,]
                     {
@@ -39,8 +42,15 @@ namespace AirTreeV1
                 }
                 else
                 {
-                    relQ = relC;
-                    
+                    RelQ = relC;
+                    if (relA < 0.66)
+                    {
+                        RelA = 0.66;
+                    }
+                    else if (relA > 0.4)
+                    {
+                        RelA = 1;
+                    }
                     Values = new double[,]
                     {
                         { 0, 0, 0, 0.1, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 2 },
@@ -53,27 +63,39 @@ namespace AirTreeV1
             {
                 if (isstraight)
                 {
-                   
-
-
-                    Values = new double[,]
+                    if (relA>0.79)
                     {
-                        { 0, 0,   0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9},
-                        { 1000000,0.79, 0.7,0.64,0.61,0.58,0.54,0.49,0.43,0.33,0.23 },
-                        {1000000,0.35,0.85,0,78,0.71,0.64,0.57,0.5,0.43,0.35}
+                        RelA = 0.79;
+                    }
+                    else if (relA<0.35)
+                    {
+                        RelA = 0.35;
+                    }
 
+
+                    Values = new double[,] {
+                        { 0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,1 },
+                        { 100000, 0.35, 0.85, 0.78, 0.71, 0.64, 0.57, 0.5, 0.43, 0.35, 0.25,0.15 },
+                        { 100000, 0.79, 0.7, 0.64, 0.61, 0.58, 0.54, 0.49, 0.43, 0.33, 0.23,0.13 }
                     };
 
-                    return;
+                    
                 }
                 else
                 {
-                    
+                    if (relA > 0.79)
+                    {
+                        RelA = 0.79;
+                    }
+                    else if (relA < 0.35)
+                    {
+                        RelA = 0.35;
+                    }
                     Values = new double[,]
                     {
-                        { 0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 },
-                        { 100000, 0, -0.75, -0.53, -0.03, 0.33, 0.8, 1.4, 2.15, 2.93, 4.18, 4.78 },
-                        { 100000, 6, -0.69, -0.21, 0.23, 0.67, 1.17, 1.66, 2.67, 3.36, 3.93, 5.13 }
+                        {0,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1},
+                        { 100000,0.35,-0.2,0.08,0.5,0.95,1.48,2.17,3.5, 4.5, 5.5,6.5},
+                        {100000,0.79,-0.2,-0.14,0.15,0.39,0.58,0.78,0.96,1.13,1.3,1.5 }
 
                     };
 
@@ -81,7 +103,7 @@ namespace AirTreeV1
                 }
             }
         }
-        public double Interpolation(double reynolds, double relA, double relQ)
+        public double Interpolation(double reynolds)
         {
             double result = 0;
             List<int> indexA = new List<int>();
@@ -97,35 +119,43 @@ namespace AirTreeV1
             }
 
             // Поиск индексов для angle
+            /*for (int j = 1; j < Values.GetLength(1); j++)
+            {
+                if (RelQ >= Values[0, j - 1] && RelQ <= Values[0, j])
+                {
+                    indexB.Add(j);
+                }
+            }*/
+
             for (int j = 1; j < Values.GetLength(1); j++)
             {
-                if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
+                if (RelQ >= Values[0, j - 1] && RelQ <= Values[0, j])
                 {
                     indexB.Add(j);
                 }
             }
             for (int k = 1; k < Values.GetLength(0); k++)
             {
-                if (relA > Values[k - 1, 1] && relA < Values[k, 1])
+                if (RelA > Values[k - 1, 1] && RelA <= Values[k, 1])
                 {
                     indexC.Add(k);
                 }
-                else if (relA < Values[k, 1])
+                else if (RelA <= Values[k, 1])
                 {
 
                     indexC.Add(k);
-                    relA = Math.Round(relA, 0);
+                    
                 }
             }
             // Интерполяция для найденных индексов
 
             for (int i = indexA.Min(); i <= indexA.Max(); i++)
             {
-                if (relA == Values[i, 1])
+                if (RelA == Values[i, 1])
                 {
                     if (indexB.Count == 0)
                     {
-                        if (relQ == Values[i, 2])
+                        if (RelQ == Values[i, 2])
                         {
                             return Values[i, 2];
                         }
@@ -134,7 +164,7 @@ namespace AirTreeV1
                     {
                         for (int j = indexB.Min(); j <= indexB.Max(); j++)
                         {
-                            if (relQ == Values[0, j])
+                            if (RelQ == Values[0, j])
                             {
                                 return Values[i, j];
                             }
@@ -143,7 +173,7 @@ namespace AirTreeV1
 
                                 for (j = indexB[0]; j <= indexB[indexB.Count - 1]; j++)
                                 {
-                                    if (relQ > Values[0, j - 1] && relQ < Values[0, j])
+                                    if (RelQ > Values[0, j - 1] && RelQ < Values[0, j])
                                     {
                                         // Линейная интерполяция
                                         double x0 = Values[0, j - 1]; // предыдущее значение
@@ -152,7 +182,7 @@ namespace AirTreeV1
                                         double y1 = Values[i, j];
 
                                         // Линейная интерполяция
-                                        result = (y0 + (relQ - x0) / (x1 - x0) * (y1 - y0));
+                                        result = (y0 + (RelQ - x0) / (x1 - x0) * (y1 - y0));
                                         break;
                                     }
                                 }
@@ -163,7 +193,7 @@ namespace AirTreeV1
 
 
                 }
-                else if (relA > Values[i - 1, 1] && relA < Values[i, 1])
+                else if (RelA >= Values[i - 1, 1] && RelA <= Values[i, 1])
                 {
                     for (int k = indexC.Min(); k <= indexC.Max(); k++)
                     {
@@ -171,23 +201,23 @@ namespace AirTreeV1
                         for (int j = indexB.Min(); j <= indexB.Max(); j++)
                         {
 
-                            if (relQ == Values[0, j])
+                            if (RelQ == Values[0, j])
                             {
                                 double x0 = Values[k - 1, 1];
                                 double x1 = Values[k, 1];
                                 double y0 = Values[k - 1, j];
                                 double y1 = Values[k, j];
 
-                                result = (y0 + (relA - x0) / (x1 - x0) * (y1 - y0));
+                                result = (y0 + (RelA - x0) / (x1 - x0) * (y1 - y0));
                             }
                             else
                             {
                                 double A1 = Values[k - 1, 1];
                                 double A2 = Values[k, 1];
-                                double A = relA;
+                                double A = RelA;
                                 double B1 = Values[0, j - 1];
                                 double B2 = Values[0, j];
-                                double B = relQ;
+                                double B = RelQ;
                                 double C11 = Values[k - 1, j - 1];
                                 double C12 = Values[k - 1, j];
                                 double C21 = Values[k, j - 1];
