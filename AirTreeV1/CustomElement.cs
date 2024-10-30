@@ -66,7 +66,9 @@ namespace AirTreeV1
             RoundTeeBranch,
             RoundTeeStraight,
             RectTeeBranch,
-            RectTeeStraight
+            RectTeeStraight,
+            RectRoundTeeBranch,
+            RectRoundTeeStraight
 
         }
 

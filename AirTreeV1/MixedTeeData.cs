@@ -7,7 +7,7 @@ using Autodesk.Revit.DB.Mechanical;
 
 namespace AirTreeV1
 {
-    public class RectTeeData
+    public class MixedTeeData
     {
         public double[,] Values { get; private set; }
         public DuctSystemType SystemType { get; set; }
@@ -15,7 +15,7 @@ namespace AirTreeV1
         public double Coeff { get; set; } = 1;
         public bool IsStraight { get; set; }
 
-        public RectTeeData(DuctSystemType ductSystemType, bool isstraight, double relA, double relQ, double relC, CustomConnector inletconnector)
+        public MixedTeeData(DuctSystemType ductSystemType, bool isstraight, double relA, double relQ, double relC)
         {
             SystemType = ductSystemType;
             if (ductSystemType == DuctSystemType.SupplyAir)
@@ -40,14 +40,7 @@ namespace AirTreeV1
                 else
                 {
                     relQ = relC;
-                    if (relA<0.66)
-                    {
-                        relA = 0.66;
-                    }
-                    else if(relA>1)
-                    {
-                        relA = 1;
-                    }
+                    
                     Values = new double[,]
                     {
                         { 0, 0, 0, 0.1, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 2 },
@@ -60,40 +53,22 @@ namespace AirTreeV1
             {
                 if (isstraight)
                 {
-                    IsStraight = isstraight;
-                    
+                   
+
 
                     Values = new double[,]
                     {
-                        { 0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 },
-                        { 1000000, 0.55, 0.59, 0.6, 0.59, 0.57, 0.53, 0.46, 0.38, 0.27, 0.16, 0 }
+                        { 0, 0,   0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9},
+                        { 1000000,0.79, 0.7,0.64,0.61,0.58,0.54,0.49,0.43,0.33,0.23 },
+                        {1000000,0.35,0.85,0,78,0.71,0.64,0.57,0.5,0.43,0.35}
+
                     };
-                    
+
                     return;
                 }
                 else
                 {
-                    if (relA <= 0.35)
-                    {
-                        Coeff = 1;
-                    }
-                    else if (relA > 0.35 && relQ <= 0.4)
-                    {
-                        Coeff = 0.9 * (1 - relQ);
-                    }
-                    else if (relA > 0.35 && relQ > 0.4)
-                    {
-                        Coeff = 0.55;
-                    }
-                    double cs = inletconnector.Velocity;
-                    if (cs<6)
-                    {
-                        relA = 0;
-                    }
-                    else if (cs>6)
-                    {
-                        relA = 6;
-                    }
+                    
                     Values = new double[,]
                     {
                         { 0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 },
@@ -101,18 +76,13 @@ namespace AirTreeV1
                         { 100000, 6, -0.69, -0.21, 0.23, 0.67, 1.17, 1.66, 2.67, 3.36, 3.93, 5.13 }
 
                     };
-                    
+
 
                 }
             }
         }
         public double Interpolation(double reynolds, double relA, double relQ)
         {
-            if (SystemType==DuctSystemType.ExhaustAir && IsStraight==true)
-            {
-                LocRes = 1.55 * (1 - relQ) - Math.Pow((1 - relQ), 2);
-                return LocRes;
-            }
             double result = 0;
             List<int> indexA = new List<int>();
             List<int> indexB = new List<int>();
@@ -127,7 +97,7 @@ namespace AirTreeV1
             }
 
             // Поиск индексов для angle
-            for (int j = 1; j <= Values.GetLength(1); j++)
+            for (int j = 1; j < Values.GetLength(1); j++)
             {
                 if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
                 {
@@ -193,7 +163,7 @@ namespace AirTreeV1
 
 
                 }
-                else if (relA >= Values[i - 1, 1] && relA <= Values[i, 1])
+                else if (relA > Values[i - 1, 1] && relA < Values[i, 1])
                 {
                     for (int k = indexC.Min(); k <= indexC.Max(); k++)
                     {
@@ -241,7 +211,8 @@ namespace AirTreeV1
             }
 
 
-            return LocRes = result*Coeff;
+            return LocRes = result;
         }
     }
 }
+

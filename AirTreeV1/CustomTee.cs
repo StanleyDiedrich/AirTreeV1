@@ -41,12 +41,13 @@ namespace AirTreeV1
             LocPoint = ((element.Element.Location) as LocationPoint).Point;
             bool IsWidth1 = false;
             bool IsWidth3 = false;
-
+            bool IsWidth = false;
             bool IsHeight1 = false;
             bool IsHeight3 = false;
-
+            bool IsHeight = false;
             bool IsDiameter1 = false;
             bool IsDiameter3 = false;
+            bool IsDiameter = false;
 
 
             var parameter = Element.Element.LookupParameter("Ширина воздуховода 1");
@@ -61,12 +62,18 @@ namespace AirTreeV1
                 IsWidth3 = true;
 
             }
+            parameter = Element.Element.LookupParameter("Ширина воздуховода");
+            if (parameter != null && parameter.HasValue)
+            {
+                IsWidth3 = true;
+                IsWidth = true;
+            }
 
             parameter = Element.Element.LookupParameter("Высота воздуховода");
             if (parameter != null && parameter.HasValue)
             {
                 IsHeight1 = true;
-
+                IsHeight = true;
             }
             parameter = Element.Element.LookupParameter("Высота воздуховода 3");
             if (parameter != null && parameter.HasValue)
@@ -88,13 +95,24 @@ namespace AirTreeV1
 
             }
 
+            parameter = Element.Element.LookupParameter("Диаметр воздуховода");
+            if (parameter != null && parameter.HasValue)
+            {
+                IsDiameter = true;
+
+            }
+
+
             double width1 = 0;
             double width3 = 0;
+            double width = 0;
             double height1 = 0;
             double height3 = 0;
+            double height = 0;
             //double length = 0;
             double diameter1 = 0;
             double diameter3 = 0;
+            double diameter = 0;
 
             if (IsWidth1 == true && IsWidth3 == true && IsHeight1 == true && IsHeight3 == true)
             {
@@ -108,7 +126,13 @@ namespace AirTreeV1
                 diameter1 = 2*Convert.ToDouble(Element.Element.LookupParameter("Радиус воздуховода 1").AsValueString());
                 diameter3 = 2*Convert.ToDouble(Element.Element.LookupParameter("Радиус воздуховода 3").AsValueString());
             }
+            else if (IsWidth==true && IsWidth==true&& IsDiameter==true)
+            {
+                width = Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода").AsValueString());
+                height = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода").AsValueString());
+                diameter = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода").AsValueString());
 
+            }
             if (document.GetElement(ElementId) is FamilyInstance)
             {
                 foreach (Connector connector in Element.OwnConnectors)
@@ -369,9 +393,30 @@ namespace AirTreeV1
                     relA = OutletConnector2.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector2.Flow / InletConnector.Flow;
                     relC = OutletConnector2.Velocity / InletConnector.Velocity;
-                    RectTeeData rectTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                    RectTeeData rectTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                     element.DetailType = CustomElement.Detail.RectTeeBranch;
                     LocRes = rectTeeData.Interpolation(100000, relA, relQ);
+                }
+            }
+            else if (IsWidth==true&&IsHeight==true && IsDiameter==true)
+            {
+                if (OutletConnector1.IsStraight == true)
+                {
+                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                    relC = OutletConnector1.Velocity / InletConnector.Velocity;
+                    MixedTeeData roundTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ,relC);
+                    element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
+                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                }
+                else
+                {
+                    relA = OutletConnector2.AOutlet / InletConnector.AInlet;
+                    relQ = OutletConnector2.Flow / InletConnector.Flow;
+                    relC = OutletConnector2.Velocity / InletConnector.Velocity;
+                    MixedTeeData roundTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ,relC);
+                    element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
+                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                 }
             }
             
