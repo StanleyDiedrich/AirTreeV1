@@ -62,7 +62,7 @@ namespace AirTreeV1
 
             }
 
-            parameter = Element.Element.LookupParameter("Высота воздуховода 1");
+            parameter = Element.Element.LookupParameter("Высота воздуховода");
             if (parameter != null && parameter.HasValue)
             {
                 IsHeight1 = true;
@@ -100,8 +100,10 @@ namespace AirTreeV1
             {
                 width1 = Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 1").AsValueString());
                 width3 = Convert.ToDouble(Element.Element.LookupParameter("Ширина воздуховода 3").AsValueString());
+                height1= Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода").AsValueString());
+                height3 = Convert.ToDouble(Element.Element.LookupParameter("Высота воздуховода 3").AsValueString());
             }
-            else
+            else if (IsDiameter1==true&&IsDiameter3==true)
             {
                 diameter1 = 2*Convert.ToDouble(Element.Element.LookupParameter("Радиус воздуховода 1").AsValueString());
                 diameter3 = 2*Convert.ToDouble(Element.Element.LookupParameter("Радиус воздуховода 3").AsValueString());
@@ -174,6 +176,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
@@ -207,6 +210,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -245,6 +249,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
@@ -276,6 +281,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
@@ -327,22 +333,48 @@ namespace AirTreeV1
             //Допиши сюда что может быть на отвод
             double relA;
             double relQ;
-            if (OutletConnector1.IsStraight==true)
+            double relC;
+            if (IsDiameter1 = true && IsDiameter3==true)
             {
-                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                 relQ = OutletConnector1.Flow / InletConnector.Flow;
-                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                element.DetailType = CustomElement.Detail.RoundTeeStraight;
-                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                if (OutletConnector1.IsStraight == true)
+                {
+                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                    element.DetailType = CustomElement.Detail.RoundTeeStraight;
+                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                }
+                else
+                {
+                    relA = OutletConnector2.AOutlet / InletConnector.AInlet;
+                    relQ = OutletConnector2.Flow / InletConnector.Flow;
+                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
+                    element.DetailType = CustomElement.Detail.RoundTeeBranch;
+                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                }
             }
-            else
+            else if (IsWidth1 == true && IsWidth3 == true && IsHeight1 == true && IsHeight3 == true)
             {
-                relA = OutletConnector2.AOutlet / InletConnector.AInlet;
-                relQ = OutletConnector2.Flow / InletConnector.Flow;
-                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
-                element.DetailType = CustomElement.Detail.RoundTeeBranch;
-                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                if(OutletConnector1.IsStraight == true)
+                {
+                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                    relC = OutletConnector1.Velocity / InletConnector.Velocity;
+                    RectTeeData rectTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                    element.DetailType = CustomElement.Detail.RectTeeStraight;
+                    LocRes = rectTeeData.Interpolation(100000, relA, relQ);
+                }
+                else
+                {
+                    relA = OutletConnector2.AOutlet / InletConnector.AInlet;
+                    relQ = OutletConnector2.Flow / InletConnector.Flow;
+                    relC = OutletConnector2.Velocity / InletConnector.Velocity;
+                    RectTeeData rectTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                    element.DetailType = CustomElement.Detail.RectTeeBranch;
+                    LocRes = rectTeeData.Interpolation(100000, relA, relQ);
+                }
             }
+            
             
 
         }

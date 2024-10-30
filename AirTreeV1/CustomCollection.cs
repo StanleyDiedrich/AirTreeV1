@@ -85,7 +85,7 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType==CustomElement.Detail.Tee)
                     {
-                        if (element.ElementId.IntegerValue== 5534030)
+                        if (element.ElementId.IntegerValue== 3428590)
                         {
                             var element2 = element;
                         }

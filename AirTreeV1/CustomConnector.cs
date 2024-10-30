@@ -26,6 +26,7 @@ namespace AirTreeV1
         public double Diameter { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
+        public double Velocity { get; set; }
         public ConnectorProfileType Shape { get; set; }
         public ConnectorType Type { get; set; }
 
