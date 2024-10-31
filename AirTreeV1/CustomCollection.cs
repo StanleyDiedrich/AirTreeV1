@@ -115,6 +115,10 @@ namespace AirTreeV1
                     {
                         branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
                     }
+                    else if (element.DetailType==CustomElement.Detail.RectFlexDuct|| element.DetailType==CustomElement.Detail.RoundFlexDuct)
+                    {
+                        branch.Pressure+=element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
+                    }
                     else if (element.DetailType==CustomElement.Detail.FireProtectValve)
                     {
                         branch.Pressure += 6;
