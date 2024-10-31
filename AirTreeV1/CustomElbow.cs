@@ -160,17 +160,20 @@ namespace AirTreeV1
                 Width = OutletConnector.Width;
                 Height = OutletConnector.Height;
                 Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
+                Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
                 ElbowData elbowdata = new ElbowData(ProfileType);
                 if (ProfileType == ConnectorProfileType.Rectangular)
                 {
                     double hw = Height / Radius;
                     double rw = Radius / Height;
                     LocRes = elbowdata.Interpolation(hw, rw);
+                    element.DetailType = CustomElement.Detail.RectElbow;
                 }
                 else
                 {
                     double rd = ElbowRadius / Diameter;
                     LocRes = elbowdata.Interpolation(rd);
+                    element.DetailType = CustomElement.Detail.RoundElbow;
                 }
             }
             

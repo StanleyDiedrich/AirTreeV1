@@ -81,7 +81,7 @@ namespace AirTreeV1
                     {
                         CustomElbow customElbow = new CustomElbow(Document, element);
                         element.LocRes = customElbow.LocRes;
-                        //branch.Pressure += 5;
+                        branch.Pressure += 5;
                     }
                     else if (element.DetailType==CustomElement.Detail.Tee)
                     {
@@ -95,6 +95,15 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType==CustomElement.Detail.TapAdjustable)
                     {
+                       
+                             if (element.ElementId.IntegerValue == 532522)
+
+                        {
+                                var element2 = element;
+                            }
+
+                        CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
+                        element.LocRes = customDuctInsert.LocRes;
                         branch.Pressure += 1;
                     }
                     else if (element.DetailType == CustomElement.Detail.Transition)
@@ -122,6 +131,10 @@ namespace AirTreeV1
                     else if (element.DetailType==CustomElement.Detail.FireProtectValve)
                     {
                         branch.Pressure += 6;
+                    }
+                    else if (element.DetailType==CustomElement.Detail.Union)
+                    {
+                        branch.Pressure += 0;
                     }
                 }
             }

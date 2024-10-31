@@ -133,7 +133,7 @@ namespace AirTreeV1
                     result = Values[1, r-1];
                     break;
                 }
-                else if (rd > Values[0, r - 1] && rd > Values[0,r])
+                else if (rd > Values[0, r - 1] && rd < Values[0,r])
                 {
                     double X1 = Values[0, r - 1];
                     double X2 = Values[0, r];

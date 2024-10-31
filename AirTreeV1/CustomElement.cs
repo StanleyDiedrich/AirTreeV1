@@ -52,25 +52,49 @@ namespace AirTreeV1
             Drossel,
             Cap,
             TapAdjustable,
+
+            RoundElbow,
+            RectElbow,
+
+
             Transition,
             RectTransition,
             RectExpansion,
             RectContraction,
             RoundTransition,
+
+
             RoundExpansion,
             RoundContraction,
             RectRoundExpansion,
             RoundRectExpansion,
             RectRoundContraction,
             RoundRectContraction,
+
+
+
             RoundTeeBranch,
             RoundTeeStraight,
             RectTeeBranch,
             RectTeeStraight,
             RectRoundTeeBranch,
             RectRoundTeeStraight,
+
+
             RoundFlexDuct,
-            RectFlexDuct
+            RectFlexDuct,
+
+            RoundInRoundDuctInsertStraight,
+            RoundInRoundDuctInsertBranch,
+            RoundInRectDuctInsertStraight,
+            RoundInRectDuctInsertBranch,
+            RectInRectDuctInsertStraight,
+            RectInRectDuctInsertBranch,
+            RectInRoundDuctInsertStraight,
+            RectInRoundDuctInsertBranch,
+
+            AirTerminalConnection,
+            Union
 
         }
 
@@ -470,6 +494,10 @@ namespace AirTreeV1
                     else if ((Model as MechanicalFitting).PartType == PartType.Transition)
                     {
                         DetailType = Detail.Transition;
+                    }
+                    else if ((Model as MechanicalFitting).PartType == PartType.Union)
+                    {
+                        DetailType = Detail.Union;
                     }
 
 
