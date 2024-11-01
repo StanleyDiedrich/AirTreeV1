@@ -27,6 +27,8 @@ namespace AirTreeV1
         public ConnectorProfileType ProfileType { get; set; }
         public double RelA { get; set; }
         public double Angle { get; set; }
+
+        public double Velocity { get; set; }
         public CustomTransition(Autodesk.Revit.DB.Document document, CustomElement element)
         {
             Document = document;
@@ -569,7 +571,14 @@ namespace AirTreeV1
                 
             }
            
-
+            if (InletConnector.Velocity>OutletConnector.Velocity)
+            {
+                Velocity = InletConnector.Velocity;
+            }
+            else
+            {
+                Velocity = OutletConnector.Velocity;
+            }
         }
         public static double Acot(double d)
         {

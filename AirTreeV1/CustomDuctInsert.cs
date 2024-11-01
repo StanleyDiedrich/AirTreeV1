@@ -34,7 +34,7 @@ namespace AirTreeV1
         public ConnectorProfileType ProfileType { get; set; }
         public double RelA { get; set; }
         public double Angle { get; set; }
-
+        public double Velocity { get; set; }
 
         public CustomDuctInsert(Autodesk.Revit.DB.Document document, CustomElement element)
         {
@@ -110,7 +110,8 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                
                                             }
                                             else
                                             {
@@ -149,7 +150,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
 
                                             }
                                             else
@@ -189,7 +190,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
 
                                             }
                                             else
@@ -226,7 +227,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
 
                                             }
                                             else
@@ -320,7 +321,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
                                             }
                                             else
                                             {
@@ -360,7 +361,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
 
                                             }
                                             else
@@ -401,7 +402,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
 
                                             }
                                             else if( connect.Direction == FlowDirectionType.Bidirectional || connect.Direction == FlowDirectionType.Out)
@@ -440,7 +441,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
 
                                             }
                                             else
@@ -505,7 +506,7 @@ namespace AirTreeV1
                 // After identifying the main connector, set its IsMainConnector property
                 StraightTee(InletConnector, OutletConnector1, OutletConnector2,curvepoints);
             }
-
+            Velocity = InletConnector.Velocity;
            
             bool inletRound = false;
             

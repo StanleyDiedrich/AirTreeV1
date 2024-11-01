@@ -406,7 +406,8 @@ namespace AirTreeV1
 
                 //selectedelements = collection.ShowElements(0);
                 //collection.MarkCollection();
-                collection.Calcualate();
+                collection.Calcualate(mainViewModel.Density);
+                collection.ResCalculate();
                 CustomBranch selectedbranch = collection.SelectMainBranch();
                 /*foreach (var element in selectedbranch.Elements)
                 {

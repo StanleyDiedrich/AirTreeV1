@@ -39,7 +39,9 @@ namespace AirTreeV1
         public double EquiDiameter { get; set; }
         public string ModelHydraulicArea { get; set; }
         public double LocRes { get; set; }
-
+        public double PDyn { get; set; }
+        public double PStat { get; set; }
+        public double Ptot { get; set; }
         public enum Detail
         {
             RectangularDuct,

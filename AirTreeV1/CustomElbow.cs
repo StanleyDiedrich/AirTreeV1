@@ -20,6 +20,7 @@ namespace AirTreeV1
         public double Radius { get; set; }
         public double Diameter { get; set; }
         public double ElbowRadius { get; set; }
+        public double Velocity { get; set; }
         public CustomConnector InletConnector { get; set; }
         public CustomConnector OutletConnector { get; set; }
         public DuctSystemType SystemType { get; set; }
@@ -88,10 +89,12 @@ namespace AirTreeV1
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
                                                 {
                                                     ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                    custom.Velocity = custom.Flow /( custom.Area  *1.77);
                                                 }
                                                 catch { }
                                             }
@@ -101,6 +104,8 @@ namespace AirTreeV1
                                                 custom.Width = connect.Width;
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -128,9 +133,11 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try
                                                 {
                                                     ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                    custom.Velocity = custom.Flow / (custom.Area * 1.77);
                                                 }
                                                 catch { }
                                                 
@@ -141,6 +148,8 @@ namespace AirTreeV1
                                                 custom.Width = connect.Width;
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
                                             }
                                             custom.Coefficient = connect.Coefficient;
 
@@ -161,6 +170,7 @@ namespace AirTreeV1
                 Height = OutletConnector.Height;
                 Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
                 Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
+                Velocity = OutletConnector.Velocity;
                 ElbowData elbowdata = new ElbowData(ProfileType);
                 if (ProfileType == ConnectorProfileType.Rectangular)
                 {

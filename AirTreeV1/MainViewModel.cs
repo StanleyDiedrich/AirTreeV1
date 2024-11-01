@@ -17,6 +17,27 @@ namespace AirTreeV1
         public ObservableCollection<CalculationMode> CalculationModes { get; set; }
         public ObservableCollection<Workset> WorkSets { get; set; } = new ObservableCollection<Workset>();
 
+        private double _temperature = 20;
+        public double Temperature
+        {
+            get => _temperature;
+            set
+            {
+                _temperature = value;
+                OnPropertyChanged("Temperature");
+                OnPropertyChanged("Density");
+            }
+        }
+        private double density = 1.21;
+        public double Density
+        {
+            get
+            {
+                // Вычисляем Density на основе Temperature
+                return 353 / (273 + _temperature);
+            }
+
+        }
         private Workset _selectedWorkSet;
         public Workset SelectedWorkSet
         {
@@ -49,6 +70,18 @@ namespace AirTreeV1
                 OnPropertyChanged("Window");
             }
         }
+        private string _searchText = "Выберите систему";
+        public string SearchText
+        {
+            get { return _searchText; }
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged(nameof(SearchText));
+                OnPropertyChanged(nameof(FilteredSystemNumbersList));
+            }
+        }
+
         public ObservableCollection<SystemNumber> SystemNumbersList
         {
             get => _systemNumbersList;
@@ -56,9 +89,27 @@ namespace AirTreeV1
             {
                 _systemNumbersList = value;
                 OnPropertyChanged(nameof(SystemNumbersList));
+                OnPropertyChanged(nameof(FilteredSystemNumbersList));
             }
         }
+        public ObservableCollection<SystemNumber> FilteredSystemNumbersList
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(SearchText) || SearchText.Equals("Выберите систему"))
+                {
+                    return new ObservableCollection<SystemNumber>(SystemNumbersList);
+                }
 
+                // Используем ToList() для получения реальной коллекции после фильтрации
+                var filteredList = SystemNumbersList
+                    .Where(system => !string.IsNullOrWhiteSpace(system.SystemName) &&
+                                     system.SystemName.ToLower().Contains(SearchText.ToLower()))
+                    .ToList();
+
+                return new ObservableCollection<SystemNumber>(filteredList);
+            }
+        }
         public SystemNumber SelectedSystemNumber
         {
             get => _selectedSystemNumber;
