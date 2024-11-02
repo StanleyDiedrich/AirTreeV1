@@ -15,6 +15,7 @@ namespace AirTreeV1
         private static int _counter = 0;
         public int Number { get; set; }
         public double Pressure { get; set; }
+        public double PBTot { get; set; }
         public List<CustomElement> Elements { get; set; } = new List<CustomElement>();
         public CustomBranch (Autodesk.Revit.DB.Document document, ElementId elementId)
         {

@@ -26,6 +26,7 @@ namespace AirTreeV1
         public double Diameter { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
+        public double Velocity { get; set; }
         public ConnectorProfileType Shape { get; set; }
         public ConnectorType Type { get; set; }
 
@@ -36,6 +37,10 @@ namespace AirTreeV1
         public double AInlet { get; set; }
         public double AOutlet { get; set; }
         public double Area { get; set; }
+        public bool IsMainConnector { get; set; }
+        public XYZ Origin { get; set; }
+        public XYZ Vector { get; set; }
+        public bool IsStraight { get; set; }
         List<CustomConnector> Connectors { get; set; } = new List<CustomConnector>();
 
         public CustomConnector(Autodesk.Revit.DB.Document document, ElementId elementId, Autodesk.Revit.DB.Mechanical.DuctSystemType ductSystemType)
