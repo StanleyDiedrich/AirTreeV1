@@ -122,7 +122,7 @@ namespace AirTreeV1
                                     {
                                         if (connect.Direction == FlowDirectionType.In)
                                         {
-                                            custom.Flow = connect.Flow;
+                                            custom.Flow = connect.Flow*102;
                                             custom.Domain = Domain.DomainHvac;
                                             //custom.DirectionType = FlowDirectionType.In;
                                             custom.NextOwnerId = connect.Owner.Id;
@@ -145,8 +145,8 @@ namespace AirTreeV1
                                             else
                                             {
                                                 ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8;
-                                                custom.Height = connect.Height * 304.8;
+                                                custom.Width = connect.Width * 304.8/1000;
+                                                custom.Height = connect.Height * 304.8/1000;
                                                 custom.Area = custom.Height * custom.Height * 0.7;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                             }

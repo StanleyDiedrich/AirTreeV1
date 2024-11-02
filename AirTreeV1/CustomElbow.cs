@@ -94,7 +94,7 @@ namespace AirTreeV1
                                                 try
                                                 {
                                                     ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
-                                                    custom.Velocity = custom.Flow /( custom.Area  *1.77);
+                                                    custom.Velocity = custom.Flow /( custom.Area  *6.68);
                                                 }
                                                 catch { }
                                             }
@@ -105,7 +105,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                custom.Velocity = custom.Flow / (custom.Area * 6.68);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -137,7 +137,7 @@ namespace AirTreeV1
                                                 try
                                                 {
                                                     ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
-                                                    custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                    custom.Velocity = custom.Flow / (custom.Area * 6.68);
                                                 }
                                                 catch { }
                                                 
@@ -149,7 +149,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                custom.Velocity = custom.Flow / (custom.Area * 6.68);
                                             }
                                             custom.Coefficient = connect.Coefficient;
 

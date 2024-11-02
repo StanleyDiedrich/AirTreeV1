@@ -72,18 +72,20 @@ namespace AirTreeV1
 
         public void  Calcualate(double density)
         {
-            IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
+            IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "," };
+            IFormatProvider formatter2 = new NumberFormatInfo { NumberDecimalSeparator = "." };
             Density = density;
             foreach (var branch in Collection)
             {
                 foreach (var element in branch.Elements)
                 {
-                    if (element.ElementId.IntegerValue == 6250255)
-                    {
-                        var element2 = element;
-                    }
+                    
                     if (element.DetailType==CustomElement.Detail.AirTerminal)
                     {
+                        if (element.ElementId.IntegerValue == 5807241)
+                        {
+                            var element2 = element;
+                        }
                         branch.Pressure += 10;
                         CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
                         element.Ptot = customAirTerminal.PDyn;
@@ -91,6 +93,11 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType==CustomElement.Detail.Elbow)
                     {
+                        
+                            if (element.ElementId.IntegerValue == 6246191)
+                        {
+                            var element2 = element;
+                        }
                         CustomElbow customElbow = new CustomElbow(Document, element);
                         element.LocRes = customElbow.LocRes;
                         element.PDyn = Density* Math.Pow(customElbow.Velocity,2) / 2 * element.LocRes;
@@ -110,7 +117,7 @@ namespace AirTreeV1
                     else if (element.DetailType==CustomElement.Detail.TapAdjustable)
                     {
                        
-                             if (element.ElementId.IntegerValue == 532522)
+                             if (element.ElementId.IntegerValue == 6246776)
 
                         {
                                 var element2 = element;
@@ -123,7 +130,11 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType == CustomElement.Detail.Transition)
                     {
-                        try
+                        if (element.ElementId.IntegerValue== 5981916)
+                        {
+                            var element2 = element;
+                        }
+                            try
                         {
                             CustomTransition customTransition = new CustomTransition(Document, element);
                         
@@ -140,7 +151,14 @@ namespace AirTreeV1
                     {
                         branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
                         string [] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
-                        element.PStat = double.Parse(pressureDropString[0], formatter);
+                        try
+                        {
+                            element.PStat = double.Parse(pressureDropString[0], formatter);
+                        }
+                        catch
+                        {
+                            element.PStat = double.Parse(pressureDropString[0], formatter2);
+                        }
                         // Проверяем, что строка не пустая или null
 
                     }
