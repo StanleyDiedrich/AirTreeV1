@@ -85,6 +85,9 @@ namespace AirTreeV1
                     if (element.DetailType==CustomElement.Detail.AirTerminal)
                     {
                         branch.Pressure += 10;
+                        CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
+                        element.Ptot = customAirTerminal.PDyn;
+                        //Сюда допишем простую логику на воздухораспределитель по magicad
                     }
                     else if (element.DetailType==CustomElement.Detail.Elbow)
                     {
