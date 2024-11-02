@@ -191,7 +191,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                custom.Velocity = custom.Flow / (custom.Area * 6.68);
                                             }
                                             else
                                             {
@@ -200,7 +200,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
+                                                custom.Velocity = custom.Flow / (6.68* custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
@@ -224,7 +224,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                custom.Velocity = custom.Flow / (custom.Area * 6.68);
 
                                             }
                                             else
@@ -234,7 +234,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -263,7 +263,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                custom.Velocity = custom.Flow / (custom.Area * 6.68);
 
                                             }
                                             else
@@ -273,7 +273,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
@@ -295,7 +295,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (custom.Area * 1.77);
+                                                custom.Velocity = custom.Flow / (custom.Area * 6.68);
 
                                             }
                                             else
@@ -305,7 +305,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3.3 * custom.Area);
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;

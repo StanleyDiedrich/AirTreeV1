@@ -275,6 +275,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                                 
                                             }
                                             else
@@ -284,6 +285,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -306,6 +308,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
 
                                             }
                                             else
@@ -315,6 +318,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -341,7 +345,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
 
                                             }
                                             else
@@ -351,6 +355,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
 
@@ -372,7 +377,7 @@ namespace AirTreeV1
                                                 Diameter = custom.Diameter;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
 
                                             }
                                             else
@@ -382,6 +387,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height;
                                                 custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (6.68 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             InletConnector = custom;
