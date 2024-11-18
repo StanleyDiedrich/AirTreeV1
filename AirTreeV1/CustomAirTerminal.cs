@@ -105,7 +105,7 @@ namespace AirTreeV1
                                                 custom.Width = connect.Width*304.8;
                                                 custom.Height = connect.Height*304.8;
 
-                                                custom.Area = custom.Height * custom.Height * 0.7;
+                                                custom.Area = custom.Height/1000 * custom.Height/1000 * 0.7;
                                                 custom.Velocity = custom.Flow / (3600*custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
@@ -147,7 +147,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8/1000;
                                                 custom.Height = connect.Height * 304.8/1000;
-                                                custom.Area = custom.Height * custom.Height * 0.7;
+                                                custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;

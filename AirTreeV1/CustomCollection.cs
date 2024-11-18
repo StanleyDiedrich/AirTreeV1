@@ -82,7 +82,7 @@ namespace AirTreeV1
                     
                     if (element.DetailType==CustomElement.Detail.AirTerminal)
                     {
-                        if (element.ElementId.IntegerValue == 5807241)
+                        if (element.ElementId.IntegerValue == 2994397)
                         {
                             var element2 = element;
                         }
@@ -149,6 +149,10 @@ namespace AirTreeV1
                     }
                     else if (element.DetailType==CustomElement.Detail.RectangularDuct || element.DetailType == CustomElement.Detail.RoundDuct)
                     {
+                        if (element.ElementId.IntegerValue == 6448413)
+                        {
+                            var element2 = element;
+                        }
                         branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
                         string [] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
                         try
