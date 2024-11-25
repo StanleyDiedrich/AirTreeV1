@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using System.Globalization;
+using Autodesk.Revit.UI;
 
 namespace AirTreeV1
 {
@@ -82,37 +83,71 @@ namespace AirTreeV1
                     
                     if (element.DetailType==CustomElement.Detail.AirTerminal)
                     {
-                        if (element.ElementId.IntegerValue == 2994397)
+                        try
                         {
-                            var element2 = element;
+                            if (element.ElementId.IntegerValue == 2994397)
+                            {
+                                var element2 = element;
+                            }
+                            branch.Pressure += 10;
+                            CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
+                            element.Ptot = customAirTerminal.PDyn;
                         }
-                        branch.Pressure += 10;
-                        CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
-                        element.Ptot = customAirTerminal.PDyn;
+                        catch
+                        {
+                            TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
                         //Сюда допишем простую логику на воздухораспределитель по magicad
                     }
                     else if (element.DetailType==CustomElement.Detail.Elbow)
                     {
-                        
-                            if (element.ElementId.IntegerValue == 6246191)
+                        try
                         {
-                            var element2 = element;
+                            if (element.ElementId.IntegerValue == 6246191)
+                            {
+                                var element2 = element;
+                            }
+                            CustomElbow customElbow = new CustomElbow(Document, element);
+                            element.LocRes = customElbow.LocRes;
+                            element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
+                            branch.Pressure += 5;
                         }
-                        CustomElbow customElbow = new CustomElbow(Document, element);
-                        element.LocRes = customElbow.LocRes;
-                        element.PDyn = Density* Math.Pow(customElbow.Velocity,2) / 2 * element.LocRes;
-                        branch.Pressure += 5;
+                            catch
+                        {
+                            TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
                     }
                     else if (element.DetailType==CustomElement.Detail.Tee)
                     {
-                        if (element.ElementId.IntegerValue== 6253444)
+                        try
                         {
-                            var element2 = element;
-                        }
+                            if (element.ElementId.IntegerValue == 6253444)
+                            {
+                                var element2 = element;
+                            }
                             CustomTee customTee = new CustomTee(Document, element);
-                        element.LocRes = customTee.LocRes;
-                        element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
-                        branch.Pressure += 7;
+                            element.LocRes = customTee.LocRes;
+                            element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                            branch.Pressure += 7;
+                        }
+                        catch
+                        {
+                            TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
+                        
+                    }
+                    else if (element.DetailType==CustomElement.Detail.Equipment)
+                    {
+                        try
+                        {
+                            element.LocRes = 0;
+                            element.PDyn = 0;
+                            branch.Pressure += 0;
+                        }
+                        catch
+                        {
+                            TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
                     }
                     else if (element.DetailType==CustomElement.Detail.TapAdjustable)
                     {
@@ -273,13 +308,13 @@ namespace AirTreeV1
         public string GetContent()
         {
             var csvcontent = new StringBuilder();
-            csvcontent.AppendLine("ElementId;DetailType;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
 
             foreach (var branch in Collection)
             {
                 foreach (var element in branch.Elements)
                 {
-                    string a = $"{element.ElementId};{element.DetailType};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                    string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
                          $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{element.LocRes};{element.PDyn};{element.Ptot};" +
                          $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
                     csvcontent.AppendLine(a);

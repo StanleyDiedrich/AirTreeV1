@@ -9,6 +9,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows.Media.Media3D;
 using Autodesk.Revit.Creation;
 using System.Text.RegularExpressions;
+using System.Security.Policy;
 
 namespace AirTreeV1
 {
@@ -20,6 +21,7 @@ namespace AirTreeV1
         public ElementId NextElementId { get; set; }
         public MEPSystem MSystem { get; set; }
         public MEPModel Model { get; set; }
+        public string Name { get; set; }
         public string SystemName { get; set; }
         public string ShortSystemName { get; set; }
         public string Lvl { get; set; }
@@ -96,8 +98,10 @@ namespace AirTreeV1
             RectInRoundDuctInsertBranch,
 
             AirTerminalConnection,
-            Union
+            Union,
+            Equipment
 
+            
         }
 
         public Detail DetailType { get;  set; }
@@ -139,7 +143,7 @@ namespace AirTreeV1
                 MSystem = (Element as MEPCurve).MEPSystem;
                 SystemType = (MSystem as MechanicalSystem).SystemType;
                 ShortSystemName = Element.LookupParameter("Сокращение для системы").AsString();
-
+                Name = Element.Name;//Добавил в патче
                 OwnConnectors = ((Element as Duct) as MEPCurve).ConnectorManager.Connectors;
                 string primaryvolume = Element.get_Parameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM).AsValueString();
                 Volume = GetValue(primaryvolume);
@@ -305,7 +309,7 @@ namespace AirTreeV1
                 MSystem = (Element as MEPCurve).MEPSystem;
                 SystemType = (MSystem as MechanicalSystem).SystemType;
                 ShortSystemName = Element.LookupParameter("Сокращение для системы").AsString();
-
+                Name = Element.Name;//Добавил в патче
                 OwnConnectors = ((Element as FlexDuct) as MEPCurve).ConnectorManager.Connectors;
                 string primaryvolume = Element.get_Parameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM).AsValueString();
                 Volume = GetValue(primaryvolume);
@@ -477,6 +481,7 @@ namespace AirTreeV1
             if (Element is FamilyInstance)
             {
                 Model = (Element as FamilyInstance).MEPModel;
+                Name = Element.Name;//Добавил в патче
                 if ((Model as MechanicalFitting) != null)
                 {
                     if ((Model as MechanicalFitting).PartType == PartType.Cap)
@@ -513,6 +518,10 @@ namespace AirTreeV1
                 else if (Element.Category.Id.IntegerValue == -2008013)
                 {
                     DetailType = Detail.AirTerminal;
+                }
+                else if (Element.Category.Id.IntegerValue == -2001140)
+                { 
+                    DetailType = Detail.Equipment;
                 }
                 /*else if (Element.LookupParameter("ТипДетали").AsString())
                 {
