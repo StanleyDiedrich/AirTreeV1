@@ -406,6 +406,18 @@ namespace AirTreeV1
 
                 //selectedelements = collection.ShowElements(0);
                 //collection.MarkCollection();
+               try
+                {
+                    collection.Calcualate(mainViewModel.Density);
+                }
+                catch
+                {
+                    CustomElement element = collection.ActiveElement;
+                    TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
+                }
+                //collection.Calcualate(mainViewModel.Density);
+                
+               
                 collection.Calcualate(mainViewModel.Density);
                 collection.ResCalculate();
                 CustomBranch selectedbranch = collection.SelectMainBranch();

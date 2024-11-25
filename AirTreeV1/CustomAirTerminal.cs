@@ -26,6 +26,7 @@ namespace AirTreeV1
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
         public double PDyn { get; set; }
+        public bool IsSpecial { get; set; }
         public ConnectorProfileType ProfileType { get; set; }
         public CustomAirTerminal(Autodesk.Revit.DB.Document document, CustomElement element)
         {
@@ -33,9 +34,10 @@ namespace AirTreeV1
             Element = element;
             ElementId = element.ElementId;
             SystemType = element.SystemType;
-
+            IsSpecial = false;
             if (document.GetElement(ElementId) is FamilyInstance)
             {
+               
                 foreach (Connector connector in Element.OwnConnectors)
                 {
                     if (connector.Domain != Domain.DomainHvac)
@@ -94,8 +96,18 @@ namespace AirTreeV1
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
                                                 {
-                                                    
-                                                    custom.Velocity = custom.Flow / (custom.Area *3600);
+                                                    if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
+                                                    {
+                                                        custom.Velocity = custom.Flow / (custom.Area * 3600);
+                                                        Velocity = OutletConnector.Velocity;
+                                                        PDyn = 0.6 * Velocity * Velocity;
+                                                    }
+                                                    else
+                                                    {
+                                                        custom.Velocity = custom.Flow / (custom.Area*0.7 * 3600);
+                                                        PDyn = 0;
+                                                    }
+                                                   
                                                 }
                                                 catch { }
                                             }
@@ -104,9 +116,20 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width*304.8;
                                                 custom.Height = connect.Height*304.8;
-
-                                                custom.Area = custom.Height/1000 * custom.Height/1000 * 0.7;
-                                                custom.Velocity = custom.Flow / (3600*custom.Area);
+                                                if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
+                                                {
+                                                    custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
+                                                    custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                   
+                                                    PDyn = 0.6 * Velocity * Velocity;
+                                                }
+                                                else
+                                                {
+                                                    custom.Area = custom.Height / 1000 * custom.Height / 1000 ;
+                                                    custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    PDyn = 0;
+                                                }
+                                                    
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -137,7 +160,17 @@ namespace AirTreeV1
                                                 try
                                                 {
 
-                                                    custom.Velocity = custom.Flow / (custom.Area * 3600);
+                                                    if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
+                                                    {
+                                                        custom.Velocity = custom.Flow / (custom.Area * 3600);
+                                                        
+                                                        PDyn = 0.6 * Velocity * Velocity;
+                                                    }
+                                                    else
+                                                    {
+                                                        custom.Velocity = custom.Flow / (custom.Area * 0.7 * 3600);
+                                                        PDyn = 0;
+                                                    }
                                                 }
                                                 catch { }
 
@@ -147,8 +180,19 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8/1000;
                                                 custom.Height = connect.Height * 304.8/1000;
-                                                custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
+                                                {
+                                                    custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
+                                                    custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    
+                                                    PDyn = 0.6 * Velocity * Velocity;
+                                                }
+                                                else
+                                                {
+                                                    custom.Area = custom.Height / 1000 * custom.Height / 1000;
+                                                    custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                }
+                                                
                                             }
                                             custom.Coefficient = connect.Coefficient;
 
@@ -169,8 +213,8 @@ namespace AirTreeV1
                 Height = OutletConnector.Height;
                 Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
                 Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();*/
-                Velocity = OutletConnector.Velocity;
-                PDyn = 0.6 * Velocity * Velocity;
+               /* Velocity = OutletConnector.Velocity;
+                PDyn = 0.6 * Velocity * Velocity;*/
                
             }
 
