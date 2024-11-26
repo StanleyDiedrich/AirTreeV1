@@ -393,9 +393,35 @@ namespace AirTreeV1
                     relA = OutletConnector2.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector2.Flow / InletConnector.Flow;
                     relC = OutletConnector2.Velocity / InletConnector.Velocity;
-                    RectTeeData rectTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
-                    element.DetailType = CustomElement.Detail.RectTeeBranch;
-                    LocRes = rectTeeData.Interpolation(100000, relA, relQ);
+                    if (relQ ==0)
+                    {
+                        ElbowData elbowData = new ElbowData(InletConnector.Shape);
+                        Width = InletConnector.Width;
+                        Height = InletConnector.Height;
+                        Radius = Document.GetElement(ElementId).LookupParameter("Длина воздуховода 1").AsDouble();
+                        Diameter = Document.GetElement(ElementId).LookupParameter("Длина воздуховода 1").AsDouble();
+                        Velocity = InletConnector.Velocity;
+                        if (InletConnector.Shape == ConnectorProfileType.Rectangular)
+                        {
+                            double hw = Height / Radius;
+                            double rw = Radius / Height;
+                            LocRes = elbowData.Interpolation(hw, rw);
+                            element.DetailType = CustomElement.Detail.RectElbow;
+                        }
+                        else
+                        {
+                            double rd = ElbowRadius / Diameter;
+                            LocRes = elbowData.Interpolation(rd);
+                            element.DetailType = CustomElement.Detail.RoundElbow;
+                        }
+                    }
+                    else
+                    {
+                        RectTeeData rectTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
+                        element.DetailType = CustomElement.Detail.RectTeeBranch;
+                        LocRes = rectTeeData.Interpolation(100000, relA, relQ);
+                    }
+                    
                 }
             }
             else if (IsWidth==true&&IsHeight==true && IsDiameter==true)
