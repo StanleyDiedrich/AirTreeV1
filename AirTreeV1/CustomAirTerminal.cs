@@ -120,7 +120,7 @@ namespace AirTreeV1
                                                 {
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                                   
+                                                    Velocity = custom.Velocity;
                                                     PDyn = 0.6 * Velocity * Velocity;
                                                 }
                                                 else
@@ -163,7 +163,7 @@ namespace AirTreeV1
                                                     if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
                                                     {
                                                         custom.Velocity = custom.Flow / (custom.Area * 3600);
-                                                        
+                                                        Velocity = custom.Velocity;
                                                         PDyn = 0.6 * Velocity * Velocity;
                                                     }
                                                     else
@@ -184,13 +184,15 @@ namespace AirTreeV1
                                                 {
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                                    
+                                                    Velocity = custom.Velocity;
                                                     PDyn = 0.6 * Velocity * Velocity;
                                                 }
                                                 else
                                                 {
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    Velocity = custom.Velocity;
+                                                    PDyn = 0;
                                                 }
                                                 
                                             }
