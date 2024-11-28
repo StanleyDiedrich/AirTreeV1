@@ -91,7 +91,7 @@ namespace AirTreeV1
                         {
                             try
                             {
-                                if (element.ElementId.IntegerValue == 8057458)
+                                if (element.ElementId.IntegerValue == 8058395)
                                 {
                                     var element2 = element;
                                 }
@@ -338,7 +338,7 @@ namespace AirTreeV1
                 foreach (var element in branch.Elements)
                 {
                     string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
-                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{element.LocRes};{element.PDyn};{element.Ptot};" +
+                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes,2)};{Math.Round(element.PDyn,2)};{Math.Round(element.Ptot,2)};" +
                          $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
                     csvcontent.AppendLine(a);
                 }

@@ -100,11 +100,15 @@ namespace AirTreeV1
                                                     {
                                                         custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                         Velocity = OutletConnector.Velocity;
+                                                        element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
+                                                        element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0.6 * Velocity * Velocity;
                                                     }
                                                     else
                                                     {
                                                         custom.Velocity = custom.Flow / (custom.Area*0.7 * 3600);
+                                                        element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
+                                                        element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0;
                                                     }
                                                    
@@ -121,12 +125,14 @@ namespace AirTreeV1
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                     Velocity = custom.Velocity;
+                                                    element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                     PDyn = 0.6 * Velocity * Velocity;
                                                 }
                                                 else
                                                 {
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000 ;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                     PDyn = 0;
                                                 }
                                                     
@@ -162,13 +168,17 @@ namespace AirTreeV1
 
                                                     if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
                                                     {
-                                                        custom.Velocity = custom.Flow / (custom.Area * 3600);
+                                                        custom.Velocity = custom.Flow / (custom.Area*0.7 * 3600);
                                                         Velocity = custom.Velocity;
+                                                        element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
+                                                        element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0.6 * Velocity * Velocity;
                                                     }
                                                     else
                                                     {
-                                                        custom.Velocity = custom.Flow / (custom.Area * 0.7 * 3600);
+                                                        custom.Velocity = custom.Flow / (custom.Area  * 3600);
+                                                        element.Volume = Convert.ToString(Math.Round(custom.Flow,0));
+                                                        element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0;
                                                     }
                                                 }
@@ -184,6 +194,8 @@ namespace AirTreeV1
                                                 {
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
+                                                    element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                     Velocity = custom.Velocity;
                                                     PDyn = 0.6 * Velocity * Velocity;
                                                 }
@@ -191,6 +203,8 @@ namespace AirTreeV1
                                                 {
                                                     custom.Area = custom.Height / 1000 * custom.Height / 1000;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
+                                                    element.ModelVelocity = Convert.ToString(Math.Round(Velocity,2));
                                                     Velocity = custom.Velocity;
                                                     PDyn = 0;
                                                 }
