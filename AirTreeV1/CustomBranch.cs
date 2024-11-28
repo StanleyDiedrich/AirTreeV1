@@ -70,6 +70,7 @@ namespace AirTreeV1
 
         public void CreateNewBranch(Document document, ElementId airterminal)
         {
+            //int i = 0;
             ElementId nextElement=null;
             CustomElement customElement = new CustomElement(document, airterminal);
             do
@@ -78,8 +79,9 @@ namespace AirTreeV1
                 Elements.Add(customElement);
                 nextElement = customElement.NextElementId;
                 customElement = new CustomElement(document, nextElement);
+                //i++;
             }
-            while (nextElement != null);
+            while (nextElement != null /*|| i==10000*/);
 
         }
 

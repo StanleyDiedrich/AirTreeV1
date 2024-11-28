@@ -149,8 +149,10 @@ namespace AirTreeV1
                 Volume = GetValue(primaryvolume);
                 string primarylength = Element.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsValueString();
                 ModelLength = primarylength;
-                string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
-                ModelVelocity = GetValue(primaryvelocity);
+                string primaryvelocity = Convert.ToString(Math.Round(Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsDouble()/3.25,2));
+                //string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
+                ModelVelocity = primaryvelocity;
+                //ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in OwnConnectors)
                 {
                     ConnectorSet nextconnectors = connector.AllRefs;
@@ -222,7 +224,8 @@ namespace AirTreeV1
                                                     ModelDiameter = primarydiameter;
 
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
-                                                    ModelHydraulicArea = ((Math.PI*Math.Pow(Convert.ToDouble(ModelHydraulicDiameter),2) / 4)/1000000).ToString();
+                                                    ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
+                                                    //ModelHydraulicArea = ((Math.PI*Math.Pow(Convert.ToDouble(ModelHydraulicDiameter),2) / 4)/1000000).ToString();
                                                 }
                                                 else
                                                 {
@@ -235,7 +238,7 @@ namespace AirTreeV1
                                                     string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
                                                     ModelHeight = primaryheight;
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
-                                                    ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
+                                                    ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000),5).ToString();
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -264,7 +267,8 @@ namespace AirTreeV1
                                                     string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
                                                     ModelDiameter = primarydiameter;
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
-                                                    ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
+                                                    ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
+                                                    //ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
                                                 }
                                                 else
                                                 {
@@ -277,7 +281,8 @@ namespace AirTreeV1
                                                     string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
                                                     ModelHeight = primaryheight;
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
-                                                    ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
+                                                    ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
+                                                    //ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -315,8 +320,10 @@ namespace AirTreeV1
                 Volume = GetValue(primaryvolume);
                 string primarylength = Element.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsValueString();
                 ModelLength = primarylength;
-                string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
-                ModelVelocity = GetValue(primaryvelocity);
+                string primaryvelocity = Convert.ToString(Math.Round(Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsDouble() / 3.25, 2));
+                //string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
+                ModelVelocity = primaryvelocity;
+                //ModelVelocity = GetValue(primaryvelocity);
                 
                 foreach (Connector connector in OwnConnectors)
                 {
