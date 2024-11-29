@@ -192,7 +192,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height * 304.8/1000;
                                                 if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
                                                 {
-                                                    custom.Area = custom.Height / 1000 * custom.Height / 1000 * 0.7;
+                                                    custom.Area = custom.Height  * custom.Height  * 0.7;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                     element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
                                                     element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
@@ -201,7 +201,7 @@ namespace AirTreeV1
                                                 }
                                                 else
                                                 {
-                                                    custom.Area = custom.Height / 1000 * custom.Height / 1000;
+                                                    custom.Area = custom.Height  * custom.Height ;
                                                     custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                     element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
                                                     element.ModelVelocity = Convert.ToString(Math.Round(Velocity,2));

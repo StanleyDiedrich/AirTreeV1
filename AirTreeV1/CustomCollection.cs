@@ -12,6 +12,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using System.Globalization;
 using Autodesk.Revit.UI;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace AirTreeV1
 {
@@ -23,6 +24,7 @@ namespace AirTreeV1
         Autodesk.Revit.DB.Document Document { get; set; }
         public double Density { get; set; }
         public CustomElement ActiveElement { get; set; }
+        public string FirstElement { get; set; } 
         public void Add (CustomBranch branch)
         {
             Collection.Add(branch);
@@ -34,7 +36,7 @@ namespace AirTreeV1
             customBranch.CreateNewBranch(Document, airterminal);
             //CustomElement customElement = new CustomElement(Document,  airterminal);
             Collection.Add(customBranch);
-
+            
             
         }
         public CustomCollection (Autodesk.Revit.DB.Document doc)
@@ -70,7 +72,7 @@ namespace AirTreeV1
             return elements;
         }
        
-
+        
         public void  Calcualate(double density)
         {
            
@@ -91,7 +93,7 @@ namespace AirTreeV1
                         {
                             try
                             {
-                                if (element.ElementId.IntegerValue == 8058395)
+                                if (element.ElementId.IntegerValue == 5929264)
                                 {
                                     var element2 = element;
                                 }
@@ -237,9 +239,9 @@ namespace AirTreeV1
                     }
                         
                 }
-            
-            
-           
+
+              FirstElement = Collection.First().Elements.First().SystemName;
+
         }
         public void ResCalculate ()
         {
@@ -330,13 +332,16 @@ namespace AirTreeV1
 
         public string GetContent()
         {
+            
             var csvcontent = new StringBuilder();
             csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
 
             foreach (var branch in Collection)
             {
+                
                 foreach (var element in branch.Elements)
                 {
+                   
                     string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
                          $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes,2)};{Math.Round(element.PDyn,2)};{Math.Round(element.Ptot,2)};" +
                          $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
@@ -351,10 +356,12 @@ namespace AirTreeV1
             System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             saveFileDialog.Filter = "CSV files (*.csv)|*.csv";
             saveFileDialog.Title = "Save CSV File";
+            saveFileDialog.FileName = Collection.First().Elements.First().SystemName + ".csv";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
+                   
                     using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
                     {
                         writer.Write(content);

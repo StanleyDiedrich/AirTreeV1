@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
@@ -428,7 +429,16 @@ namespace AirTreeV1
 
                 collection.MarkCollection(selectedbranch);
                 string content = collection.GetContent();
-                collection.SaveFile(content);
+                string filemname = collection.FirstElement;
+                try
+                {
+                    collection.SaveFile(content);
+                    
+                }
+                catch
+                {
+                    TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
+                }
                 //selectedelements=  collection.ShowElements();
                 
                 //selectedelements = collection.ShowControlElements();
