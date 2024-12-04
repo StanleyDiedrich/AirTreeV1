@@ -79,168 +79,177 @@ namespace AirTreeV1
                 IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "," };
                 IFormatProvider formatter2 = new NumberFormatInfo { NumberDecimalSeparator = "." };
                 Density = density;
+                if (Collection.Count==0)
+                { 
+                TaskDialog.Show("AirTree", $"Система {Collection.First().Elements.First().SystemName} не имеет ни одного элемента");
+                return;
+                }
+                else
+            {
                 foreach (var branch in Collection)
                 {
                     foreach (var element in branch.Elements)
                     {
                         try
                         {
-                        if (element.Element == null)
-                        {
-                            continue;
-                        }
-                        if (element.DetailType == CustomElement.Detail.AirTerminal)
-                        {
-                            try
+                            if (element.Element == null)
                             {
-                                if (element.ElementId.IntegerValue == 5929264)
+                                continue;
+                            }
+                            if (element.DetailType == CustomElement.Detail.AirTerminal)
+                            {
+                                try
+                                {
+                                    if (element.ElementId.IntegerValue == 5929264)
+                                    {
+                                        var element2 = element;
+                                    }
+                                    branch.Pressure += 10;
+                                    CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
+                                    element.Ptot = customAirTerminal.PDyn;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                }
+                                //Сюда допишем простую логику на воздухораспределитель по magicad
+                            }
+                            else if (element.DetailType == CustomElement.Detail.Elbow)
+                            {
+                                try
+                                {
+                                    if (element.ElementId.IntegerValue == 6246191)
+                                    {
+                                        var element2 = element;
+                                    }
+                                    CustomElbow customElbow = new CustomElbow(Document, element);
+                                    element.LocRes = customElbow.LocRes;
+                                    element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
+                                    branch.Pressure += 5;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                }
+                            }
+                            else if (element.DetailType == CustomElement.Detail.Tee)
+                            {
+                                try
+                                {
+                                    if (element.ElementId.IntegerValue == 7294387)
+                                    {
+                                        var element2 = element;
+                                    }
+                                    CustomTee customTee = new CustomTee(Document, element);
+                                    element.LocRes = customTee.LocRes;
+                                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                                    branch.Pressure += 7;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                }
+
+                            }
+                            else if (element.DetailType == CustomElement.Detail.Equipment)
+                            {
+                                try
+                                {
+                                    element.LocRes = 0;
+                                    element.PDyn = 0;
+                                    branch.Pressure += 0;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                }
+                            }
+                            else if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                            {
+
+                                if (element.ElementId.IntegerValue == 6246776)
+
                                 {
                                     var element2 = element;
                                 }
-                                branch.Pressure += 10;
-                                CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
-                                element.Ptot = customAirTerminal.PDyn;
+
+                                CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
+                                element.LocRes = customDuctInsert.LocRes;
+                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                branch.Pressure += 1;
                             }
-                            catch
+                            else if (element.DetailType == CustomElement.Detail.Transition)
                             {
-                                ActiveElement = element;
-                                TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                            }
-                            //Сюда допишем простую логику на воздухораспределитель по magicad
-                        }
-                        else if (element.DetailType == CustomElement.Detail.Elbow)
-                        {
-                            try
-                            {
-                                if (element.ElementId.IntegerValue == 6246191)
+                                if (element.ElementId.IntegerValue == 5981916)
                                 {
                                     var element2 = element;
                                 }
-                                CustomElbow customElbow = new CustomElbow(Document, element);
-                                element.LocRes = customElbow.LocRes;
-                                element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
-                                branch.Pressure += 5;
+                                try
+                                {
+                                    CustomTransition customTransition = new CustomTransition(Document, element);
+
+                                    element.LocRes = customTransition.LocRes;
+                                    element.PDyn = Density * Math.Pow(customTransition.Velocity, 2) / 2 * element.LocRes;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    element.LocRes = 0.5;
+                                }
+
                             }
-                            catch
+                            else if (element.DetailType == CustomElement.Detail.RectangularDuct || element.DetailType == CustomElement.Detail.RoundDuct)
                             {
-                                ActiveElement = element;
-                                TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                            }
-                        }
-                        else if (element.DetailType == CustomElement.Detail.Tee)
-                        {
-                            try
-                            {
-                                if (element.ElementId.IntegerValue == 7294387)
+                                if (element.ElementId.IntegerValue == 6448413)
                                 {
                                     var element2 = element;
                                 }
-                                CustomTee customTee = new CustomTee(Document, element);
-                                element.LocRes = customTee.LocRes;
-                                element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
-                                branch.Pressure += 7;
-                            }
-                            catch
-                            {
-                                ActiveElement = element;
-                                TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                            }
+                                branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
+                                string[] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
+                                try
+                                {
 
-                        }
-                        else if (element.DetailType == CustomElement.Detail.Equipment)
-                        {
-                            try
-                            {
-                                element.LocRes = 0;
-                                element.PDyn = 0;
-                                branch.Pressure += 0;
-                            }
-                            catch
-                            {
-                                ActiveElement = element;
-                                TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                            }
-                        }
-                        else if (element.DetailType == CustomElement.Detail.TapAdjustable)
-                        {
+                                    element.PStat = double.Parse(pressureDropString[0], formatter);
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    element.PStat = double.Parse(pressureDropString[0], formatter2);
+                                }
+                                // Проверяем, что строка не пустая или null
 
-                            if (element.ElementId.IntegerValue == 6246776)
-
-                            {
-                                var element2 = element;
                             }
-
-                            CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
-                            element.LocRes = customDuctInsert.LocRes;
-                            element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
-                            branch.Pressure += 1;
-                        }
-                        else if (element.DetailType == CustomElement.Detail.Transition)
-                        {
-                            if (element.ElementId.IntegerValue == 5981916)
+                            else if (element.DetailType == CustomElement.Detail.RectFlexDuct || element.DetailType == CustomElement.Detail.RoundFlexDuct)
                             {
-                                var element2 = element;
-                            }
-                            try
-                            {
-                                CustomTransition customTransition = new CustomTransition(Document, element);
-
-                                element.LocRes = customTransition.LocRes;
-                                element.PDyn = Density * Math.Pow(customTransition.Velocity, 2) / 2 * element.LocRes;
-                            }
-                            catch
-                            {
-                                ActiveElement = element;
-                                element.LocRes = 0.5;
-                            }
-
-                        }
-                        else if (element.DetailType == CustomElement.Detail.RectangularDuct || element.DetailType == CustomElement.Detail.RoundDuct)
-                        {
-                            if (element.ElementId.IntegerValue == 6448413)
-                            {
-                                var element2 = element;
-                            }
-                            branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
-                            string[] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
-                            try
-                            {
-                                
+                                branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
+                                string[] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
                                 element.PStat = double.Parse(pressureDropString[0], formatter);
                             }
-                            catch
+                            else if (element.DetailType == CustomElement.Detail.FireProtectValve)
                             {
-                                ActiveElement = element;
-                                element.PStat = double.Parse(pressureDropString[0], formatter2);
+                                branch.Pressure += 6;
                             }
-                            // Проверяем, что строка не пустая или null
-
+                            else if (element.DetailType == CustomElement.Detail.Union)
+                            {
+                                branch.Pressure += 0;
+                            }
                         }
-                        else if (element.DetailType == CustomElement.Detail.RectFlexDuct || element.DetailType == CustomElement.Detail.RoundFlexDuct)
-                        {
-                            branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
-                            string[] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
-                            element.PStat = double.Parse(pressureDropString[0], formatter);
-                        }
-                        else if (element.DetailType == CustomElement.Detail.FireProtectValve)
-                        {
-                            branch.Pressure += 6;
-                        }
-                        else if (element.DetailType == CustomElement.Detail.Union)
-                        {
-                            branch.Pressure += 0;
-                        }
-                    }
                         catch
                         {
                             TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                             ActiveElement = element;
-                         }
+                        }
                     }
-                        
+
                 }
 
-              FirstElement = Collection.First().Elements.First().SystemName;
+                FirstElement = Collection.First().Elements.First().SystemName;
+            }
+               
 
         }
         public void ResCalculate ()
