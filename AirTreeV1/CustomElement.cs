@@ -220,8 +220,25 @@ namespace AirTreeV1
                                                     DetailType = Detail.RoundDuct;
                                                     custom.Diameter = connect.Radius * 2;
                                                     custom.EquiDiameter = custom.Diameter;
-                                                    string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
-                                                    ModelDiameter = primarydiameter;
+                                                    try
+                                                    {
+                                                        string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
+                                                        ModelDiameter = primarydiameter;
+                                                        ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
+                                                        ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
+                                                    }
+                                                    catch
+                                                    {
+                                                        string primarywidth = Element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsValueString();
+                                                        ModelWidth = primarywidth;
+                                                        string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
+                                                        ModelHeight = primaryheight;
+                                                        ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
+                                                        ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
+                                                        DetailType = Detail.RectangularDuct;
+
+                                                        //ModelDiameter = "Not defined";
+                                                    }
 
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
                                                     ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();

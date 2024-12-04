@@ -396,49 +396,58 @@ namespace AirTreeV1
             List<ElementId> selectedterminals = new List<ElementId>();
             List<ElementId> selectedelements = new List<ElementId>();
             //Ну тут вроде норм
+            string systemName = null;
             foreach (var systemname in systemnames)
             {
-                string systemName = systemname.SystemName;
+                 systemName = systemname.SystemName;
 
                 //var maxpipe = GetStartDuct(doc, systemName);
 
                 selectedterminals = GetAirTerminals(doc, systemName);
-                CustomCollection collection = GetCollection(doc, selectedterminals);
-
-                //selectedelements = collection.ShowElements(0);
-                //collection.MarkCollection();
-               try
+                if (selectedterminals.Count!=0)
                 {
+                    CustomCollection collection = GetCollection(doc, selectedterminals);
+
+                    //selectedelements = collection.ShowElements(0);
+                    //collection.MarkCollection();
+                    try
+                    {
+                        collection.Calcualate(mainViewModel.Density);
+                    }
+                    catch
+                    {
+                        CustomElement element = collection.ActiveElement;
+                        TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
+                    }
+                    //collection.Calcualate(mainViewModel.Density);
+
+
                     collection.Calcualate(mainViewModel.Density);
-                }
-                catch
-                {
-                    CustomElement element = collection.ActiveElement;
-                    TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
-                }
-                //collection.Calcualate(mainViewModel.Density);
-                
-               
-                collection.Calcualate(mainViewModel.Density);
-                collection.ResCalculate();
-                CustomBranch selectedbranch = collection.SelectMainBranch();
-                /*foreach (var element in selectedbranch.Elements)
-                {
-                    selectedelements.Add(element.ElementId);
-                }*/
+                    collection.ResCalculate();
+                    CustomBranch selectedbranch = collection.SelectMainBranch();
+                    /*foreach (var element in selectedbranch.Elements)
+                    {
+                        selectedelements.Add(element.ElementId);
+                    }*/
 
-                collection.MarkCollection(selectedbranch);
-                string content = collection.GetContent();
-                string filemname = collection.FirstElement;
-                try
-                {
-                    collection.SaveFile(content);
-                    
+                    collection.MarkCollection(selectedbranch);
+                    string content = collection.GetContent();
+                    string filemname = collection.FirstElement;
+                    try
+                    {
+                        collection.SaveFile(content);
+
+                    }
+                    catch
+                    {
+                        TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
+                    }
                 }
-                catch
+                else
                 {
-                    TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
+                    TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей"); 
                 }
+                
                 //selectedelements=  collection.ShowElements();
                 
                 //selectedelements = collection.ShowControlElements();
