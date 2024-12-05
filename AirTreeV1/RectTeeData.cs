@@ -51,8 +51,8 @@ namespace AirTreeV1
                     Values = new double[,]
                     {
                         { 0, 0, 0, 0.1, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 2 },
-                        { 100000, 0.66, 1, 1.01, 1.04, 1.16, 1.35, 1.64, 2, 2.44, 2.96, 3.54, 4.6 },
-                        { 100000, 1, 1, 1, 1.01, 1.05, 1.11, 1.19, 1.3, 1.43, 1.59, 1.77, 2.2 }
+                        { 100000, 0.7, 1, 1.01, 1.04, 1.16, 1.35, 1.64, 2, 2.44, 2.96, 3.54, 4.6 },
+                        { 100000, 2, 1, 1, 1.01, 1.05, 1.11, 1.19, 1.3, 1.43, 1.59, 1.77, 2.2 }
                     };
                 }
             }
@@ -108,6 +108,10 @@ namespace AirTreeV1
         }
         public double Interpolation(double reynolds, double relA, double relQ)
         {
+           /* if (relA>2)
+            {
+                relA = 0.99;
+            }*/
             if (SystemType==DuctSystemType.ExhaustAir && IsStraight==true)
             {
                 LocRes = 1.55 * (1 - relQ) - Math.Pow((1 - relQ), 2);
@@ -129,7 +133,7 @@ namespace AirTreeV1
             // Поиск индексов для angle
             for (int j = 1; j <= Values.GetLength(1); j++)
             {
-                if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
+                if (relQ >= Values[0, j - 1] && relQ <= Values[0, j])
                 {
                     indexB.Add(j);
                 }
@@ -144,7 +148,7 @@ namespace AirTreeV1
                 {
 
                     indexC.Add(k);
-                    relA = Math.Round(relA, 0);
+                    
                 }
             }
             // Интерполяция для найденных индексов
@@ -203,9 +207,9 @@ namespace AirTreeV1
 
                             if (relQ == Values[0, j])
                             {
-                                double x0 = Values[k - 1, 1];
-                                double x1 = Values[k, 1];
-                                double y0 = Values[k - 1, j];
+                                double x0 = Values[0, j-1];
+                                double x1 = Values[0, j];
+                                double y0 = Values[k , j-1];
                                 double y1 = Values[k, j];
 
                                 result = (y0 + (relA - x0) / (x1 - x0) * (y1 - y0));

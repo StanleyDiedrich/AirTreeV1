@@ -171,7 +171,7 @@ namespace AirTreeV1
                             else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
-                                if (element.ElementId.IntegerValue == 6246776)
+                                if (element.ElementId.IntegerValue == 6448528)
 
                                 {
                                     var element2 = element;
