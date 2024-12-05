@@ -647,16 +647,19 @@ namespace AirTreeV1
                     else
                     {
                         relA = OutletConnector1.AOutlet/ InletConnector.AInlet;
+                        relC = OutletConnector1.Velocity / InletConnector.Velocity;
                         if (relA >1)
                         {
                             relA = InletConnector.AInlet/ OutletConnector1.AOutlet;
+                            relC = InletConnector.Velocity/ OutletConnector1.Velocity;
                         }
+                        
                         relQ = OutletConnector1.Flow / InletConnector.Flow;
-                        relC = OutletConnector1.Velocity / InletConnector.Velocity;
+                        //relC = OutletConnector1.Velocity / InletConnector.Velocity;
 
                         if (relC >=2)
                         {
-                            relC = 1.99;
+                            relC = 2;
                         }
                         RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC,InletConnector);
                         if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
