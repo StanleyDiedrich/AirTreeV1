@@ -23,8 +23,6 @@ namespace AirTreeV1
         List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
         Autodesk.Revit.DB.Document Document { get; set; }
         public double Density { get; set; }
-        public CustomElement ActiveElement { get; set; }
-        public string FirstElement { get; set; } 
 
         public string ErrorString { get; set; }
         public void Add (CustomBranch branch)
