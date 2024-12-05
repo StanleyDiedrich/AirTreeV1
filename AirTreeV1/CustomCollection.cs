@@ -119,7 +119,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 6246191)
+                                    if (element.ElementId.IntegerValue == 8181120)
                                     {
                                         var element2 = element;
                                     }
@@ -171,7 +171,7 @@ namespace AirTreeV1
                             else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
-                                if (element.ElementId.IntegerValue == 6246776)
+                                if (element.ElementId.IntegerValue == 6044542)
 
                                 {
                                     var element2 = element;
@@ -184,7 +184,7 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
-                                if (element.ElementId.IntegerValue == 5981916)
+                                if (element.ElementId.IntegerValue == 6448371)
                                 {
                                     var element2 = element;
                                 }

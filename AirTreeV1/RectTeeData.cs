@@ -40,11 +40,11 @@ namespace AirTreeV1
                 else
                 {
                     relQ = relC;
-                    if (relA<0.66)
+                    if (relA < 0.66)
                     {
                         relA = 0.66;
                     }
-                    else if(relA>1)
+                    else if (relA > 1)
                     {
                         relA = 1;
                     }
@@ -61,14 +61,14 @@ namespace AirTreeV1
                 if (isstraight)
                 {
                     IsStraight = isstraight;
-                    
+
 
                     Values = new double[,]
                     {
                         { 0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 },
                         { 1000000, 0.55, 0.59, 0.6, 0.59, 0.57, 0.53, 0.46, 0.38, 0.27, 0.16, 0 }
                     };
-                    
+
                     return;
                 }
                 else
@@ -86,11 +86,11 @@ namespace AirTreeV1
                         Coeff = 0.55;
                     }
                     double cs = inletconnector.Velocity;
-                    if (cs<6)
+                    if (cs < 6)
                     {
                         relA = 0;
                     }
-                    else if (cs>6)
+                    else if (cs > 6)
                     {
                         relA = 6;
                     }
@@ -101,147 +101,225 @@ namespace AirTreeV1
                         { 100000, 6, -0.69, -0.21, 0.23, 0.67, 1.17, 1.66, 2.67, 3.36, 3.93, 5.13 }
 
                     };
-                    
+
 
                 }
             }
         }
+
         public double Interpolation(double reynolds, double relA, double relQ)
         {
-            if (SystemType==DuctSystemType.ExhaustAir && IsStraight==true)
+            double result = 0;
+            if (SystemType == DuctSystemType.ExhaustAir && IsStraight == true)
             {
                 LocRes = 1.55 * (1 - relQ) - Math.Pow((1 - relQ), 2);
                 return LocRes;
             }
-            double result = 0;
-            List<int> indexA = new List<int>();
-            List<int> indexB = new List<int>();
-            List<int> indexC = new List<int>();
-            // Поиск индексов для reynolds
-            for (int i = 1; i < Values.GetLength(0); i++)
+            else
             {
-                if (reynolds >= Values[i - 1, 0] && reynolds <= Values[i, 0])
+                List<int> indexA = new List<int>();
+                List<int> indexB = new List<int>();
+                List<int> indexC = new List<int>();
+                for (int i = 1; i < Values.GetLength(0); i++)
                 {
-                    indexA.Add(i);
-                }
-            }
-
-            // Поиск индексов для angle
-            for (int j = 1; j <= Values.GetLength(1); j++)
-            {
-                if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
-                {
-                    indexB.Add(j);
-                }
-            }
-            for (int k = 1; k < Values.GetLength(0); k++)
-            {
-                if (relA > Values[k - 1, 1] && relA < Values[k, 1])
-                {
-                    indexC.Add(k);
-                }
-                else if (relA < Values[k, 1])
-                {
-
-                    indexC.Add(k);
-                    relA = Math.Round(relA, 0);
-                }
-            }
-            // Интерполяция для найденных индексов
-
-            for (int i = indexA.Min(); i <= indexA.Max(); i++)
-            {
-                if (relA == Values[i, 1])
-                {
-                    if (indexB.Count == 0)
+                    if (reynolds >= Values[i - 1, 0] && reynolds <= Values[i, 0])
                     {
-                        if (relQ == Values[i, 2])
-                        {
-                            return Values[i, 2];
-                        }
+                        indexA.Add(i);
                     }
-                    else
+                }
+
+                for (int j = 1; j < Values.GetLength(1); j++)
+                {
+
+                    if (relQ >= Values[0, j - 1] && relQ <= Values[0, j])
                     {
-                        for (int j = indexB.Min(); j <= indexB.Max(); j++)
-                        {
-                            if (relQ == Values[0, j])
-                            {
-                                return Values[i, j];
-                            }
-                            else
-                            {
-
-                                for (j = indexB[0]; j <= indexB[indexB.Count - 1]; j++)
-                                {
-                                    if (relQ > Values[0, j - 1] && relQ < Values[0, j])
-                                    {
-                                        // Линейная интерполяция
-                                        double x0 = Values[0, j - 1]; // предыдущее значение
-                                        double x1 = Values[0, j];     // текущее значение
-                                        double y0 = Values[i, j - 1];
-                                        double y1 = Values[i, j];
-
-                                        // Линейная интерполяция
-                                        result = (y0 + (relQ - x0) / (x1 - x0) * (y1 - y0));
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
+                        indexB.Add(j);
+                    }
+                }
+                for (int k = 1; k < Values.GetLength(0); k++)
+                {
+                    if (relA <= Values[k, 1])
+                    {
+                        indexC.Add(k);
+                        break;
+                    }
+                }
+                for (int i = indexC.Min(); i <= indexC.Max(); i++)
+                {
+                    for (int j = indexB.Min(); j <= indexB.Max(); j++)
+                    {
+                        result = Values[i, j];
                     }
 
-
                 }
-                else if (relA >= Values[i - 1, 1] && relA <= Values[i, 1])
-                {
-                    for (int k = indexC.Min(); k <= indexC.Max(); k++)
-                    {
-
-                        for (int j = indexB.Min(); j <= indexB.Max(); j++)
-                        {
-
-                            if (relQ == Values[0, j])
-                            {
-                                double x0 = Values[k - 1, 1];
-                                double x1 = Values[k, 1];
-                                double y0 = Values[k - 1, j];
-                                double y1 = Values[k, j];
-
-                                result = (y0 + (relA - x0) / (x1 - x0) * (y1 - y0));
-                            }
-                            else
-                            {
-                                double A1 = Values[k - 1, 1];
-                                double A2 = Values[k, 1];
-                                double A = relA;
-                                double B1 = Values[0, j - 1];
-                                double B2 = Values[0, j];
-                                double B = relQ;
-                                double C11 = Values[k - 1, j - 1];
-                                double C12 = Values[k - 1, j];
-                                double C21 = Values[k, j - 1];
-                                double C22 = Values[k, j];
-                                double res1 = (((B2 - B) / (B2 - B1) * C11) + (B - B1) / (B2 - B1) * C12) * ((A2 - A) / (A2 - A1));
-                                double res2 = (((B2 - B) / (B2 - B1) * C21) + (B - B1) / (B2 - B1) * C22) * (A - A1) / (A2 - A1);
-                                result = res1 + res2;
-                                break;
-                            }
-
-
-
-                        }
-                    }
-
-
-                }
-
-
-
+                LocRes = result;
+                return LocRes;
             }
+            /* public double Interpolation(double reynolds, double relA, double relQ)
+             {
+                *//* if (relA>2)
+                 {
+                     relA = 0.99;
+                 }*//*
+                 if (SystemType==DuctSystemType.ExhaustAir && IsStraight==true)
+                 {
+                     LocRes = 1.55 * (1 - relQ) - Math.Pow((1 - relQ), 2);
+                     return LocRes;
+                 }
+                 double result = 0;
+                 List<int> indexA = new List<int>();
+                 List<int> indexB = new List<int>();
+                 List<int> indexC = new List<int>();
+                 // Поиск индексов для reynolds
+                 for (int i = 1; i < Values.GetLength(0); i++)
+                 {
+                     if (reynolds >= Values[i - 1, 0] && reynolds <= Values[i, 0])
+                     {
+                         indexA.Add(i);
+                     }
+                 }
+
+                 // Поиск индексов для angle
+                 for (int j = 1; j < Values.GetLength(1); j++)
+                 {
+                     if (relQ == Values[0,j])
+                     {
+                         indexB.Add(j);
+                     }
+                     else if (relQ >= Values[0, j - 1] && relQ <= Values[0, j])
+                     {
+                         indexB.Add(j);
+                     }
+                 }
+                 for (int k = 1; k < Values.GetLength(0); k++)
+                 {
+                     *//*if (relA > Values[k - 1, 1] && relA <= Values[k, 1])
+                     {
+                         indexC.Add(k);
+                     }*//*
+                      if (relA < Values[k, 1])
+                     {
+
+                         indexC.Add(k);
+
+                     }
+                 }
+                 // Интерполяция для найденных индексов
+
+                 for (int i = indexA.Min(); i <= indexA.Max(); i++)
+                 {
+                     if (relA == Values[i, 1])
+                     {
+                         if (indexB.Count == 0)
+                         {
+                             if (relQ == Values[i, 2])
+                             {
+                                 return Values[i, 2];
+                             }
+                         }
+                         else
+                         {
+                             for (int j = indexB.Min(); j <= indexB.Max(); j++)
+                             {
+                                 if (relQ == Values[0, j])
+                                 {
+                                     return Values[i, j];
+                                 }
+                                 else
+                                 {
+
+                                     for (j = indexB[0]; j <= indexB[indexB.Count - 1]; j++)
+                                     {
+                                         if (relQ > Values[0, j - 1] && relQ < Values[0, j])
+                                         {
+                                             // Линейная интерполяция
+                                             double x0 = Values[0, j - 1]; // предыдущее значение
+                                             double x1 = Values[0, j];     // текущее значение
+                                             double y0 = Values[i, j - 1];
+                                             double y1 = Values[i, j];
+
+                                             // Линейная интерполяция
+                                             result = (y0 + (relQ - x0) / (x1 - x0) * (y1 - y0));
+                                             break;
+                                         }
+                                     }
+
+                                 }
+                             }
+                         }
 
 
-            return LocRes = result*Coeff;
+                     }
+
+                     *//*else if (relA <= Values[i, 1])
+                     {
+                         for (int k = indexC.Min(); k <= indexC.Max(); k++)
+                         {
+
+                             for (int j = indexB.Min(); j <= indexB.Max(); j++)
+                             {
+                                 if (relQ <= Values[0,j])
+                                 {
+                                     result = Values[i, j];
+                                 }
+                             }
+                         }
+                     }*//*
+
+                     else if (relA >= Values[i - 1, 1] && relA <= Values[i, 1])
+                     {
+                         for (int k = indexC.Min(); k <= indexC.Max(); k++)
+                         {
+
+                             for (int j = indexB.Min(); j <= indexB.Max(); j++)
+                             {
+
+                                 if (relQ ==Values[0,j])
+                                 {
+                                     result = Values[i-1, j];
+                                 }
+                                 *//*if (relQ == Values[0, j])
+                                 {
+                                     double x0 = Values[0, j - 1];
+                                     double x1 = Values[0, j];
+                                     double y0 = Values[k, j - 1];
+                                     double y1 = Values[k, j];
+
+                                     result = (y0 + (relA - x0) / (x1 - x0) * (y1 - y0));
+                                 }*//*
+                                 else
+                                 {
+                                     double A1 = Values[k - 1, 1];
+                                     double A2 = Values[k, 1];
+                                     double A = relA;
+                                     double B1 = Values[0, j - 1];
+                                     double B2 = Values[0, j];
+                                     double B = relQ;
+                                     double C11 = Values[k - 1, j - 1];
+                                     double C12 = Values[k - 1, j];
+                                     double C21 = Values[k, j - 1];
+                                     double C22 = Values[k, j];
+                                     double res1 = (((B2 - B) / (B2 - B1) * C11) + (B - B1) / (B2 - B1) * C12) * ((A2 - A) / (A2 - A1));
+                                     double res2 = (((B2 - B) / (B2 - B1) * C21) + (B - B1) / (B2 - B1) * C22) * (A - A1) / (A2 - A1);
+                                     result = res1 + res2;
+                                     break;
+                                 }
+
+
+
+                             }
+                         }
+
+
+                     }
+
+
+
+                 }
+
+
+                 return LocRes = result*Coeff;
+             }*/
         }
     }
 }

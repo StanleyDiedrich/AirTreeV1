@@ -73,7 +73,7 @@ namespace AirTreeV1
                             Y1 = Values[w - 1, h];
                             Y2 = Values[w, h];
 
-                            result = Y2 + (Y1 - Y2) / (X1 - X2) * (rw - X1);
+                            result = Y1 - (Y1 - Y2) * (rw - X1) / (X2 - X1) ;
                             break;
 
                         }
