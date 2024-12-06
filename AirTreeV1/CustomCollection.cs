@@ -16,8 +16,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace AirTreeV1
 {
-
     
+
     public  class CustomCollection
     {
         List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
@@ -119,7 +119,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 8181120)
+                                    if (element.ElementId.IntegerValue == 6856896)
                                     {
                                         var element2 = element;
                                     }
@@ -138,11 +138,23 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 7294387)
+                                    if (element.ElementId.IntegerValue == 6856285)
                                     {
                                         var element2 = element;
                                     }
                                     CustomTee customTee = new CustomTee(Document, element);
+                                    element.IA = customTee.IA;
+                                    element.IQ = customTee.IQ;
+                                    element.IC = customTee.IC;
+                                    element.O1A = customTee.O1A;
+                                    element.O1Q = customTee.O1Q;
+                                    element.O1C = customTee.O1C;
+                                    element.O2A = customTee.O2A;
+                                    element.O2Q = customTee.O2Q;
+                                    element.RA = customTee.RA;
+                                    element.RQ = customTee.RQ;
+                                    element.RC = customTee.RC;
+
                                     element.LocRes = customTee.LocRes;
                                     element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
                                     branch.Pressure += 7;
@@ -171,15 +183,26 @@ namespace AirTreeV1
                             else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
-                                if (element.ElementId.IntegerValue == 6246776)
+                               /* if (element.ElementId.IntegerValue == 6246776)
 
                                 {
                                     var element2 = element;
                                 }
 
                                 CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
+                                element.IA = customDuctInsert.IA;
+                                element.IQ = customDuctInsert.IQ;
+                                element.IC = customDuctInsert.IC;
+                                element.O1A = customDuctInsert.O1A;
+                                element.O1Q = customDuctInsert.O1Q;
+                                element.O1C = customDuctInsert.O1C;
+                                element.O2A = customDuctInsert.O2A;
+                                element.O2Q = customDuctInsert.O2Q;
+                                element.RA = customDuctInsert.RA;
+                                element.RQ = customDuctInsert.RQ;
+                                element.RC = customDuctInsert.RC;
                                 element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;*/
                                 branch.Pressure += 1;
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
@@ -263,11 +286,57 @@ namespace AirTreeV1
                     
                     branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i-1].Ptot;
 
-
                 }
                
             }
+            foreach (var branch in Collection)
+            {
+                foreach (var element in branch.Elements)
+                {
+                    if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                         if (element.ElementId.IntegerValue == 6448528)
+
+                        {
+                                    var element2 = element;
+                                }
+
+                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection);
+                                element.IA = customDuctInsert.IA;
+                                element.IQ = customDuctInsert.IQ;
+                                element.IC = customDuctInsert.IC;
+                                element.O1A = customDuctInsert.O1A;
+                                element.O1Q = customDuctInsert.O1Q;
+                                element.O1C = customDuctInsert.O1C;
+                                element.O2A = customDuctInsert.O2A;
+                                element.O2Q = customDuctInsert.O2Q;
+                                element.RA = customDuctInsert.RA;
+                                element.RQ = customDuctInsert.RQ;
+                                element.RC = customDuctInsert.RC;
+                                element.LocRes = customDuctInsert.LocRes;
+                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                    }
+                }
+            }
+
+            //Финальный пересчет
+            foreach (var branch in Collection)
+            {
+                branch.PBTot = 0;
+
+                for (int i = 1; i < branch.Elements.Count; i++)
+                {
+
+                    branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i - 1].Ptot;
+
+                }
+
+            }
+
+
         }
+
+      
         public CustomBranch SelectMainBranch()
         {
             List<CustomBranch> branches = new List<CustomBranch>();
@@ -337,22 +406,23 @@ namespace AirTreeV1
             Collection = newCustomCollection;
         }
 
-
+        
 
         public string GetContent()
         {
             
             var csvcontent = new StringBuilder();
-            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;IA;IQ;IC;O1A;O1Q;O1C;O2A;O2Q;O2C;RA;RQ;RC;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
 
             foreach (var branch in Collection)
             {
                 
                 foreach (var element in branch.Elements)
                 {
-                   
+
                     string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
-                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes,2)};{Math.Round(element.PDyn,2)};{Math.Round(element.Ptot,2)};" +
+                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.IA};{element.IQ};{element.IC};{element.O1A};{element.O1Q};{element.O1C};{element.O2A};{element.O2Q};{element.O2C};{element.RA};{element.RQ};{element.RC};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
+                        
                          $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
                     csvcontent.AppendLine(a);
                 }

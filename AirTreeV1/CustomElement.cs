@@ -108,6 +108,20 @@ namespace AirTreeV1
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
         public bool MainTrack { get; set; }
+        public double IA { get; set; }
+        public double IQ { get; set; }
+        public double IC { get; set; }
+        public double O1A { get; set; }
+        public double O1Q { get; set; }
+        public double O1C { get; set; }
+        public double O2A { get; set; }
+        public double O2Q { get; set; }
+        public double O2C { get; set; }
+        public double RA { get; set; }
+        public double RQ { get; set; }
+        public double RC { get; set; }
+
+
         private string GetValue(string primaryvolume)
         {
             // Используем регулярное выражение, чтобы найти и вернуть только числовую часть

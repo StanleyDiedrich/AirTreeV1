@@ -272,8 +272,8 @@ namespace AirTreeV1
                     Angle = 90;
                 }
 
-                Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
-                Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble();
+                Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
+                Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
                 Velocity = OutletConnector.Velocity;
                 ElbowData elbowdata = new ElbowData(ProfileType);
                 if (ProfileType == ConnectorProfileType.Rectangular)

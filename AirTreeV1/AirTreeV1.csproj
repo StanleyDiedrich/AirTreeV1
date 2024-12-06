@@ -61,6 +61,7 @@
     <Compile Include="CustomCollection.cs" />
     <Compile Include="CustomConnector.cs" />
     <Compile Include="CustomDuctInsert.cs" />
+    <Compile Include="CustomDuctInsert2.cs" />
     <Compile Include="CustomElbow.cs" />
     <Compile Include="CustomElement.cs" />
     <Compile Include="CustomTee.cs" />

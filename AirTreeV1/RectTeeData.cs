@@ -127,7 +127,7 @@ namespace AirTreeV1
             }
 
             // Поиск индексов для angle
-            for (int j = 1; j <= Values.GetLength(1); j++)
+            for (int j = 1; j < Values.GetLength(1); j++)
             {
                 if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
                 {
