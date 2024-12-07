@@ -73,14 +73,41 @@ namespace AirTreeV1
                 //ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in (NextElement as MEPCurve).ConnectorManager.Connectors)
                 {
-                    ConnectorSet nextconnectors = connector.AllRefs;
+                    CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
+                    SystemType = connector.DuctSystemType;
+                    if (SystemType == DuctSystemType.SupplyAir)
+                    {
+                        custom.Flow = connector.Flow * 101.947308132875143184421534937;
+                        custom.Domain = Domain.DomainHvac;
+                        //custom.DirectionType = FlowDirectionType.Out;
+                        custom.OwnerId = connector.Owner.Id;
+                        custom.ConnectorType = connector.ConnectorType;
+                        custom.Shape = connector.Shape;
+                        if (custom.Shape == ConnectorProfileType.Round)
+                        {
+                            ProfileType = ConnectorProfileType.Round;
+                            custom.Diameter = connector.Radius * 2 * 304.8 / 1000;
+                            custom.EquiDiameter = custom.Diameter;
+                            custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
 
-                    if (connector.Domain != Domain.DomainHvac)
-                    {
-                        continue;
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
+                            ProfileType = ConnectorProfileType.Rectangular;
+                            custom.Width = connector.Width * 304.8 / 1000;
+                            custom.Height = connector.Height * 304.8 / 1000;
+                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+                        }
+                        custom.Coefficient = connector.Coefficient;
+                        custom.Origin = connector.Origin;
+                        custom.PressureDrop = connector.PressureDrop;
+
+
+                        ConnectorSet nextconnectors = connector.AllRefs;
+
                         foreach (Connector connect in nextconnectors)
                         {
                             if (connect.Domain != Domain.DomainHvac)
@@ -89,69 +116,26 @@ namespace AirTreeV1
                             }
                             else
                             {
-                                CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
-
-
 
                                 if (Document.GetElement(connect.Owner.Id) is MechanicalSystem || Document.GetElement(connect.Owner.Id) is DuctInsulation)
                                 {
                                     continue;
                                 }
-
-                                /*else if (connect.Owner.Id == ElementId)
-                                {
-                                    continue; // Игнорируем те же элементы
-                                }*/
                                 else if (connect.Owner.Id == NextElementId)
                                 {
                                     continue;
                                 }
-
-
                                 if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
                                 {
-                                    SystemType = connect.DuctSystemType;
-                                    custom.Shape = connect.Shape;
                                     if (SystemType == DuctSystemType.SupplyAir)
                                     {
 
                                         if (connect.Direction == FlowDirectionType.In || connect.Direction == FlowDirectionType.Bidirectional)
                                         {
-                                            custom.Flow = connect.Flow * 101.947308132875143184421534937;
-                                            custom.Domain = Domain.DomainHvac;
+
                                             //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
                                             
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
-                                            if(connect.Direction == FlowDirectionType.Bidirectional)
-                                            {
-                                                custom.ConnectorType = ConnectorType.Curve;
-                                            }
-                                            else
-                                            {
-                                                custom.ConnectorType = connect.ConnectorType;
-                                            }
-                                           // custom.ConnectorType = connect.ConnectorType;
                                             OutletConnector = custom;
                                             OutletConnector.AOutlet = custom.Area;
                                             OutletConnectors.Add(OutletConnector);
@@ -159,113 +143,102 @@ namespace AirTreeV1
                                         }
                                         if (connect.Direction == FlowDirectionType.Out)
                                         {
-                                            custom.Flow = connect.Flow * 101.947308132875143184421534937;
-                                            custom.Domain = Domain.DomainHvac;
-                                            //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
-                                            custom.ConnectorType = connect.ConnectorType;
-                                           
                                             InletConnector = custom;
                                             InletConnector.AInlet = custom.Area;
                                         }
 
                                     }
-                                    else if (SystemType == DuctSystemType.ExhaustAir)
-                                    {
-                                        if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.Bidirectional)
-                                        {
-                                            custom.Flow = connect.Flow * 101.947308132875143184421534937;
-                                            custom.Domain = Domain.DomainHvac;
-                                            //custom.DirectionType = FlowDirectionType.Out;
-                                            custom.NextOwnerId = connect.Owner.Id;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
 
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
-                                            custom.ConnectorType = connect.ConnectorType;
-                                            OutletConnector = custom;
-                                            OutletConnector.AOutlet = custom.Area;
-                                            OutletConnectors.Add(OutletConnector);
-                                            
-
-                                        }
-                                        if (connect.Direction == FlowDirectionType.In)
-                                        {
-                                            custom.Flow = connect.Flow * 101.947308132875143184421534937;
-                                            custom.Domain = Domain.DomainHvac;
-                                            //custom.DirectionType = FlowDirectionType.Out;
-                                            custom.NextOwnerId = connect.Owner.Id;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
-                                            custom.ConnectorType = connect.ConnectorType;
-                                            InletConnector = custom;
-                                            InletConnector.AInlet = custom.Area;
-
-                                        }
-                                        //SecondaryConnectors.Add(custom);
-                                    }
                                 }
                             }
                         }
                     }
+                    else if (SystemType == DuctSystemType.ExhaustAir)
+                    {
+                        custom.Flow = connector.Flow * 101.947308132875143184421534937;
+                        custom.Domain = Domain.DomainHvac;
+                        //custom.DirectionType = FlowDirectionType.Out;
+                        custom.OwnerId = connector.Owner.Id;
+                        custom.ConnectorType = connector.ConnectorType;
+                        custom.Shape = connector.Shape;
+                        if (custom.Shape == ConnectorProfileType.Round)
+                        {
+                            ProfileType = ConnectorProfileType.Round;
+                            custom.Diameter = connector.Radius * 2 * 304.8 / 1000;
+                            custom.EquiDiameter = custom.Diameter;
+                            custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+
+                        }
+                        else
+                        {
+                            ProfileType = ConnectorProfileType.Rectangular;
+                            custom.Width = connector.Width * 304.8 / 1000;
+                            custom.Height = connector.Height * 304.8 / 1000;
+                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+                        }
+                        custom.Coefficient = connector.Coefficient;
+                        custom.Origin = connector.Origin;
+                        custom.PressureDrop = connector.PressureDrop;
+
+
+                        ConnectorSet nextconnectors = connector.AllRefs;
+
+                        foreach (Connector connect in nextconnectors)
+                        {
+                            if (connect.Domain != Domain.DomainHvac)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+
+                                if (Document.GetElement(connect.Owner.Id) is MechanicalSystem || Document.GetElement(connect.Owner.Id) is DuctInsulation)
+                                {
+                                    continue;
+                                }
+                                else if (connect.Owner.Id == NextElementId)
+                                {
+                                    continue;
+                                }
+                                if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
+                                {
+                                    if (SystemType == DuctSystemType.ExhaustAir)
+                                    {
+
+                                        if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.Bidirectional)
+                                        {
+
+                                            //custom.DirectionType = FlowDirectionType.Out;
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                           
+                                            OutletConnector = custom;
+                                            OutletConnector.AOutlet = custom.Area;
+                                            OutletConnectors.Add(OutletConnector);
+
+                                        }
+                                        if (connect.Direction == FlowDirectionType.In)
+                                        {
+                                            custom.NextOwnerId = connect.Owner.Id;
+                                            InletConnector = custom;
+                                            InletConnector.AInlet = custom.Area;
+                                        }
+
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+
+
                 }
+            
+
+           
 
 
 
@@ -274,6 +247,8 @@ namespace AirTreeV1
 
                 double Ptot1 = 0;
                 double Ptot2 = 0;
+                OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
+                OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
                 try
                 {
                     CustomElement neighbour1 = GetNeighbour(OutletConnector1.NextOwnerId, collection);
@@ -287,33 +262,9 @@ namespace AirTreeV1
 
                 }
                   
-                    OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
-                    OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
-                   
-                    //ElementId neigbourh1 = OutletConnector1.
                     
                    
-                   
-                    /*foreach (var branch in collection)
-                    {
-                        foreach (var element1 in branch.Elements)
-                        {
-                            if (element1.ElementId == OutletConnector1.NextOwnerId)
-                            {
-                                neighbour1 = element1;
-                            }
-                        }
-                    }
-                    foreach (var branch in collection)
-                    {
-                        foreach (var element2 in branch.Elements)
-                        {
-                            if (element2.ElementId == OutletConnector2.NextOwnerId)
-                            {
-                                neighbour2 = element2;
-                            }
-                        }
-                    }*/
+                    
                     
                
                 
