@@ -5,16 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB;
-using System.Runtime.Remoting.Contexts;
-using System.Security.Cryptography.X509Certificates;
-using Autodesk.Revit.DB.Visual;
-using System.Windows.Controls;
-using Autodesk.Revit.UI;
-using System.Xml.Linq;
 
 namespace AirTreeV1
 {
-    public class CustomDuctInsert2
+    public class CustomTee2
     {
         public Document Document { get; set; }
         public CustomElement Element { get; set; }
@@ -57,21 +51,19 @@ namespace AirTreeV1
         public double RA { get; set; }
         public double RQ { get; set; }
         public double RC { get; set; }
-
-        public CustomDuctInsert2(Autodesk.Revit.DB.Document document, CustomElement element, List<CustomBranch> collection)
+        public CustomTee2(Autodesk.Revit.DB.Document document, CustomElement element, List<CustomBranch> collection)
         {
             Document = document;
             Element = element;
             ElementId = element.ElementId;
+            SystemType = element.SystemType;
+            LocPoint = ((element.Element.Location) as LocationPoint).Point;
 
-            NextElementId = element.NextElementId;
-            Element NextElement = document.GetElement(element.NextElementId);
-
-            if (NextElement is Duct)
+            if (Element.Element is FamilyInstance)
             {
 
                 //ModelVelocity = GetValue(primaryvelocity);
-                foreach (Connector connector in (NextElement as MEPCurve).ConnectorManager.Connectors)
+                foreach (Connector connector in Element.OwnConnectors)
                 {
                     CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
                     SystemType = connector.DuctSystemType;
@@ -81,7 +73,30 @@ namespace AirTreeV1
                         custom.Domain = Domain.DomainHvac;
                         //custom.DirectionType = FlowDirectionType.Out;
                         custom.OwnerId = connector.Owner.Id;
-                        
+                        custom.ConnectorType = connector.ConnectorType;
+                        custom.Shape = connector.Shape;
+                        custom.Origin = connector.Origin;
+                        if (custom.Shape == ConnectorProfileType.Round)
+                        {
+                            ProfileType = ConnectorProfileType.Round;
+                            custom.Diameter = connector.Radius * 2 * 304.8 / 1000;
+                            custom.EquiDiameter = custom.Diameter;
+                            custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+
+                        }
+                        else
+                        {
+                            ProfileType = ConnectorProfileType.Rectangular;
+                            custom.Width = connector.Width * 304.8 / 1000;
+                            custom.Height = connector.Height * 304.8 / 1000;
+                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+                        }
+                        custom.Coefficient = connector.Coefficient;
+                        custom.Origin = connector.Origin;
+                        custom.PressureDrop = connector.PressureDrop;
 
 
                         ConnectorSet nextconnectors = connector.AllRefs;
@@ -113,29 +128,7 @@ namespace AirTreeV1
 
                                             //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            custom.ConnectorType = connector.ConnectorType;
-                                            custom.Shape = connector.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
 
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
                                             OutletConnector = custom;
                                             OutletConnector.AOutlet = custom.Area;
                                             OutletConnectors.Add(OutletConnector);
@@ -144,29 +137,6 @@ namespace AirTreeV1
                                         if (connect.Direction == FlowDirectionType.Out)
                                         {
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            custom.ConnectorType = connector.ConnectorType;
-                                            custom.Shape = connect.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
                                             InletConnector = custom;
                                             InletConnector.AInlet = custom.Area;
                                         }
@@ -184,7 +154,29 @@ namespace AirTreeV1
                         //custom.DirectionType = FlowDirectionType.Out;
                         custom.OwnerId = connector.Owner.Id;
                         custom.ConnectorType = connector.ConnectorType;
-                        
+                        custom.Shape = connector.Shape;
+                        custom.Origin = connector.Origin;
+                        if (custom.Shape == ConnectorProfileType.Round)
+                        {
+                            ProfileType = ConnectorProfileType.Round;
+                            custom.Diameter = connector.Radius * 2 * 304.8 / 1000;
+                            custom.EquiDiameter = custom.Diameter;
+                            custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+
+                        }
+                        else
+                        {
+                            ProfileType = ConnectorProfileType.Rectangular;
+                            custom.Width = connector.Width * 304.8 / 1000;
+                            custom.Height = connector.Height * 304.8 / 1000;
+                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            custom.Velocity = custom.Flow / (3600 * custom.Area);
+                        }
+                        custom.Coefficient = connector.Coefficient;
+                        custom.Origin = connector.Origin;
+                        custom.PressureDrop = connector.PressureDrop;
 
 
                         ConnectorSet nextconnectors = connector.AllRefs;
@@ -216,28 +208,7 @@ namespace AirTreeV1
 
                                             //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            custom.Shape = connector.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
 
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
                                             OutletConnector = custom;
                                             OutletConnector.AOutlet = custom.Area;
                                             OutletConnectors.Add(OutletConnector);
@@ -246,28 +217,6 @@ namespace AirTreeV1
                                         if (connect.Direction == FlowDirectionType.In)
                                         {
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            custom.Shape = connector.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
                                             InletConnector = custom;
                                             InletConnector.AInlet = custom.Area;
                                         }
@@ -284,14 +233,9 @@ namespace AirTreeV1
 
 
 
-
-
-
-
-                //OutletConnector1 = OutletConnectors.Where(x => x.ConnectorType == ConnectorType.End).FirstOrDefault();
-
                 double Ptot1 = 0;
                 double Ptot2 = 0;
+               
                 OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
                 OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
                 try
@@ -301,23 +245,12 @@ namespace AirTreeV1
                     Ptot1 = neighbour1.Ptot;
                     Ptot2 = neighbour2.Ptot;
                 }
-                
+
                 catch
                 {
 
                 }
-                  
-                    
-                   
-                    
-                    
-               
-                
-
-
-
                 CustomConnector selectedConnector;
-                //CustomElement selectedNeigbour;
                 if (Ptot1 > Ptot2)
                 {
                     selectedConnector = OutletConnector1;
@@ -327,6 +260,11 @@ namespace AirTreeV1
                     selectedConnector = OutletConnector2;
                 }
 
+                InletConnector.Vector = GetVector(InletConnector.Origin, LocPoint);
+                selectedConnector.Vector = GetVector(selectedConnector.Origin, LocPoint);
+
+                bool isStraight = StraightTee(InletConnector, selectedConnector);
+
                 double relA;
                 double relQ;
                 double relC;
@@ -335,7 +273,7 @@ namespace AirTreeV1
                 {
                     if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight ==true)
                         {
                             relA = selectedConnector.Area / InletConnector.Area;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -346,9 +284,9 @@ namespace AirTreeV1
                             RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                               /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
-                                LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                element.DetailType = CustomElement.Detail.RectTeeStraight;
+                                /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
                         }
                         else
@@ -359,13 +297,11 @@ namespace AirTreeV1
                             RA = relA;
                             RQ = relQ;
                             RC = relC;
-                            if (relC>2)
-                            { relC = 2; }
                             RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
+                                element.DetailType = CustomElement.Detail.RectTeeBranch;
+                                /*LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
                                 LocRes = roundTeeData.Interpolation2(relA, relC);
                             }
                         }
@@ -373,7 +309,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -384,9 +320,8 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
-                               
                             }
                         }
                         else
@@ -401,7 +336,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -409,7 +344,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -420,7 +355,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -436,7 +371,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -444,7 +379,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -455,7 +390,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -471,7 +406,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -479,7 +414,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -490,7 +425,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -506,7 +441,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -515,7 +450,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -526,7 +461,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -542,7 +477,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -550,7 +485,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Все коннекторы круглые
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             // Тройник прямой
                             relA = OutletConnector1.AOutlet / InletConnector.AInlet;
@@ -558,7 +493,7 @@ namespace AirTreeV1
                             RA = relA;
                             RQ = relQ;
                             RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                            element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                            element.DetailType = CustomElement.Detail.RoundTeeStraight;
                             LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                         }
                         else
@@ -569,7 +504,7 @@ namespace AirTreeV1
                             RA = relA;
                             RQ = relQ;
                             RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                            element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                            element.DetailType = CustomElement.Detail.RoundTeeBranch;
                             LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                         }
 
@@ -578,7 +513,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Все коннекторы по одному случаю смешанные (прямоугольный — круглый — круглый)
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -616,7 +551,7 @@ namespace AirTreeV1
                 {
                     if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.Area / InletConnector.Area;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -627,7 +562,7 @@ namespace AirTreeV1
                             RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectTeeStraight;
                                 LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                             }
                         }
@@ -642,7 +577,7 @@ namespace AirTreeV1
                             RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectTeeBranch;
                                 LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                             }
                         }
@@ -650,7 +585,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -661,7 +596,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -677,7 +612,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -685,7 +620,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -696,7 +631,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -712,7 +647,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -720,7 +655,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -731,7 +666,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -747,7 +682,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -755,7 +690,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -766,7 +701,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -782,7 +717,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -791,7 +726,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Смешанный случай
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -802,7 +737,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -818,7 +753,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -826,7 +761,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Все коннекторы круглые
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             // Тройник прямой
                             relA = OutletConnector1.AOutlet / InletConnector.AInlet;
@@ -845,7 +780,7 @@ namespace AirTreeV1
                             RA = relA;
                             RQ = relQ;
                             RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                            element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                            element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                             LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                         }
 
@@ -854,7 +789,7 @@ namespace AirTreeV1
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Round)
                     {
                         // Все коннекторы по одному случаю смешанные (прямоугольный — круглый — круглый)
-                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        if (isStraight == true)
                         {
                             relA = selectedConnector.AOutlet / InletConnector.AInlet;
                             relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -865,7 +800,7 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectTeeStraight;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
@@ -881,27 +816,83 @@ namespace AirTreeV1
                             MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
-                                element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                element.DetailType = CustomElement.Detail.RectTeeBranch;
                                 LocRes = rectTeeData.Interpolation(100000);
                             }
                         }
                     }
                 }
 
-                IA = InletConnector.AInlet;
-                IQ = InletConnector.Flow;
+
+
+
+
+
+                IA = InletConnector.AInlet * 0.09;
+                IQ = InletConnector.Flow * 102;
                 IC = InletConnector.Velocity;
-                O1A = OutletConnector1.AInlet;
-                O1Q = OutletConnector1.Flow;
+                O1A = OutletConnector1.AInlet * 0.09;
+                O1Q = OutletConnector1.Flow * 102;
                 O1C = OutletConnector1.Velocity;
-                O2A = OutletConnector2.AInlet;
-                O2Q = OutletConnector2.Flow;
+                O2A = OutletConnector2.AInlet * 0.09;
+                O2Q = OutletConnector2.Flow * 102;
                 O2C = OutletConnector2.Velocity;
+                //Допиши сюда что может быть на отвод
+                
+                
+
                 Velocity = InletConnector.Velocity;
 
+            }
 
+
+        }
+        private XYZ GetVector(XYZ origin, XYZ locPoint)
+        {
+            XYZ result = null;
+            double xorigin = origin.X;
+            double yorigin = origin.Y;
+            double zorigin = origin.Z;
+            double xlocpoint = locPoint.X;
+            double ylocpoint = locPoint.Y;
+            double zlocpoint = locPoint.Z;
+
+            result = new XYZ(xorigin - xlocpoint, yorigin - ylocpoint, zorigin - zlocpoint);
+            return result;
+
+        }
+        public bool StraightTee(CustomConnector inlet, CustomConnector selectedConnector)
+        {
+            bool isStraight = true;
+            XYZ inletvector = inlet.Vector;
+            XYZ outletvector = selectedConnector.Vector;
+
+            double ivX = inletvector.X;
+            double ivY = inletvector.Y;
+            double ivZ = inletvector.Z;
+            double ovX = outletvector.X;
+            double ovY = outletvector.Y;
+            double ovZ = outletvector.Z;
+
+            double scalar = ivX * ovX + ivY * ovY + ivZ * ovZ;
+            double vectorA = Math.Sqrt(Math.Pow(ivX, 2) + Math.Pow(ivY, 2) + Math.Pow(ivZ, 2));
+            double vectorB = Math.Sqrt(Math.Pow(ovX, 2) + Math.Pow(ovY, 2) + Math.Pow(ovZ, 2));
+
+            double radian = scalar / (vectorA * vectorB);
+            double angle = Math.Round(Math.Acos(radian) * 57.3, 0);
+            if (angle == 180 || angle ==0)
+            {
+
+                isStraight = true;
+                return isStraight;
             }
+            else
+            {
+                isStraight = false;
+                return isStraight;
             }
+            return isStraight;
+        }
 
         private CustomElement GetNeighbour(ElementId neighbourg, List<CustomBranch> collection)
         {
@@ -917,9 +908,5 @@ namespace AirTreeV1
             }
             return null; // если не найден, просто возвращаем null
         }
-
     }
-
-    
 }
-

@@ -142,7 +142,7 @@ namespace AirTreeV1
                                     {
                                         var element2 = element;
                                     }
-                                    CustomTee customTee = new CustomTee(Document, element);
+                                   /* CustomTee customTee = new CustomTee(Document, element);
                                     element.IA = customTee.IA;
                                     element.IQ = customTee.IQ;
                                     element.IC = customTee.IC;
@@ -156,7 +156,7 @@ namespace AirTreeV1
                                     element.RC = customTee.RC;
 
                                     element.LocRes = customTee.LocRes;
-                                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;*/
                                     branch.Pressure += 7;
                                 }
                                 catch
@@ -315,6 +315,31 @@ namespace AirTreeV1
                                 element.RC = customDuctInsert.RC;
                                 element.LocRes = customDuctInsert.LocRes;
                                 element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                    }
+                }
+                foreach (var element in branch.Elements)
+                {
+                    if (element.DetailType == CustomElement.Detail.Tee)
+                    {
+                        if (element.ElementId.IntegerValue == 6856285)
+
+                        {
+                            var element2 = element;
+                        }
+                        CustomTee2 customDuctInsert = new CustomTee2(Document, element, Collection);
+                        element.IA = customDuctInsert.IA;
+                        element.IQ = customDuctInsert.IQ;
+                        element.IC = customDuctInsert.IC;
+                        element.O1A = customDuctInsert.O1A;
+                        element.O1Q = customDuctInsert.O1Q;
+                        element.O1C = customDuctInsert.O1C;
+                        element.O2A = customDuctInsert.O2A;
+                        element.O2Q = customDuctInsert.O2Q;
+                        element.RA = customDuctInsert.RA;
+                        element.RQ = customDuctInsert.RQ;
+                        element.RC = customDuctInsert.RC;
+                        element.LocRes = customDuctInsert.LocRes;
+                        element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
                     }
                 }
             }
