@@ -90,8 +90,9 @@ namespace AirTreeV1
                             ProfileType = ConnectorProfileType.Rectangular;
                             custom.Width = connector.Width * 304.8 / 1000;
                             custom.Height = connector.Height * 304.8 / 1000;
-                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            //custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                            //custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            custom.Area = custom.Width * custom.Height;
                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                         }
                         custom.Coefficient = connector.Coefficient;
@@ -170,8 +171,9 @@ namespace AirTreeV1
                             ProfileType = ConnectorProfileType.Rectangular;
                             custom.Width = connector.Width * 304.8 / 1000;
                             custom.Height = connector.Height * 304.8 / 1000;
-                            custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
+                            /*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                            custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                            custom.Area = custom.Width * custom.Height;
                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                         }
                         custom.Coefficient = connector.Coefficient;
