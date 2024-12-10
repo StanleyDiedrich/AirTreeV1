@@ -286,7 +286,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width*304.8/1000;
                                                 custom.Height = connect.Height*304.8/1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                //custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                             }
@@ -319,7 +319,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                //custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                             }
@@ -388,7 +388,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                //custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                             }
