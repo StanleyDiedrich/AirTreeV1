@@ -114,7 +114,30 @@ namespace AirTreeV1
                                             //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
                                             custom.ConnectorType = connector.ConnectorType;
-                                            custom.Shape = connector.Shape;
+                                            try
+                                            {
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Rectangular;
+                                            }
+                                            catch
+                                            {
+                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
+                                                custom.EquiDiameter = custom.Diameter;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Round;
+                                            }
+
+
+                                            
+                                           /* custom.Shape = connector.Shape;
                                             if (custom.Shape == ConnectorProfileType.Round)
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
@@ -129,11 +152,11 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                /*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                *//*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
+                                            }*/
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -146,7 +169,35 @@ namespace AirTreeV1
                                         {
                                             custom.NextOwnerId = connect.Owner.Id;
                                             custom.ConnectorType = connector.ConnectorType;
-                                            custom.Shape = connect.Shape;
+
+                                            try
+                                            {
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Rectangular;
+                                            }
+                                            catch
+                                            {
+                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
+                                                custom.EquiDiameter = custom.Diameter;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Round;
+                                            }
+
+
+
+
+
+
+
+                                            /*custom.Shape = connect.Shape;
                                             if (custom.Shape == ConnectorProfileType.Round)
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
@@ -161,11 +212,11 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                *//* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
+                                            }*/
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -218,8 +269,35 @@ namespace AirTreeV1
 
                                             //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            custom.Shape = connector.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
+                                            custom.ConnectorType = connector.ConnectorType;
+                                            //custom.Shape = connector.Shape;
+                                            //bool isRound = false;
+
+                                            try
+                                            {
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Rectangular;
+                                            }
+                                            catch
+                                            {
+                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
+                                                custom.EquiDiameter = custom.Diameter;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Round;
+                                            }
+
+
+
+
+                                           /* if (custom.Shape == ConnectorProfileType.Round)
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
@@ -233,11 +311,11 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                *//* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
+                                            }*/
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -249,7 +327,30 @@ namespace AirTreeV1
                                         if (connect.Direction == FlowDirectionType.In)
                                         {
                                             custom.NextOwnerId = connect.Owner.Id;
-                                            custom.Shape = connector.Shape;
+                                            custom.ConnectorType = connector.ConnectorType;
+
+                                            try
+                                            {
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                custom.Area = custom.Width * custom.Height;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Rectangular;
+                                            }
+                                            catch
+                                            {
+                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
+                                                custom.EquiDiameter = custom.Diameter;
+                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                custom.Shape = ConnectorProfileType.Round;
+                                            }
+
+                                            /*custom.Shape = connector.Shape;
                                             if (custom.Shape == ConnectorProfileType.Round)
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
@@ -264,11 +365,11 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                /*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                                *//*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
+                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }
+                                            }*/
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -632,7 +733,7 @@ namespace AirTreeV1
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
                                 element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                             }
                         }
                         else
@@ -647,7 +748,7 @@ namespace AirTreeV1
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
                                 element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2( relA, relC);
                             }
                         }
                     }

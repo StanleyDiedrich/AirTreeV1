@@ -119,7 +119,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 6856896)
+                                    if (element.ElementId.IntegerValue == 8058600)
                                     {
                                         var element2 = element;
                                     }
@@ -293,54 +293,72 @@ namespace AirTreeV1
             {
                 foreach (var element in branch.Elements)
                 {
-                    if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                    try
                     {
-                         if (element.ElementId.IntegerValue == 6448528)
-
+                        if (element.DetailType == CustomElement.Detail.TapAdjustable)
                         {
-                                    var element2 = element;
-                                }
+                            if (element.ElementId.IntegerValue == 8061401)
 
-                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection);
-                                element.IA = customDuctInsert.IA;
-                                element.IQ = customDuctInsert.IQ;
-                                element.IC = customDuctInsert.IC;
-                                element.O1A = customDuctInsert.O1A;
-                                element.O1Q = customDuctInsert.O1Q;
-                                element.O1C = customDuctInsert.O1C;
-                                element.O2A = customDuctInsert.O2A;
-                                element.O2Q = customDuctInsert.O2Q;
-                                element.RA = customDuctInsert.RA;
-                                element.RQ = customDuctInsert.RQ;
-                                element.RC = customDuctInsert.RC;
-                                element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                            {
+                                var element2 = element;
+                            }
+
+                            CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection);
+                            element.IA = customDuctInsert.IA;
+                            element.IQ = customDuctInsert.IQ;
+                            element.IC = customDuctInsert.IC;
+                            element.O1A = customDuctInsert.O1A;
+                            element.O1Q = customDuctInsert.O1Q;
+                            element.O1C = customDuctInsert.O1C;
+                            element.O2A = customDuctInsert.O2A;
+                            element.O2Q = customDuctInsert.O2Q;
+                            element.RA = customDuctInsert.RA;
+                            element.RQ = customDuctInsert.RQ;
+                            element.RC = customDuctInsert.RC;
+                            element.LocRes = customDuctInsert.LocRes;
+                            element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                        }
                     }
+                    catch
+                    {
+                        TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        ActiveElement = element;
+                    }
+                    
                 }
                 foreach (var element in branch.Elements)
                 {
-                    if (element.DetailType == CustomElement.Detail.Tee)
+                    try
                     {
-                        if (element.ElementId.IntegerValue == 6856285)
-
+                        if (element.DetailType == CustomElement.Detail.Tee)
                         {
-                            var element2 = element;
+                            if (element.ElementId.IntegerValue == 8057936)
+
+                            {
+                                var element2 = element;
+                            }
+                            CustomTee2 customDuctInsert = new CustomTee2(Document, element, Collection);
+                            element.IA = customDuctInsert.IA;
+                            element.IQ = customDuctInsert.IQ;
+                            element.IC = customDuctInsert.IC;
+                            element.O1A = customDuctInsert.O1A;
+                            element.O1Q = customDuctInsert.O1Q;
+                            element.O1C = customDuctInsert.O1C;
+                            element.O2A = customDuctInsert.O2A;
+                            element.O2Q = customDuctInsert.O2Q;
+                            element.RA = customDuctInsert.RA;
+                            element.RQ = customDuctInsert.RQ;
+                            element.RC = customDuctInsert.RC;
+                            element.LocRes = customDuctInsert.LocRes;
+                            element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
                         }
-                        CustomTee2 customDuctInsert = new CustomTee2(Document, element, Collection);
-                        element.IA = customDuctInsert.IA;
-                        element.IQ = customDuctInsert.IQ;
-                        element.IC = customDuctInsert.IC;
-                        element.O1A = customDuctInsert.O1A;
-                        element.O1Q = customDuctInsert.O1Q;
-                        element.O1C = customDuctInsert.O1C;
-                        element.O2A = customDuctInsert.O2A;
-                        element.O2Q = customDuctInsert.O2Q;
-                        element.RA = customDuctInsert.RA;
-                        element.RQ = customDuctInsert.RQ;
-                        element.RC = customDuctInsert.RC;
-                        element.LocRes = customDuctInsert.LocRes;
-                        element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
                     }
+                    catch
+                    {
+                        TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        ActiveElement = element;
+                    }
+                    
                 }
             }
 

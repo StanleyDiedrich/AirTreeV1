@@ -565,7 +565,7 @@ namespace AirTreeV1
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
                                 element.DetailType = CustomElement.Detail.RectTeeStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                             }
                         }
                         else
@@ -580,7 +580,7 @@ namespace AirTreeV1
                             if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                             {
                                 element.DetailType = CustomElement.Detail.RectTeeBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2( relA, relC);
                             }
                         }
                     }

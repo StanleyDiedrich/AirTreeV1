@@ -141,14 +141,14 @@ namespace AirTreeV1
                         Coeff = 0.55;
                     }
                     double cs = inletconnector.Velocity;
-                    if (cs<6)
+                   /* if (cs<6)
                     {
                         relA = 0;
                     }
                     else if (cs>6)
                     {
                         relA = 6;
-                    }
+                    }*/
                     Values = new double[,]
                     {
                         /*{ 0, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 },

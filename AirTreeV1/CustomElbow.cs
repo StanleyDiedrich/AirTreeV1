@@ -101,7 +101,7 @@ namespace AirTreeV1
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
                                                     custom.Velocity = custom.Flow /( custom.Area  *3600);
                                                 }
                                                 catch { }
@@ -140,7 +140,7 @@ namespace AirTreeV1
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
@@ -184,7 +184,7 @@ namespace AirTreeV1
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
@@ -222,7 +222,7 @@ namespace AirTreeV1
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble();
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
