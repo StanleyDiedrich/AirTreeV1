@@ -397,20 +397,44 @@ namespace AirTreeV1
 
                 double Ptot1 = 0;
                 double Ptot2 = 0;
+                CustomConnector selectedConnector=null;
                 OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
                 OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
-                try
-                {
+                
+                   
                     CustomElement neighbour1 = GetNeighbour(OutletConnector1.NextOwnerId, collection);
                     CustomElement neighbour2 = GetNeighbour(OutletConnector2.NextOwnerId, collection);
-                    Ptot1 = neighbour1.Ptot;
-                    Ptot2 = neighbour2.Ptot;
-                }
-                
-                catch
-                {
 
-                }
+                    if (neighbour1 !=null && neighbour2!=null)
+                    {
+                        Ptot1 = neighbour1.Ptot;
+                        Ptot2 = neighbour2.Ptot;
+
+                        if (Ptot1>Ptot2)
+                        {
+                            selectedConnector = OutletConnector1;
+                        }
+                        else
+                        {
+                            selectedConnector = OutletConnector2;
+                        }
+                    }
+                    else  if (neighbour1!=null && neighbour2 ==null)
+                    {
+                        selectedConnector = OutletConnector1;
+                    }
+                    else if (neighbour1==null && neighbour2 !=null)
+                    {
+                        selectedConnector = OutletConnector2;
+                    }
+
+                   /* Ptot1 = neighbour1.Ptot;
+                    Ptot2 = neighbour2.Ptot;*/
+
+                    
+                
+                
+               
                   
                     
                    
@@ -421,16 +445,17 @@ namespace AirTreeV1
 
 
 
-                CustomConnector selectedConnector;
+                
                 //CustomElement selectedNeigbour;
-                if (Ptot1 > Ptot2)
+                
+                /*if (Ptot1 > Ptot2)
                 {
                     selectedConnector = OutletConnector1;
                 }
                 else
                 {
                     selectedConnector = OutletConnector2;
-                }
+                }*/
 
                 double relA;
                 double relQ;

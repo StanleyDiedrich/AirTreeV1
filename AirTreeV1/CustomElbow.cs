@@ -296,10 +296,16 @@ namespace AirTreeV1
                     }
                     else
                     {
-                        Width = OutletConnector.Height;
-                        Height = OutletConnector.Width;
+                        Height = OutletConnector.Height;
+                         Width = OutletConnector.Width;
                         hw = Height / Width;
                         rw = Radius / Width;
+
+                        // Исправлено по замечанию Ивана Салмина от 13.12.24//
+                        /*Width = OutletConnector.Height;
+                        Height = OutletConnector.Width;
+                        hw = Height / Width;
+                        rw = Radius / Width;*/
                     }
 
 

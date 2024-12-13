@@ -119,7 +119,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 8058600)
+                                    if (element.ElementId.IntegerValue == 8719436)
                                     {
                                         var element2 = element;
                                     }
@@ -297,7 +297,7 @@ namespace AirTreeV1
                     {
                         if (element.DetailType == CustomElement.Detail.TapAdjustable)
                         {
-                            if (element.ElementId.IntegerValue == 8061401)
+                            if (element.ElementId.IntegerValue == 8712060)
 
                             {
                                 var element2 = element;
