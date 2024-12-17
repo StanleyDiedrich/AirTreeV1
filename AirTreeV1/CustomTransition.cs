@@ -415,6 +415,20 @@ namespace AirTreeV1
                         {
                             element.DetailType = CustomElement.Detail.RectExpansion;
                         }
+                        else if (RelA==1)
+                        {
+                            LocRes = 0.8;
+                            if (InletConnector.Velocity > OutletConnector.Velocity)
+                            {
+                                Velocity = InletConnector.Velocity;
+                            }
+                            else
+                            {
+                                Velocity = OutletConnector.Velocity;
+                            }
+                            element.DetailType = CustomElement.Detail.RectTransition;
+                            return;
+                        }
                         else
                         {
                             element.DetailType = CustomElement.Detail.RectContraction;
@@ -431,6 +445,21 @@ namespace AirTreeV1
                         if (RelA > 1)
                         {
                             element.DetailType = CustomElement.Detail.RectExpansion;
+                        }
+                        else if (RelA == 1)
+                        {
+                            LocRes = 0.8;
+                            if (InletConnector.Velocity > OutletConnector.Velocity)
+                            {
+                                Velocity = InletConnector.Velocity;
+                            }
+                            else
+                            {
+                                Velocity = OutletConnector.Velocity;
+                            }
+                            
+                            element.DetailType = CustomElement.Detail.RectTransition;
+                            return;
                         }
                         else
                         {
