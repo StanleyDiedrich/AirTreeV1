@@ -207,7 +207,7 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
-                                if (element.ElementId.IntegerValue == 6448371)
+                                if (element.ElementId.IntegerValue == 8309046)
                                 {
                                     var element2 = element;
                                 }
@@ -220,8 +220,11 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
+                                    CustomTransition customTransition = new CustomTransition(Document, element);
                                     ActiveElement = element;
-                                    element.LocRes = 0.5;
+                                    element.LocRes = 0.11;
+                                    element.PDyn = Density * Math.Pow(customTransition.Velocity, 2) / 2 * element.LocRes;
+
                                 }
 
                             }

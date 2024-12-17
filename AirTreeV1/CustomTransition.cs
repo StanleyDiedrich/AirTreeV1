@@ -161,7 +161,7 @@ namespace AirTreeV1
                 length = Convert.ToDouble(Element.Element.LookupParameter("Длина воздуховода").AsValueString());
                 double d = (1.13 * Math.Sqrt(width1 * height1) - diameter1) / (2 * length);
                 double angle = Math.Abs(2 * Math.Atan(d))*57.3;
-                Angle = d;
+                Angle = angle;
             }
 
 
@@ -550,8 +550,17 @@ namespace AirTreeV1
                          }*/
 
                         MixedTransitionData elbowdata = new MixedTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
-                        LocRes = elbowdata.LocRes;
+                        try
+                        {
+                            elbowdata.Interpolation(100000, RelA, Angle);
+                            LocRes = elbowdata.LocRes;
+
+                        }
+                        catch
+                        {
+                            LocRes = 0.27;
+                        }
+
 
 
                     }
