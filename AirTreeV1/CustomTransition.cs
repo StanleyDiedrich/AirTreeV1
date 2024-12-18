@@ -173,7 +173,24 @@ namespace AirTreeV1
                     double angle = Acot(d);
                     Angle = 2 * angle;
                 }
-                
+                else if (width1<height1)
+                {
+                    double d = Math.Abs((2 * length / (width1 - diameter1)));
+                    double angle = Acot(d);
+                    Angle = 2 * angle;
+                }
+                else if (  height1 < width1)
+                {
+                    double d = Math.Abs((2 * length / (height1 - diameter1)));
+                    double angle = Acot(d);
+                    Angle = 2 * angle;
+                }
+                else if (height1==width1)
+                {
+                    double d = Math.Abs((2 * length / (height1 - diameter1)));
+                    double angle = Acot(d);
+                    Angle = 2 * angle;
+                }
             }
 
 
