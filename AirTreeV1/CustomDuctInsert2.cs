@@ -1114,7 +1114,7 @@ namespace AirTreeV1
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
                                     element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    LocRes = roundTeeData.Interpolation2(relC, relQ);
                                 }
                             }
                         }
