@@ -56,7 +56,7 @@ namespace AirTreeV1
             Drossel,
             Cap,
             TapAdjustable,
-
+            Multiport,
             RoundElbow,
             RectElbow,
 
@@ -547,6 +547,11 @@ namespace AirTreeV1
                         DetailType = Detail.Union;
                     }
 
+                    // Добавил 18.12.24
+                    else if ((Model as MechanicalFitting).PartType==PartType.MultiPort)
+                    {
+                        DetailType = Detail.Multiport; 
+                    }    
 
                 }
                 else if (Element.Category.Id.IntegerValue == -2008016)

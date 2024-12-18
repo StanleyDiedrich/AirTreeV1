@@ -180,6 +180,29 @@ namespace AirTreeV1
                                     TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
+                            else if (element.DetailType==CustomElement.Detail.Multiport)
+                            {
+                                try
+                                {
+                                    if (element.ElementId.IntegerValue == 8968461)
+                                    {
+                                        var element2 = element;
+                                    }
+                                    CustomMultiport customElbow = new CustomMultiport(Document, element);
+                                    element.LocRes = customElbow.LocRes;
+                                    element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
+                                    branch.Pressure += 5;
+
+
+                                    branch.Pressure += 1;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                }
+                            }
+
                             else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
@@ -207,7 +230,7 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
-                                if (element.ElementId.IntegerValue == 5022083)
+                                if (element.ElementId.IntegerValue == 8059012)
                                 {
                                     var element2 = element;
                                 }
@@ -335,7 +358,7 @@ namespace AirTreeV1
                     {
                         if (element.DetailType == CustomElement.Detail.Tee)
                         {
-                            if (element.ElementId.IntegerValue == 8057936)
+                            if (element.ElementId.IntegerValue == 5956301)
 
                             {
                                 var element2 = element;

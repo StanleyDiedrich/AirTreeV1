@@ -75,131 +75,141 @@ namespace AirTreeV1
         public double Interpolation(double reynolds, double relA, double angle)
         {
             double result = 0;
-            List<int> indexA = new List<int>();
-            List<int> indexB = new List<int>();
-            List<int> indexC = new List<int>();
-            // Поиск индексов для reynolds
-            for (int i = 1; i < Values.GetLength(0); i++)
+            if (/*SystemType == DuctSystemType.ExhaustAir &&*/ relA < 1)
             {
-                if (reynolds >= Values[i - 1, 0] && reynolds <= Values[i, 0])
-                {
-                    indexA.Add(i);
-                }
+                return LocRes = 0.11; 
             }
-
-            // Поиск индексов для angle
-            for (int j = 1; j < Values.GetLength(1); j++)
+           
+            else
             {
-                if (angle > Values[0, j - 1] && angle <= Values[0, j])
+               
+                List<int> indexA = new List<int>();
+                List<int> indexB = new List<int>();
+                List<int> indexC = new List<int>();
+                // Поиск индексов для reynolds
+                for (int i = 1; i < Values.GetLength(0); i++)
                 {
-                    indexB.Add(j);
-                }
-            }
-            for (int k = 1; k < Values.GetLength(0); k++)
-            {
-                if (relA > Values[k - 1, 1] && relA < Values[k, 1])
-                {
-                    indexC.Add(k);
-                }
-                else if (relA < Values[k, 1])
-                {
-
-                    indexC.Add(k);
-                    relA = Math.Round(relA, 0);
-                }
-            }
-            // Интерполяция для найденных индексов
-
-            for (int i = indexA.Min(); i < indexA.Max(); i++)
-            {
-                if (relA == Values[i, 1])
-                {
-                    if (indexB.Count == 0)
+                    if (reynolds >= Values[i - 1, 0] && reynolds <= Values[i, 0])
                     {
-                        if (angle == Values[i, 2])
-                        {
-                            return Values[i, 2];
-                        }
+                        indexA.Add(i);
                     }
-                    else
+                }
+
+                // Поиск индексов для angle
+                for (int j = 1; j < Values.GetLength(1); j++)
+                {
+                    if (angle > Values[0, j - 1] && angle <= Values[0, j])
                     {
-                        for (int j = indexB.Min(); j <= indexB.Max(); j++)
+                        indexB.Add(j);
+                    }
+                }
+                for (int k = 1; k < Values.GetLength(0); k++)
+                {
+                    if (relA > Values[k - 1, 1] && relA < Values[k, 1])
+                    {
+                        indexC.Add(k);
+                    }
+                    else if (relA < Values[k, 1])
+                    {
+
+                        indexC.Add(k);
+                        relA = Math.Round(relA, 0);
+                    }
+                }
+                // Интерполяция для найденных индексов
+
+                for (int i = indexA.Min(); i < indexA.Max(); i++)
+                {
+                    if (relA == Values[i, 1])
+                    {
+                        if (indexB.Count == 0)
                         {
-                            if (angle == Values[0, j])
+                            if (angle == Values[i, 2])
                             {
-                                return Values[i, j];
+                                return Values[i, 2];
                             }
-                            else
+                        }
+                        else
+                        {
+                            for (int j = indexB.Min(); j <= indexB.Max(); j++)
+                            {
+                                if (angle == Values[0, j])
+                                {
+                                    return Values[i, j];
+                                }
+                                else
+                                {
+
+                                    for (j = indexB[0]; j <= indexB[indexB.Count - 1]; j++)
+                                    {
+                                        if (angle > Values[0, j - 1] && angle < Values[0, j])
+                                        {
+                                            // Линейная интерполяция
+                                            double x0 = Values[0, j - 1]; // предыдущее значение
+                                            double x1 = Values[0, j];     // текущее значение
+                                            double y0 = Values[i, j - 1];
+                                            double y1 = Values[i, j];
+
+                                            // Линейная интерполяция
+                                            result = (y0 + (angle - x0) / (x1 - x0) * (y1 - y0));
+                                            break;
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+
+
+                    }
+                    else if (relA > Values[i - 1, 1] && relA < Values[i, 1])
+                    {
+                        for (int k = indexC.Min(); k <= indexC.Max(); k++)
+                        {
+
+                            for (int j = indexB.Min(); j <= indexB.Max(); j++)
                             {
 
-                                for (j = indexB[0]; j <= indexB[indexB.Count - 1]; j++)
+                                if (angle == Values[0, j])
                                 {
-                                    if (angle > Values[0, j - 1] && angle < Values[0, j])
-                                    {
-                                        // Линейная интерполяция
-                                        double x0 = Values[0, j - 1]; // предыдущее значение
-                                        double x1 = Values[0, j];     // текущее значение
-                                        double y0 = Values[i, j - 1];
-                                        double y1 = Values[i, j];
+                                    double x0 = Values[k - 1, 1];
+                                    double x1 = Values[k, 1];
+                                    double y0 = Values[k - 1, j];
+                                    double y1 = Values[k, j];
 
-                                        // Линейная интерполяция
-                                        result = (y0 + (angle - x0) / (x1 - x0) * (y1 - y0));
-                                        break;
-                                    }
+                                    result = (y0 + (relA - x0) / (x1 - x0) * (y1 - y0));
+                                }
+                                else
+                                {
+                                    double A1 = Values[k - 1, 1];
+                                    double A2 = Values[k, 1];
+                                    double A = relA;
+                                    double B1 = Values[0, j - 1];
+                                    double B2 = Values[0, j];
+                                    double B = angle;
+                                    double C11 = Values[k - 1, j - 1];
+                                    double C12 = Values[k - 1, j];
+                                    double C21 = Values[k, j - 1];
+                                    double C22 = Values[k, j];
+                                    double res1 = (((B2 - B) / (B2 - B1) * C11) + (B - B1) / (B2 - B1) * C12) * ((A2 - A) / (A2 - A1));
+                                    double res2 = (((B2 - B) / (B2 - B1) * C21) + (B - B1) / (B2 - B1) * C22) * (A - A1) / (A2 - A1);
+                                    result = res1 + res2;
+                                    break;
                                 }
 
+
+
                             }
                         }
+
+
                     }
 
 
-                }
-                else if (relA > Values[i - 1, 1] && relA < Values[i, 1])
-                {
-                    for (int k = indexC.Min(); k <= indexC.Max(); k++)
-                    {
-
-                        for (int j = indexB.Min(); j <= indexB.Max(); j++)
-                        {
-
-                            if (angle == Values[0, j])
-                            {
-                                double x0 = Values[k - 1, 1];
-                                double x1 = Values[k, 1];
-                                double y0 = Values[k - 1, j];
-                                double y1 = Values[k, j];
-
-                                result = (y0 + (relA - x0) / (x1 - x0) * (y1 - y0));
-                            }
-                            else
-                            {
-                                double A1 = Values[k - 1, 1];
-                                double A2 = Values[k, 1];
-                                double A = relA;
-                                double B1 = Values[0, j - 1];
-                                double B2 = Values[0, j];
-                                double B = angle;
-                                double C11 = Values[k - 1, j - 1];
-                                double C12 = Values[k - 1, j];
-                                double C21 = Values[k, j - 1];
-                                double C22 = Values[k, j];
-                                double res1 = (((B2 - B) / (B2 - B1) * C11) + (B - B1) / (B2 - B1) * C12) * ((A2 - A) / (A2 - A1));
-                                double res2 = (((B2 - B) / (B2 - B1) * C21) + (B - B1) / (B2 - B1) * C22) * (A - A1) / (A2 - A1);
-                                result = res1 + res2;
-                                break;
-                            }
-
-
-
-                        }
-                    }
-
 
                 }
-
-
-
             }
+                
 
 
             return LocRes = result;
