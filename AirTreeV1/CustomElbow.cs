@@ -29,6 +29,7 @@ namespace AirTreeV1
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
         public ConnectorProfileType ProfileType { get; set; }
+        public double RW { get; set; }
         public enum Rotation
         {
             Vertical,
@@ -275,31 +276,52 @@ namespace AirTreeV1
                 {
                     Angle = 90;
                 }
-
+                RW = Document.GetElement(ElementId).LookupParameter("AirTree_Elbow_RW").AsDouble();
                 Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
                 Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
                 Velocity = OutletConnector.Velocity;
+                
                 ElbowData elbowdata = new ElbowData(ProfileType);
                 if (ProfileType == ConnectorProfileType.Rectangular)
                 {
-                    double hw = 0;
-                    double rw = 0;
+                   
+                        double hw = 0;
+                        double rw = 0;
+                    
+                   
                    /* double hw = Height / Width;
                     double rw = Radius / Width;*/
                     if (GetRotation(OutletConnector, InletConnector) == Rotation.Horizontal)
                     {
                         Width = OutletConnector.Width;
                         Height = OutletConnector.Height;
-                         hw = Height / Width;
-                         rw = Radius / Width;
+                        if (RW == 0)
+                        {
+                            rw = Radius / Width;
+                        }
+                        else
+                        {
+                            rw = RW;
+                        }
+                        hw = Height / Width;
+                       // rw = Radius / Width;
 
                     }
                     else
                     {
                         Height = OutletConnector.Height;
                          Width = OutletConnector.Width;
+                        if (RW == 0)
+                        {
+                            rw = Radius / Width;
+                        }
+                        else
+                        {
+                            rw = RW;
+                        }
+
                         hw = Height / Width;
-                        rw = Radius / Width;
+                        //rw = Radius / Width;
 
                         // Исправлено по замечанию Ивана Салмина от 13.12.24//
                         /*Width = OutletConnector.Height;

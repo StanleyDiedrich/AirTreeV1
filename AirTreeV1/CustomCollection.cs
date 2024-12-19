@@ -119,7 +119,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 8719436)
+                                    if (element.ElementId.IntegerValue == 6856896)
                                     {
                                         var element2 = element;
                                     }
@@ -280,8 +280,14 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.FireProtectValve)
                             {
+                                if (element.ElementId.IntegerValue == 7188184)
+                                {
+                                    var element2 = element;
+                                }
                                 CustomValve customValve = new CustomValve(Document, element);
-                                element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * element.LocRes;
+                                element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * customValve.LocRes;
+                                element.LocRes = customValve.LocRes;
+                                element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);
                                 branch.Pressure += 6;
                             }
                             else if (element.DetailType == CustomElement.Detail.Union)

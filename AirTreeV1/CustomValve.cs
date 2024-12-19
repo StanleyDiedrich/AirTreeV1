@@ -262,6 +262,10 @@ namespace AirTreeV1
             {
                 LocRes = 0;
             }
+            else
+            {
+                LocRes = element.Element.LookupParameter("AirTree_КМС").AsDouble();
+            }
             if (AirTree_Area==0)
             {
                 Velocity = InletConnector.Velocity;
