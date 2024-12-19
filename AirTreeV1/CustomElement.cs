@@ -44,6 +44,9 @@ namespace AirTreeV1
         public double PDyn { get; set; }
         public double PStat { get; set; }
         public double Ptot { get; set; }
+        public double AirTree_Area { get; set; }
+
+
         public enum Detail
         {
             RectangularDuct,
@@ -557,6 +560,8 @@ namespace AirTreeV1
                 else if (Element.Category.Id.IntegerValue == -2008016)
                 {
                     DetailType = Detail.FireProtectValve;
+                   
+
                 }
                 else if (Element.Category.Id.IntegerValue == -2008013)
                 {

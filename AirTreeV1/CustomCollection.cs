@@ -280,6 +280,8 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.FireProtectValve)
                             {
+                                CustomValve customValve = new CustomValve(Document, element);
+                                element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * element.LocRes;
                                 branch.Pressure += 6;
                             }
                             else if (element.DetailType == CustomElement.Detail.Union)
