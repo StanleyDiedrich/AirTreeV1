@@ -25,6 +25,8 @@ namespace AirTreeV1
         public double Density { get; set; }
         public CustomElement ActiveElement { get; set; }
         public string FirstElement { get; set; } 
+
+        public string ErrorString { get; set; }
         public void Add (CustomBranch branch)
         {
             Collection.Add(branch);
@@ -75,7 +77,7 @@ namespace AirTreeV1
         
         public void  Calcualate(double density)
         {
-           
+                
                 IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "," };
                 IFormatProvider formatter2 = new NumberFormatInfo { NumberDecimalSeparator = "." };
                 Density = density;
@@ -111,7 +113,8 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}"+"\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                                 //Сюда допишем простую логику на воздухораспределитель по magicad
                             }
@@ -119,7 +122,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 6856896)
+                                    if (element.ElementId.IntegerValue == 8039295)
                                     {
                                         var element2 = element;
                                     }
@@ -131,7 +134,8 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
                             else if (element.DetailType == CustomElement.Detail.Tee)
@@ -162,7 +166,8 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
 
                             }
@@ -177,7 +182,8 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
                             else if (element.DetailType==CustomElement.Detail.Multiport)
@@ -199,7 +205,8 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
 
@@ -297,8 +304,10 @@ namespace AirTreeV1
                         }
                         catch
                         {
-                            TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                             ActiveElement = element;
+                            ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                         }
                     }
 
@@ -355,10 +364,12 @@ namespace AirTreeV1
                     }
                     catch
                     {
-                        TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                         ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                     }
-                    
+
                 }
                 foreach (var element in branch.Elements)
                 {
@@ -389,8 +400,9 @@ namespace AirTreeV1
                     }
                     catch
                     {
-                        TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                         ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
                     }
                     
                 }
@@ -409,7 +421,14 @@ namespace AirTreeV1
                 }
 
             }
-
+            if (ErrorString == null)
+            {
+                
+            }
+            else if (ErrorString!=null || ErrorString.Length!=0)
+            {
+                TaskDialog.Show("Ошибка в системе", $"Система {FirstElement}\n {ErrorString}");
+            }
 
         }
 

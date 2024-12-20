@@ -135,7 +135,7 @@ namespace AirTreeV1
         public ICommand SelectAllCommand { get; }
         public void SelectAll(object param)
         {
-            foreach (var selectedSystem in SystemNumbersList)
+            foreach (var selectedSystem in FilteredSystemNumbersList)
             {
                 selectedSystem.IsSelected = true;
             }
@@ -144,7 +144,7 @@ namespace AirTreeV1
         public ICommand CancelAllCommand { get; }
         public void CancelAll(object param)
         {
-            foreach (var selectedSystem in SystemNumbersList)
+            foreach (var selectedSystem in FilteredSystemNumbersList)
             {
                 selectedSystem.IsSelected = false;
             }
