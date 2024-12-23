@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB;
 
 namespace AirTreeV1
 {
-    public class CustomElbow
+    public class CustomValve
     {
         public Document Document { get; set; }
         public CustomElement Element { get; set; }
@@ -28,15 +26,15 @@ namespace AirTreeV1
         public CustomConnector OutletConnector { get; set; }
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
+        public double AirTree_Area { get; set; }
         public ConnectorProfileType ProfileType { get; set; }
-        public double RW { get; set; }
         public enum Rotation
         {
             Vertical,
             Horizontal
         }
 
-        public CustomElbow(Autodesk.Revit.DB.Document document, CustomElement element)
+        public CustomValve(Autodesk.Revit.DB.Document document, CustomElement element)
         {
             Document = document;
             Element = element;
@@ -88,7 +86,7 @@ namespace AirTreeV1
 
                                         if (connect.Direction == FlowDirectionType.Out)
                                         {
-                                            custom.Flow = connect.Flow* 101.947308132875143184421534937;
+                                            custom.Flow = connect.Flow * 101.947308132875143184421534937;
                                             custom.Domain = Domain.DomainHvac;
                                             //custom.DirectionType = FlowDirectionType.Out;
                                             custom.NextOwnerId = connect.Owner.Id;
@@ -97,25 +95,25 @@ namespace AirTreeV1
                                             if (custom.Shape == ConnectorProfileType.Round)
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2*304.8/1000;
+                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
-                                                    custom.Velocity = custom.Flow /( custom.Area  *3600);
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble() * 304.8 / 1000;
+                                                    custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
                                             }
                                             else
                                             {
                                                 ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width*304.8/1000;
-                                                custom.Height = connect.Height*304.8/1000;
+                                                custom.Width = connect.Width * 304.8 / 1000;
+                                                custom.Height = connect.Height * 304.8 / 1000;
                                                 //custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
                                                 //custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;
                                                 custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3600*custom.Area );
+                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
                                             }
                                             custom.Coefficient = connect.Coefficient;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -141,7 +139,7 @@ namespace AirTreeV1
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble() * 304.8 / 1000;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
@@ -185,11 +183,11 @@ namespace AirTreeV1
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble() * 304.8 / 1000;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
-                                                
+
                                             }
                                             else
                                             {
@@ -223,7 +221,7 @@ namespace AirTreeV1
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try
                                                 {
-                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble()*304.8/1000;
+                                                    ElbowRadius = document.GetElement(ElementId).LookupParameter("u").AsDouble() * 304.8 / 1000;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                 }
                                                 catch { }
@@ -254,138 +252,31 @@ namespace AirTreeV1
                     }
 
                 }
-
-                if (GetRotation(OutletConnector, InletConnector)==Rotation.Horizontal)
-                {
-                    Width = OutletConnector.Width;
-                    Height = OutletConnector.Height;
-                   
-                   
-                }
-                else
-                {
-                    Width = OutletConnector.Height;
-                    Height = OutletConnector.Width;
-                }
-
-                try
-                {
-                    Angle = GetAngle(Document, ElementId);
-                }
-                catch
-                {
-                    Angle = 90;
-                }
-                RW = Document.GetElement(ElementId).LookupParameter("AirTree_Elbow_RW").AsDouble();
-                Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
-                Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
-                Velocity = OutletConnector.Velocity;
-                
-                ElbowData elbowdata = new ElbowData(ProfileType);
-                if (ProfileType == ConnectorProfileType.Rectangular)
-                {
-                   
-                        double hw = 0;
-                        double rw = 0;
-                    
-                   
-                   /* double hw = Height / Width;
-                    double rw = Radius / Width;*/
-                    if (GetRotation(OutletConnector, InletConnector) == Rotation.Horizontal)
-                    {
-                        Width = OutletConnector.Width;
-                        Height = OutletConnector.Height;
-                        if (RW == 0)
-                        {
-                            rw = Radius / Width;
-                        }
-                        else
-                        {
-                            rw = RW;
-                        }
-                        hw = Height / Width;
-                       // rw = Radius / Width;
-
-                    }
-                    else
-                    {
-                        Height = OutletConnector.Height;
-                         Width = OutletConnector.Width;
-                        if (RW == 0)
-                        {
-                            rw = Radius / Width;
-                        }
-                        else
-                        {
-                            rw = RW;
-                        }
-
-                        hw = Height / Width;
-                        //rw = Radius / Width;
-
-                        // Исправлено по замечанию Ивана Салмина от 13.12.24//
-                        /*Width = OutletConnector.Height;
-                        Height = OutletConnector.Width;
-                        hw = Height / Width;
-                        rw = Radius / Width;*/
-                    }
-
-
-
-
-                    if (Angle<90)
-                    {
-                        LocRes = elbowdata.Interpolation(hw, rw)/2;
-
-                    }
-                    else
-                    {
-                        LocRes = elbowdata.Interpolation(hw, rw);
-                    }
-                   
-                    element.DetailType = CustomElement.Detail.RectElbow;
-                }
-                else
-                {
-                    double rd = ElbowRadius / Diameter;
-                    if (Angle <90)
-                    {
-                        LocRes = elbowdata.Interpolation(rd)/2;
-                    }
-                    else
-                    {
-                        LocRes = elbowdata.Interpolation(rd);
-                    }
-                   
-                    element.DetailType = CustomElement.Detail.RoundElbow;
-                }
             }
-            
 
-        }
-        public double GetAngle (Autodesk.Revit.DB.Document document, ElementId elementId)
-        {
-            double res = 90;
-            string value = document.GetElement(elementId).LookupParameter("Угол").AsValueString();
-            string cleandedvalue = value.Replace("°", string.Empty).Replace(",",".");
-            if (double.TryParse(cleandedvalue, out double result))
-            {
-                res = result;
-            }
-              
-            return res;
 
-        }
-        public Rotation GetRotation (CustomConnector outletconnector, CustomConnector inletconnector)
-        {
-            if (outletconnector.Origin.Z == inletconnector.Origin.Z)
+            LocRes = element.Element.LookupParameter("AirTree_КМС").AsDouble();
+            AirTree_Area = element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble();
+
+            if (LocRes ==0)
             {
-                return Rotation.Horizontal;
+                LocRes = 0;
             }
             else
             {
-                return Rotation.Vertical;
+                LocRes = element.Element.LookupParameter("AirTree_КМС").AsDouble();
             }
+            if (AirTree_Area==0)
+            {
+                Velocity = InletConnector.Velocity;
+                AirTree_Area = InletConnector.Area;
+            }
+            else
+            {
+                Velocity = InletConnector.Flow / (3600 * AirTree_Area);
+            }
+
+            
         }
     }
 }

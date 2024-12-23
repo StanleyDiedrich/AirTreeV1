@@ -61,10 +61,14 @@
     <Compile Include="CustomCollection.cs" />
     <Compile Include="CustomConnector.cs" />
     <Compile Include="CustomDuctInsert.cs" />
+    <Compile Include="CustomDuctInsert2.cs" />
     <Compile Include="CustomElbow.cs" />
     <Compile Include="CustomElement.cs" />
+    <Compile Include="CustomMultiport.cs" />
     <Compile Include="CustomTee.cs" />
+    <Compile Include="CustomTee2.cs" />
     <Compile Include="CustomTransition.cs" />
+    <Compile Include="CustomValve.cs" />
     <Compile Include="ElbowData.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="MainViewModel.cs" />

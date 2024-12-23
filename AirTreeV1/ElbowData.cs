@@ -125,6 +125,10 @@ namespace AirTreeV1
         }
         public double Interpolation (double rd)
         {
+            if(rd>4)
+            {
+                rd = 4;
+            }
             double result = 0;
             for (int r = 1;r<7;r++)
             {

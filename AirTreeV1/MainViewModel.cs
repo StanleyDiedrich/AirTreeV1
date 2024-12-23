@@ -132,6 +132,25 @@ namespace AirTreeV1
             }
         }
 
+        public ICommand SelectAllCommand { get; }
+        public void SelectAll(object param)
+        {
+            foreach (var selectedSystem in FilteredSystemNumbersList)
+            {
+                selectedSystem.IsSelected = true;
+            }
+            
+        }
+        public ICommand CancelAllCommand { get; }
+        public void CancelAll(object param)
+        {
+            foreach (var selectedSystem in FilteredSystemNumbersList)
+            {
+                selectedSystem.IsSelected = false;
+            }
+
+        }
+
         public ICommand ShowSelectedSystemsCommand { get; }
 
         public void ShowSelectedSystems(object param)
@@ -212,6 +231,8 @@ namespace AirTreeV1
 
             ShowSelectedSystemsCommand = new RelayCommand(ShowSelectedSystems);
             StartCommand = new RelayCommand(StartCalculate);
+            SelectAllCommand = new RelayCommand(SelectAll);
+            CancelAllCommand = new RelayCommand(CancelAll);
             CalculationModes = new ObservableCollection<CalculationMode>
         {
             new CalculationMode { CalculationName = "Обход системы вентиляции", CalculationId=0, IsMode = false },

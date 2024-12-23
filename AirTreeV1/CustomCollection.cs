@@ -16,8 +16,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace AirTreeV1
 {
-
     
+
     public  class CustomCollection
     {
         List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
@@ -25,6 +25,8 @@ namespace AirTreeV1
         public double Density { get; set; }
         public CustomElement ActiveElement { get; set; }
         public string FirstElement { get; set; } 
+
+        public string ErrorString { get; set; }
         public void Add (CustomBranch branch)
         {
             Collection.Add(branch);
@@ -75,7 +77,7 @@ namespace AirTreeV1
         
         public void  Calcualate(double density)
         {
-           
+                
                 IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "," };
                 IFormatProvider formatter2 = new NumberFormatInfo { NumberDecimalSeparator = "." };
                 Density = density;
@@ -111,7 +113,8 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}"+"\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                                 //Сюда допишем простую логику на воздухораспределитель по magicad
                             }
@@ -119,7 +122,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 8181120)
+                                    if (element.ElementId.IntegerValue == 8039295)
                                     {
                                         var element2 = element;
                                     }
@@ -131,26 +134,40 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
                             else if (element.DetailType == CustomElement.Detail.Tee)
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 7294387)
+                                    if (element.ElementId.IntegerValue == 6856285)
                                     {
                                         var element2 = element;
                                     }
-                                    CustomTee customTee = new CustomTee(Document, element);
+                                   /* CustomTee customTee = new CustomTee(Document, element);
+                                    element.IA = customTee.IA;
+                                    element.IQ = customTee.IQ;
+                                    element.IC = customTee.IC;
+                                    element.O1A = customTee.O1A;
+                                    element.O1Q = customTee.O1Q;
+                                    element.O1C = customTee.O1C;
+                                    element.O2A = customTee.O2A;
+                                    element.O2Q = customTee.O2Q;
+                                    element.RA = customTee.RA;
+                                    element.RQ = customTee.RQ;
+                                    element.RC = customTee.RC;
+
                                     element.LocRes = customTee.LocRes;
-                                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;*/
                                     branch.Pressure += 7;
                                 }
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
 
                             }
@@ -165,26 +182,62 @@ namespace AirTreeV1
                                 catch
                                 {
                                     ActiveElement = element;
-                                    TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
+                            else if (element.DetailType==CustomElement.Detail.Multiport)
+                            {
+                                try
+                                {
+                                    if (element.ElementId.IntegerValue == 8968461)
+                                    {
+                                        var element2 = element;
+                                    }
+                                    CustomMultiport customElbow = new CustomMultiport(Document, element);
+                                    element.LocRes = customElbow.LocRes;
+                                    element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
+                                    branch.Pressure += 5;
+
+
+                                    branch.Pressure += 1;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                                    //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                                }
+                            }
+
                             else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
-                                if (element.ElementId.IntegerValue == 6044542)
+
 
                                 {
                                     var element2 = element;
                                 }
 
                                 CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
+                                element.IA = customDuctInsert.IA;
+                                element.IQ = customDuctInsert.IQ;
+                                element.IC = customDuctInsert.IC;
+                                element.O1A = customDuctInsert.O1A;
+                                element.O1Q = customDuctInsert.O1Q;
+                                element.O1C = customDuctInsert.O1C;
+                                element.O2A = customDuctInsert.O2A;
+                                element.O2Q = customDuctInsert.O2Q;
+                                element.RA = customDuctInsert.RA;
+                                element.RQ = customDuctInsert.RQ;
+                                element.RC = customDuctInsert.RC;
                                 element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;*/
                                 branch.Pressure += 1;
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
-                                if (element.ElementId.IntegerValue == 6448371)
+                                if (element.ElementId.IntegerValue == 8976273)
                                 {
                                     var element2 = element;
                                 }
@@ -197,8 +250,11 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
+                                    CustomTransition customTransition = new CustomTransition(Document, element);
                                     ActiveElement = element;
-                                    element.LocRes = 0.5;
+                                    element.LocRes = 0.11;
+                                    element.PDyn = Density * Math.Pow(customTransition.Velocity, 2) / 2 * element.LocRes;
+
                                 }
 
                             }
@@ -231,6 +287,14 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.FireProtectValve)
                             {
+                                if (element.ElementId.IntegerValue == 7188184)
+                                {
+                                    var element2 = element;
+                                }
+                                CustomValve customValve = new CustomValve(Document, element);
+                                element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * customValve.LocRes;
+                                element.LocRes = customValve.LocRes;
+                                element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);
                                 branch.Pressure += 6;
                             }
                             else if (element.DetailType == CustomElement.Detail.Union)
@@ -240,8 +304,10 @@ namespace AirTreeV1
                         }
                         catch
                         {
-                            TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                             ActiveElement = element;
+                            ErrorString = "Ошибка в элементе" + $"{ActiveElement}" + "\n";
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                         }
                     }
 
@@ -263,11 +329,110 @@ namespace AirTreeV1
                     
                     branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i-1].Ptot;
 
-
                 }
                
             }
+            foreach (var branch in Collection)
+            {
+                foreach (var element in branch.Elements)
+                {
+                    try
+                    {
+                        if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                        {
+                            if (element.ElementId.IntegerValue == 8938148)
+
+                            {
+                                var element2 = element;
+                            }
+
+                            CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection);
+                            element.IA = customDuctInsert.IA;
+                            element.IQ = customDuctInsert.IQ;
+                            element.IC = customDuctInsert.IC;
+                            element.O1A = customDuctInsert.O1A;
+                            element.O1Q = customDuctInsert.O1Q;
+                            element.O1C = customDuctInsert.O1C;
+                            element.O2A = customDuctInsert.O2A;
+                            element.O2Q = customDuctInsert.O2Q;
+                            element.RA = customDuctInsert.RA;
+                            element.RQ = customDuctInsert.RQ;
+                            element.RC = customDuctInsert.RC;
+                            element.LocRes = customDuctInsert.LocRes;
+                            element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                        }
+                    }
+                    catch
+                    {
+                        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                    }
+
+                }
+                foreach (var element in branch.Elements)
+                {
+                    try
+                    {
+                        if (element.DetailType == CustomElement.Detail.Tee)
+                        {
+                            if (element.ElementId.IntegerValue == 5956301)
+
+                            {
+                                var element2 = element;
+                            }
+                            CustomTee2 customDuctInsert = new CustomTee2(Document, element, Collection);
+                            element.IA = customDuctInsert.IA;
+                            element.IQ = customDuctInsert.IQ;
+                            element.IC = customDuctInsert.IC;
+                            element.O1A = customDuctInsert.O1A;
+                            element.O1Q = customDuctInsert.O1Q;
+                            element.O1C = customDuctInsert.O1C;
+                            element.O2A = customDuctInsert.O2A;
+                            element.O2Q = customDuctInsert.O2Q;
+                            element.RA = customDuctInsert.RA;
+                            element.RQ = customDuctInsert.RQ;
+                            element.RC = customDuctInsert.RC;
+                            element.LocRes = customDuctInsert.LocRes;
+                            element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                        }
+                    }
+                    catch
+                    {
+                        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                    }
+                    
+                }
+            }
+
+            //Финальный пересчет
+            foreach (var branch in Collection)
+            {
+                branch.PBTot = 0;
+
+                for (int i = 1; i < branch.Elements.Count; i++)
+                {
+
+                    branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i - 1].Ptot;
+
+                }
+
+            }
+            if (ErrorString == null)
+            {
+                
+            }
+            else if (ErrorString!=null || ErrorString.Length!=0)
+            {
+                TaskDialog.Show("Ошибка в системе", $"Система {FirstElement}\n {ErrorString}");
+            }
+
         }
+
+      
         public CustomBranch SelectMainBranch()
         {
             List<CustomBranch> branches = new List<CustomBranch>();
@@ -337,22 +502,23 @@ namespace AirTreeV1
             Collection = newCustomCollection;
         }
 
-
+        
 
         public string GetContent()
         {
             
             var csvcontent = new StringBuilder();
-            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;IA;IQ;IC;O1A;O1Q;O1C;O2A;O2Q;O2C;RA;RQ;RC;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
 
             foreach (var branch in Collection)
             {
                 
                 foreach (var element in branch.Elements)
                 {
-                   
+
                     string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
-                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes,2)};{Math.Round(element.PDyn,2)};{Math.Round(element.Ptot,2)};" +
+                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.IA};{element.IQ};{element.IC};{element.O1A};{element.O1Q};{element.O1C};{element.O2A};{element.O2Q};{element.O2C};{element.RA};{element.RQ};{element.RC};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
+                        
                          $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
                     csvcontent.AppendLine(a);
                 }

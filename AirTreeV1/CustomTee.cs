@@ -31,7 +31,18 @@ namespace AirTreeV1
         public double RelA { get; set; }
         public double Angle { get; set; }
         public double Velocity { get; set; }
-
+        public double IA { get; set; }
+        public double IQ { get; set; }
+        public double IC { get; set; }
+        public double O1A { get; set; }
+        public double O1Q { get; set; }
+        public double O1C { get; set; }
+        public double O2A { get; set; }
+        public double O2Q { get; set; }
+        public double O2C { get; set; }
+        public double RA { get; set; }
+        public double RQ { get; set; }
+        public double RC { get; set; }
         public CustomTee(Autodesk.Revit.DB.Document document, CustomElement element)
         {
             Document = document;
@@ -354,6 +365,16 @@ namespace AirTreeV1
                 // After identifying the main connector, set its IsMainConnector property
                 StraightTee(InletConnector, OutletConnector1, OutletConnector2);
             }
+
+            IA = InletConnector.AInlet * 0.09;
+            IQ = InletConnector.Flow * 102;
+            IC = InletConnector.Velocity;
+            O1A = OutletConnector1.AInlet * 0.09;
+            O1Q = OutletConnector1.Flow * 102;
+            O1C = OutletConnector1.Velocity;
+            O2A = OutletConnector2.AInlet * 0.09;
+            O2Q = OutletConnector2.Flow * 102;
+            O2C = OutletConnector2.Velocity;
             //Допиши сюда что может быть на отвод
             double relA;
             double relQ;
@@ -364,6 +385,9 @@ namespace AirTreeV1
                 {
                     relA = OutletConnector1.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector1.Flow / InletConnector.Flow;
+                    RA = relA;
+                    RQ = relQ;
+                    //RC = relC;
                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                     element.DetailType = CustomElement.Detail.RoundTeeStraight;
                     LocRes = roundTeeData.Interpolation(100000, relA, relQ);
@@ -372,6 +396,9 @@ namespace AirTreeV1
                 {
                     relA = OutletConnector2.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector2.Flow / InletConnector.Flow;
+                    RA = relA;
+                    RQ = relQ;
+                    //RC = relC;
                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
                     element.DetailType = CustomElement.Detail.RoundTeeBranch;
                     LocRes = roundTeeData.Interpolation(100000, relA, relQ);
@@ -384,6 +411,9 @@ namespace AirTreeV1
                     relA = OutletConnector1.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector1.Flow / InletConnector.Flow;
                     relC = OutletConnector1.Velocity / InletConnector.Velocity;
+                    RA = relA;
+                    RQ = relQ;
+                    RC = relC;
                     RectTeeData rectTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                     element.DetailType = CustomElement.Detail.RectTeeStraight;
                     LocRes = rectTeeData.Interpolation(100000, relA, relQ);
@@ -393,6 +423,9 @@ namespace AirTreeV1
                     relA = OutletConnector2.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector2.Flow / InletConnector.Flow;
                     relC = OutletConnector2.Velocity / InletConnector.Velocity;
+                    RA = relA;
+                    RQ = relQ;
+                    RC = relC;
                     if (relQ ==0)
                     {
                         ElbowData elbowData = new ElbowData(InletConnector.Shape);
@@ -431,6 +464,9 @@ namespace AirTreeV1
                     relA = OutletConnector1.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector1.Flow / InletConnector.Flow;
                     relC = OutletConnector1.Velocity / InletConnector.Velocity;
+                    RA = relA;
+                    RQ = relQ;
+                    RC = relC;
                     MixedTeeData roundTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ,relC);
                     element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                     LocRes = roundTeeData.Interpolation(100000);
@@ -440,6 +476,9 @@ namespace AirTreeV1
                     relA = OutletConnector2.AOutlet / InletConnector.AInlet;
                     relQ = OutletConnector2.Flow / InletConnector.Flow;
                     relC = OutletConnector2.Velocity / InletConnector.Velocity;
+                    RA = relA;
+                    RQ = relQ;
+                    RC = relC;
                     MixedTeeData roundTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ,relC);
                     element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                     LocRes = roundTeeData.Interpolation(100000);

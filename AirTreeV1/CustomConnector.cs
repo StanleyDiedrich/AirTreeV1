@@ -5,13 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
+using System.Xml.Linq;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
+using Autodesk.Revit.DB.Visual;
 
 namespace AirTreeV1
 {
     public class CustomConnector
     {
+        public Autodesk.Revit.DB.Document Document { get; set; }
         public ElementId OwnerId { get; set; }
         public Connector Connector { get; set; }
         public Domain Domain { get; set; }
@@ -45,11 +49,13 @@ namespace AirTreeV1
 
         public CustomConnector(Autodesk.Revit.DB.Document document, ElementId elementId, Autodesk.Revit.DB.Mechanical.DuctSystemType ductSystemType)
         {
+            Document = document;
             OwnerId = elementId;
-
-           
+            
+            
 
         }
-
+        
     }
+    
 }
