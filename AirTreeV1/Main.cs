@@ -424,6 +424,7 @@ namespace AirTreeV1
 
                     collection.Calcualate(mainViewModel.Density);
                     collection.ResCalculate();
+                   
                     CustomBranch selectedbranch = collection.SelectMainBranch();
                     /*foreach (var element in selectedbranch.Elements)
                     {
@@ -431,6 +432,7 @@ namespace AirTreeV1
                     }*/
 
                     collection.MarkCollection(selectedbranch);
+                    collection.FilterCollection();
                     string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try

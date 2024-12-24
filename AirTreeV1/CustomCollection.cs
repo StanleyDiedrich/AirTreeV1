@@ -232,7 +232,7 @@ namespace AirTreeV1
                                 element.RQ = customDuctInsert.RQ;
                                 element.RC = customDuctInsert.RC;
                                 element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes; 
+                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
                                 branch.Pressure += 1;
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
@@ -320,6 +320,10 @@ namespace AirTreeV1
         }
         public void ResCalculate()
         {
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+            CustomBranch customBranch = new CustomBranch(Document);
+
+
             foreach (var branch in Collection)
             {
                 branch.PBTot = 0;
@@ -421,6 +425,13 @@ namespace AirTreeV1
                 }
 
             }
+
+
+
+
+
+
+
             if (ErrorString == null)
             {
 
@@ -429,6 +440,7 @@ namespace AirTreeV1
             {
                 TaskDialog.Show("Ошибка в системе", $"Система {FirstElement}\n {ErrorString}");
             }
+
 
         }
 
@@ -573,5 +585,47 @@ namespace AirTreeV1
             var match = System.Text.RegularExpressions.Regex.Match(primaryvolume, @"\d+(\.\d+)?");
             return match.Success ? match.Value : string.Empty; // Вернуть число или пустую строку, если числ
         }
+
+        public  List<CustomBranch>  FilterCollection()
+        {
+            int param_counter = 0;
+            foreach (var branch in Collection)
+            {
+                foreach (var element in branch.Elements)
+                {
+                    if (element.AirTree_Start==1)
+                    {
+                        param_counter++;
+                    }
+                }
+            }
+            
+            if (param_counter==0)
+            {
+                return Collection;
+            }
+            else
+            {
+                CustomBranch customBranch = new CustomBranch(Document);
+                List<CustomBranch> newCollection = new List<CustomBranch>();
+                foreach (var branch in Collection)
+                {
+                    foreach (var element in branch.Elements)
+                    {
+                        if (element.AirTree_Start == 1)
+                        {
+                            customBranch.Add(element);
+
+                        }
+                    }
+                }
+                newCollection.Add(customBranch);
+                Collection = newCollection;
+                return Collection;
+            }
+           
+
+                
+            }
+        }
     }
-}

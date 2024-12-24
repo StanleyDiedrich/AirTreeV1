@@ -45,7 +45,8 @@ namespace AirTreeV1
         public double PStat { get; set; }
         public double Ptot { get; set; }
         public double AirTree_Area { get; set; }
-
+        public double AirTree_Start { get; set; }
+        public double AirTree_Finish { get; set; }
 
         public enum Detail
         {
@@ -151,7 +152,16 @@ namespace AirTreeV1
                 Lvl = Element.LookupParameter("Уровень").AsValueString();
             }
 
+            try
+            {
+                AirTree_Start = Element.LookupParameter("AirTree_Start").AsInteger();
+                AirTree_Finish = Element.LookupParameter("AirTree_Finish").AsInteger();
+            }
+           
+            catch
+            {
 
+            }
 
 
 
