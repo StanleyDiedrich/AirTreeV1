@@ -33,7 +33,11 @@
                 <Button Grid.Column="1" Content="Начать" Command="{Binding StartCommand}" Margin="10" Background="#5B9BD5" Foreground="White" Padding="10" HorizontalAlignment="Stretch" Width="120" />
                 <Button Grid.Column="2" Content="Отменить всё" Command="{Binding CancelAllCommand}" Margin="10" Background="#5B9BD5" Foreground="White" Padding="10" HorizontalAlignment="Stretch" Width="120" />
             </StackPanel>
-
+            <StackPanel>
+                <TextBlock Text="Температура воздуха в системе, C" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" TextAlignment="Center"/>
+                <TextBox x:Name="TempTextBox" Width="400" Margin="5" 
+ Text="{Binding Temperature}"/>
+            </StackPanel>
 
             <!-- Метка для отображения выбранных систем -->
             <Label Content="{Binding SelectedSystems}" Margin="10" FontWeight="Bold"/>
