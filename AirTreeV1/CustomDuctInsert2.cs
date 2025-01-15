@@ -108,7 +108,7 @@ namespace AirTreeV1
                                     if (SystemType == DuctSystemType.SupplyAir)
                                     {
 
-                                        if (connect.Direction == FlowDirectionType.In || connect.Direction == FlowDirectionType.Bidirectional)
+                                        if (connect.Direction == FlowDirectionType.In /*|| connect.Direction == FlowDirectionType.Bidirectional*/)
                                         {
 
                                             //custom.DirectionType = FlowDirectionType.Out;
@@ -736,12 +736,30 @@ namespace AirTreeV1
 
                 }
 
+                    if (OutletConnectors.Count ==3)
+                    {
+                    /*foreach (var connector in OutletConnectors)
+                    {
+                        if (connector.NextOwnerId == Element.ElementId)
+                        {
+                            InletConnector = connector;
+                        }
+                    }*/
 
 
+                       InletConnector = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
+                    OutletConnector1 = OutletConnectors.Skip(1).OrderByDescending(x => x.Flow).FirstOrDefault();
+                    OutletConnector2 = OutletConnectors.Skip(1).OrderByDescending(x => x.Flow).LastOrDefault();
+                    }
 
-                    OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
-                    OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
 
+                        else
+                    {
+                        OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
+                        OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
+                    }
+                   
+                    
 
                     CustomElement neighbour1 = GetNeighbour(OutletConnector1.NextOwnerId, collection);
                     CustomElement neighbour2 = GetNeighbour(OutletConnector2.NextOwnerId, collection);

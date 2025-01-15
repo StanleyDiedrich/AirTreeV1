@@ -102,7 +102,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 5929264)
+                                    if (element.ElementId.IntegerValue == 21647431)
                                     {
                                         var element2 = element;
                                     }
@@ -122,7 +122,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 8039295)
+                                    if (element.ElementId.IntegerValue == 22017547)
                                     {
                                         var element2 = element;
                                     }
@@ -210,7 +210,7 @@ namespace AirTreeV1
                                 }
                             }
 
-                            else if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                           /* else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
 
@@ -234,7 +234,7 @@ namespace AirTreeV1
                                 element.LocRes = customDuctInsert.LocRes;
                                 element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes; 
                                 branch.Pressure += 1;
-                            }
+                            }*/
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
                                 if (element.ElementId.IntegerValue == 8976273)
@@ -287,7 +287,7 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.FireProtectValve)
                             {
-                                if (element.ElementId.IntegerValue == 7188184)
+                                if (element.ElementId.IntegerValue == 21647432)
                                 {
                                     var element2 = element;
                                 }
@@ -340,7 +340,7 @@ namespace AirTreeV1
                     {
                         if (element.DetailType == CustomElement.Detail.TapAdjustable)
                         {
-                            if (element.ElementId.IntegerValue == 8938148)
+                            if (element.ElementId.IntegerValue == 11860673)
 
                             {
                                 var element2 = element;
