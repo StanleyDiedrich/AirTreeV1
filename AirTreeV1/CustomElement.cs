@@ -298,8 +298,17 @@ namespace AirTreeV1
                                                     DetailType = Detail.RoundDuct;
                                                     custom.Diameter = connect.Radius * 2;
                                                     custom.EquiDiameter = custom.Diameter;
-                                                    string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
-                                                    ModelDiameter = primarydiameter;
+                                                    try
+                                                    {
+                                                        string primarydiameter = Element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM).AsValueString();
+                                                        ModelDiameter = primarydiameter;
+                                                    }
+                                                    catch
+                                                    {
+                                                        double d = custom.Diameter * 304.8;
+                                                        ModelDiameter = d.ToString();
+                                                    }
+                                                   
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
                                                     ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
                                                     //ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
@@ -310,10 +319,27 @@ namespace AirTreeV1
                                                     custom.Width = connect.Width;
                                                     custom.Height = connect.Height;
                                                     custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                    string primarywidth = Element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsValueString();
-                                                    ModelWidth = primarywidth;
-                                                    string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
-                                                    ModelHeight = primaryheight;
+                                                    try
+                                                    {
+                                                        string primarywidth = Element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM).AsValueString();
+                                                        ModelWidth = primarywidth;
+                                                    }
+                                                    catch
+                                                    {
+                                                        double w = custom.Width * 304.8;
+                                                        ModelWidth = w.ToString();
+                                                    }
+
+                                                    try
+                                                    {
+                                                        string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
+                                                        ModelHeight = primaryheight;
+                                                    }
+                                                    catch
+                                                    {
+                                                        double h = custom.Height * 304.8;
+                                                        ModelHeight = h.ToString();
+                                                    }
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
                                                     ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
                                                     //ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
