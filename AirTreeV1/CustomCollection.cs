@@ -113,8 +113,8 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
-                                    ActiveElement = element;
-                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                   /* ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                                     //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                                 //Сюда допишем простую логику на воздухораспределитель по magicad
@@ -134,8 +134,8 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
-                                    ActiveElement = element;
-                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                    /*ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                                     //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
@@ -166,8 +166,8 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
-                                    ActiveElement = element;
-                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                    /*ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                                     //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
 
@@ -182,8 +182,8 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
-                                    ActiveElement = element;
-                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                   /* ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                                     //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
@@ -205,8 +205,8 @@ namespace AirTreeV1
                                 }
                                 catch
                                 {
-                                    ActiveElement = element;
-                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                    /*ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                                     //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
@@ -314,8 +314,8 @@ namespace AirTreeV1
                         catch
                         {
                             //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                            ActiveElement = element;
-                            ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                           /* ActiveElement = element;
+                            ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                             //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                         }
                     }
@@ -374,8 +374,8 @@ namespace AirTreeV1
                     catch
                     {
                         //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                        ActiveElement = element;
-                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                        /*ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                         //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                     }
 
@@ -410,8 +410,8 @@ namespace AirTreeV1
                     catch
                     {
                         //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                        ActiveElement = element;
-                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                       /* ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
                     }
 
                 }
@@ -570,7 +570,11 @@ namespace AirTreeV1
                 {
                     if (!selectedelements.Contains(element.ElementId))
                     {
-                        selectedelements.Add(element.ElementId);
+                        if (element.MainTrack ==true)
+                        {
+                            selectedelements.Add(element.ElementId);
+                        }
+                       
                     }
                 }
             }
