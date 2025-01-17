@@ -417,7 +417,7 @@ namespace AirTreeV1
                     catch
                     {
                         CustomElement element = collection.ActiveElement;
-                        TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
+                        //TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
                     }
                     //collection.Calcualate(mainViewModel.Density);
 
@@ -425,12 +425,14 @@ namespace AirTreeV1
                     collection.Calcualate(mainViewModel.Density);
                     collection.ResCalculate();
                     CustomBranch selectedbranch = collection.SelectMainBranch();
-                    /*foreach (var element in selectedbranch.Elements)
+                    foreach (var element in selectedbranch.Elements)
                     {
                         selectedelements.Add(element.ElementId);
-                    }*/
-
-                    collection.MarkCollection(selectedbranch);
+                    }
+                    //selectedelements = collection.ShowControlElements();
+                    //selectedelements = collection.ShowElements();
+                    uIDocument.Selection.SetElementIds(selectedelements);
+                    /*collection.MarkCollection(selectedbranch);
                     string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try
@@ -441,14 +443,14 @@ namespace AirTreeV1
                     catch
                     {
                         TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
-                    }
+                    }*/
                 }
                 else
                 {
                     TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей"); 
                 }
                 
-                //selectedelements=  collection.ShowElements();
+               
                 
                 //selectedelements = collection.ShowControlElements();
                 //selectedelements = collection;
