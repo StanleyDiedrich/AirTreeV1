@@ -108,9 +108,9 @@ namespace AirTreeV1
                                                         element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
                                                         element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0.6 * Velocity * Velocity;
-                                                        if (element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble() != 0)
+                                                        if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
                                                         {
-                                                            custom.Area = element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble();
+                                                            custom.Area = element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
                                                             Velocity = custom.Flow / (3600 * custom.Area);
 
                                                         }
@@ -143,9 +143,9 @@ namespace AirTreeV1
                                                     Velocity = custom.Velocity;
                                                     element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                     PDyn = 0.6 * Velocity * Velocity;
-                                                    if (element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble() != 0)
+                                                    if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
                                                     {
-                                                        custom.Area = element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble();
+                                                        custom.Area = element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
                                                         Velocity = custom.Flow / (3600 * custom.Area);
 
                                                     }
@@ -200,9 +200,9 @@ namespace AirTreeV1
                                                         element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
                                                         element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0.6 * Velocity * Velocity;
-                                                        if (element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble() != 0)
+                                                        if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
                                                         {
-                                                            custom.Area = element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble();
+                                                            custom.Area = element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
                                                             Velocity = custom.Flow / (3600 * custom.Area);
 
                                                         }
@@ -237,9 +237,9 @@ namespace AirTreeV1
                                                     Velocity = custom.Velocity;
                                                     PDyn = 0.6 * Velocity * Velocity;
 
-                                                    if (element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble()!=0)
+                                                    if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble()!=0)
                                                     {
-                                                        custom.Area = element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble();
+                                                        custom.Area = element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
                                                         Velocity = custom.Flow / (3600 * custom.Area);
 
                                                     }
@@ -261,7 +261,8 @@ namespace AirTreeV1
                                                 
                                             }
                                             custom.Coefficient = connect.Coefficient;
-
+                                            if (Element.Element.LookupParameter("AirTree_dP").AsDouble()!=0)
+                                            { PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble(); }
                                             OutletConnector = custom;
                                             //SecondaryConnectors.Add(custom);
                                         }

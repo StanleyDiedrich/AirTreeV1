@@ -256,7 +256,7 @@ namespace AirTreeV1
 
 
             LocRes = element.Element.LookupParameter("AirTree_КМС").AsDouble();
-            AirTree_Area = element.Element.LookupParameter("AirTree_Живое_сечение").AsDouble();
+            AirTree_Area = element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
 
             if (LocRes ==0)
             {
@@ -276,7 +276,8 @@ namespace AirTreeV1
                 Velocity = InletConnector.Flow / (3600 * AirTree_Area);
             }
 
-            
+           
+
         }
     }
 }

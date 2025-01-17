@@ -300,6 +300,8 @@ namespace AirTreeV1
                                 CustomValve customValve = new CustomValve(Document, element);
                                 element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * customValve.LocRes;
                                 element.LocRes = customValve.LocRes;
+                                if (element.Element.LookupParameter("AirTree_dP").AsDouble() != 0)
+                                { element.PDyn = element.Element.LookupParameter("AirTree_dP").AsDouble(); }
                                 element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);
                                 //branch.Pressure += 6;
                                 branch.Pressure += element.PDyn;
