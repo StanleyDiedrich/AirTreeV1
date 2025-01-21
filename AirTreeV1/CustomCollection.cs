@@ -102,7 +102,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 6343549)
+                                    if (element.ElementId.IntegerValue == 5024837)
                                     {
                                         var element2 = element;
                                     }
@@ -304,11 +304,11 @@ namespace AirTreeV1
                                     var element2 = element;
                                 }
                                 CustomValve customValve = new CustomValve(Document, element);
-                                element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * customValve.LocRes;
-                                element.LocRes = customValve.LocRes;
-                                if (element.Element.LookupParameter("AirTree_dP").AsDouble() != 0)
+                                //element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * customValve.LocRes;
+                                //element.LocRes = customValve.LocRes;
+                               /* if (element.Element.LookupParameter("AirTree_dP").AsDouble() != 0)
                                 { element.PDyn = element.Element.LookupParameter("AirTree_dP").AsDouble(); }
-                                element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);
+                                element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);*/
                                 //branch.Pressure += 6;
                                 branch.Pressure += element.PDyn;
                             }

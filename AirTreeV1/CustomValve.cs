@@ -40,6 +40,29 @@ namespace AirTreeV1
             Element = element;
             ElementId = element.ElementId;
             SystemType = element.SystemType;
+
+            bool KZHS = false;
+            bool FKMS = false;
+            bool kMS = false;
+            bool dP = false;
+
+            if (Element.Element.LookupParameter("AirTree_КЖС").AsDouble() != 0)
+            {
+                KZHS = true;
+            }
+            if (Element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
+            {
+                FKMS = true;
+            }
+            if (Element.Element.LookupParameter("AirTree_КМС").AsDouble() != 0)
+            {
+                kMS = true;
+            }
+            if (Element.Element.LookupParameter("AirTree_dP").AsDouble() != 0)
+            {
+                dP = true;
+            }
+
             if (document.GetElement(ElementId) is FamilyInstance)
             {
                 foreach (Connector connector in Element.OwnConnectors)
@@ -255,7 +278,59 @@ namespace AirTreeV1
             }
 
 
-            LocRes = element.Element.LookupParameter("AirTree_КМС").AsDouble();
+            if (dP==true)
+            {
+                element.PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
+            }
+
+            if (kMS == true && dP == false)
+            {
+                element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
+                Velocity = InletConnector.Velocity;
+                element.ModelVelocity = Convert.ToString(Velocity);
+                HydraulicArea = InletConnector.Area;
+                element.ModelHydraulicArea = Convert.ToString(HydraulicArea);
+                element.PDyn = element.LocRes * 0.6 * Velocity * Velocity;
+            }
+            if (KZHS == true && dP == false)
+            {
+                double Koeffizient = Element.Element.LookupParameter("AirTree_КЖС").AsDouble();
+                HydraulicArea = InletConnector.Area * Koeffizient;
+                element.ModelHydraulicArea = Convert.ToString(HydraulicArea);
+                Velocity = InletConnector.Flow / (HydraulicArea * 3600);
+                element.ModelVelocity = Convert.ToString(Velocity);
+                element.PDyn = 0.6 * Velocity * Velocity;
+            }
+            if (FKMS == true && kMS == true && dP == false)
+            {
+                HydraulicArea = Element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
+                element.ModelHydraulicArea = Convert.ToString(HydraulicArea);
+                element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
+                Velocity = InletConnector.Flow / (3600 * HydraulicArea);
+                element.ModelVelocity = Convert.ToString(Velocity);
+                element.PDyn = element.LocRes * Velocity * Velocity * 0.6;
+            }
+            if (KZHS == true && kMS == true && dP == false)
+            {
+                double Koeffizient = Element.Element.LookupParameter("AirTree_КЖС").AsDouble();
+                HydraulicArea =InletConnector.Area * Koeffizient;
+                element.ModelHydraulicArea = Convert.ToString(HydraulicArea);
+                Velocity =InletConnector.Flow / (3600 * HydraulicArea);
+                element.ModelVelocity = Convert.ToString(InletConnector.Velocity);
+                element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
+                element.PDyn = element.LocRes * Velocity *Velocity * 0.6;
+            }
+
+            else
+            {
+                Velocity = InletConnector.Flow / (InletConnector.Area * 3600);
+                element.Volume = Convert.ToString(Math.Round(InletConnector.Flow, 0));
+                element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
+                element.PDyn = 0.6 * Velocity * Velocity;
+                
+            }
+
+           /* LocRes = element.Element.LookupParameter("AirTree_КМС").AsDouble();
             AirTree_Area = element.Element.LookupParameter("AirTree_F(КМС)").AsDouble();
 
             if (LocRes ==0)
@@ -274,7 +349,7 @@ namespace AirTreeV1
             else
             {
                 Velocity = InletConnector.Flow / (3600 * AirTree_Area);
-            }
+            }*/
 
            
 

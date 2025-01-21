@@ -151,7 +151,16 @@ namespace AirTreeV1
 
                                                             PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
                                                         }
+                                                        if (kMS == true && dP == false)
+                                                        {
 
+                                                            element.ModelHydraulicArea = Convert.ToString(custom.Area);
+                                                            Velocity = custom.Flow / (custom.Area * 3600);
+                                                            element.ModelVelocity = Convert.ToString(custom.Velocity);
+                                                            element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
+
+                                                            PDyn = 0.6 * Velocity * Velocity * element.LocRes;
+                                                        }
                                                         if (KZHS == true && dP == false)
                                                         {
                                                             Koeffizient = Element.Element.LookupParameter("AirTree_КЖС").AsDouble();
@@ -180,7 +189,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
-                                                            PDyn = element.LocRes * custom.Velocity * custom.Velocity;
+                                                            PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
                                                         }
 
                                                         /*if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
@@ -234,8 +243,17 @@ namespace AirTreeV1
 
                                                             PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
                                                         }
+                                                    if (kMS == true && dP == false)
+                                                    {
 
-                                                        if (KZHS == true && dP == false)
+                                                        element.ModelHydraulicArea = Convert.ToString(custom.Area);
+                                                        Velocity = custom.Flow / (custom.Area * 3600);
+                                                        element.ModelVelocity = Convert.ToString(custom.Velocity);
+                                                        element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
+
+                                                        PDyn = 0.6 * Velocity * Velocity * element.LocRes;
+                                                    }
+                                                    if (KZHS == true && dP == false)
                                                         {
                                                             Koeffizient = Element.Element.LookupParameter("AirTree_КЖС").AsDouble();
                                                             custom.Area = custom.Area * Koeffizient;
@@ -263,7 +281,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
-                                                            PDyn = element.LocRes * custom.Velocity * custom.Velocity;
+                                                            PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
                                                         }
 
                                                         /*if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
@@ -338,8 +356,17 @@ namespace AirTreeV1
 
                                                                 PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
                                                             }
+                                                        if (kMS == true && dP == false)
+                                                        {
 
-                                                            if (KZHS == true && dP == false)
+                                                            element.ModelHydraulicArea = Convert.ToString(custom.Area);
+                                                            Velocity = custom.Flow / (custom.Area * 3600);
+                                                            element.ModelVelocity = Convert.ToString(custom.Velocity);
+                                                            element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
+
+                                                            PDyn = 0.6 * Velocity * Velocity * element.LocRes;
+                                                        }
+                                                        if (KZHS == true && dP == false)
                                                             {
                                                                 Koeffizient = Element.Element.LookupParameter("AirTree_КЖС").AsDouble();
                                                                 custom.Area = custom.Area * Koeffizient;
@@ -367,7 +394,7 @@ namespace AirTreeV1
                                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                                 element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
-                                                                PDyn = element.LocRes * custom.Velocity * custom.Velocity;
+                                                                PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
                                                             }
 
                                                             /*if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
@@ -406,12 +433,13 @@ namespace AirTreeV1
                                                     element.ModelHeight = custom.Height.ToString();
                                                     if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
                                                     {
+                                                        custom.Area = custom.Width * custom.Height;
                                                         custom.Velocity = custom.Flow / (custom.Area * 3600);
-                                                        Velocity = OutletConnector.Velocity;
+                                                        //Velocity = OutletConnector.Velocity;
                                                         element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
                                                         element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         element.ModelHydraulicArea = Convert.ToString(Math.Round(custom.Area, 2));
-                                                        PDyn = 0.6 * Velocity * Velocity;
+                                                        PDyn = 0.6 * custom.Velocity * custom.Velocity;
                                                         element.PDyn = PDyn;
 
                                                         if (dP == true)
@@ -419,7 +447,16 @@ namespace AirTreeV1
 
                                                             PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
                                                         }
+                                                        if (kMS ==true && dP ==false)
+                                                        {
+                                                           
+                                                            element.ModelHydraulicArea = Convert.ToString(custom.Area);
+                                                            Velocity = custom.Flow / (custom.Area * 3600);
+                                                            element.ModelVelocity = Convert.ToString(custom.Velocity);
+                                                            element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
 
+                                                            PDyn = 0.6 * Velocity * Velocity*element.LocRes;
+                                                        }
                                                         if (KZHS == true && dP == false)
                                                         {
                                                             Koeffizient = Element.Element.LookupParameter("AirTree_КЖС").AsDouble();
@@ -448,7 +485,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
-                                                            PDyn = element.LocRes * custom.Velocity * custom.Velocity;
+                                                            PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
                                                         }
 
                                                         /*if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)
