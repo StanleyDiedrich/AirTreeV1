@@ -289,8 +289,8 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Rectangular;
                                                 custom.Width = connect.Width * 304.8;
                                                 custom.Height = connect.Height * 304.8;
-                                                element.ModelWidth = (custom.Width * 1000).ToString();
-                                                element.ModelHeight = (custom.Height * 1000).ToString();
+                                                element.ModelWidth = (custom.Width).ToString();
+                                                element.ModelHeight = (custom.Height).ToString();
 
                                                 if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
                                                     {
