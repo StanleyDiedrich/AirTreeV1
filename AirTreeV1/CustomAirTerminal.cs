@@ -150,6 +150,7 @@ namespace AirTreeV1
                                                         {
 
                                                             PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
+                                                            element.PDyn = PDyn;
                                                         }
                                                         if (kMS == true && dP == false)
                                                         {
@@ -160,6 +161,7 @@ namespace AirTreeV1
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
 
                                                             PDyn = 0.6 * Velocity * Velocity * element.LocRes;
+                                                            element.PDyn = PDyn;
                                                         }
                                                         if (KZHS == true && dP == false)
                                                         {
@@ -170,6 +172,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = 0.6 * custom.Velocity * custom.Velocity;
+                                                            element.PDyn = PDyn;
                                                         }
 
                                                         if (FKMS == true && dP == false)
@@ -180,6 +183,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
                                                         if (FKMS == true && KZHS == true)
@@ -202,10 +206,12 @@ namespace AirTreeV1
                                                             {
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                                element.PDyn = PDyn;
                                                             }
                                                             else
                                                             {
                                                                 PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                                element.PDyn = PDyn;
                                                             }
 
 
@@ -219,6 +225,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
                                                         if (KZHS == true && kMS == true && dP == false)
@@ -231,6 +238,7 @@ namespace AirTreeV1
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
                                                         if (FKMS == true && KZHS == true && kMS == true)
@@ -253,6 +261,7 @@ namespace AirTreeV1
                                                             {
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                                element.PDyn = PDyn;
                                                             }
 
                                                         }
@@ -278,6 +287,7 @@ namespace AirTreeV1
                                                         element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));
                                                         element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0;
+                                                        element.PDyn = PDyn;
                                                         element.PDyn = PDyn;
                                                     }
 
@@ -307,7 +317,8 @@ namespace AirTreeV1
                                                         {
 
                                                             PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
                                                     if (kMS == true && dP == false)
                                                     {
 
@@ -317,6 +328,7 @@ namespace AirTreeV1
                                                         element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
 
                                                         PDyn = 0.6 * Velocity * Velocity * element.LocRes;
+                                                        element.PDyn = PDyn;
                                                     }
                                                     if (KZHS == true && dP == false)
                                                     {
@@ -327,6 +339,7 @@ namespace AirTreeV1
                                                         custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                         element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                         PDyn = 0.6 * custom.Velocity * custom.Velocity;
+                                                        element.PDyn = PDyn;
                                                     }
 
                                                     if (FKMS == true && dP == false)
@@ -337,6 +350,7 @@ namespace AirTreeV1
                                                         custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                         element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                         PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                        element.PDyn = PDyn;
                                                     }
 
                                                     if (FKMS == true && KZHS == true)
@@ -359,10 +373,12 @@ namespace AirTreeV1
                                                         {
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
                                                         else
                                                         {
                                                             PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
 
@@ -376,7 +392,8 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
 
                                                         if (KZHS == true && kMS == true && dP == false)
                                                         {
@@ -388,7 +405,8 @@ namespace AirTreeV1
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
 
                                                     if (FKMS == true && KZHS == true && kMS == true)
                                                     {
@@ -410,6 +428,7 @@ namespace AirTreeV1
                                                         {
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
                                                     }
@@ -436,7 +455,8 @@ namespace AirTreeV1
                                                         element.ModelVelocity = Convert.ToString(Math.Round(Velocity, 2));
                                                         PDyn = 0;
                                                         element.PDyn = PDyn;
-                                                    }
+                                                    element.PDyn = PDyn;
+                                                }
 
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
@@ -485,7 +505,8 @@ namespace AirTreeV1
                                                             {
 
                                                                 PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
-                                                            }
+                                                            element.PDyn = PDyn;
+                                                        }
                                                         if (kMS == true && dP == false)
                                                         {
 
@@ -495,6 +516,7 @@ namespace AirTreeV1
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
 
                                                             PDyn = 0.6 * Velocity * Velocity * element.LocRes;
+                                                            element.PDyn = PDyn;
                                                         }
                                                         if (KZHS == true && dP == false)
                                                         {
@@ -505,6 +527,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = 0.6 * custom.Velocity * custom.Velocity;
+                                                            element.PDyn = PDyn;
                                                         }
                                                         if (FKMS == true && dP == false)
                                                         {
@@ -514,6 +537,7 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
                                                         if (FKMS == true && KZHS == true)
@@ -536,10 +560,12 @@ namespace AirTreeV1
                                                             {
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                                element.PDyn = PDyn;
                                                             }
                                                             else
                                                             {
                                                                 PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                                element.PDyn = PDyn;
                                                             }
 
 
@@ -553,7 +579,8 @@ namespace AirTreeV1
                                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                                 element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
-                                                            }
+                                                            element.PDyn = PDyn;
+                                                        }
 
                                                             if (KZHS == true && kMS == true && dP == false)
                                                             {
@@ -565,7 +592,8 @@ namespace AirTreeV1
                                                                 element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
-                                                            }
+                                                            element.PDyn = PDyn;
+                                                        }
 
                                                         if (FKMS == true && KZHS == true && kMS == true)
                                                         {
@@ -587,6 +615,7 @@ namespace AirTreeV1
                                                             {
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                                element.PDyn = PDyn;
                                                             }
 
                                                         }
@@ -640,7 +669,8 @@ namespace AirTreeV1
                                                         {
 
                                                             PDyn = Element.Element.LookupParameter("AirTree_dP").AsDouble();
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
                                                         if (kMS ==true && dP ==false)
                                                         {
                                                            
@@ -650,7 +680,8 @@ namespace AirTreeV1
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
 
                                                             PDyn = 0.6 * Velocity * Velocity*element.LocRes;
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
                                                     if (KZHS == true && dP == false)
                                                     {
                                                         custom.Area = custom.Width * custom.Height;
@@ -660,6 +691,7 @@ namespace AirTreeV1
                                                         custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                         element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                         PDyn = 0.6 * custom.Velocity * custom.Velocity;
+                                                        element.PDyn = PDyn;
                                                     }
                                                     if (FKMS ==true && dP==false)
                                                         {
@@ -669,7 +701,8 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn =  custom.Velocity * custom.Velocity * 0.6;
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
                                                     if (FKMS == true && KZHS == true)
                                                     {
                                                         custom.Area = custom.Width * custom.Height;
@@ -690,10 +723,12 @@ namespace AirTreeV1
                                                         {
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
                                                         else
                                                         {
                                                             PDyn = custom.Velocity * custom.Velocity * 0.6;
+                                                            element.PDyn = PDyn;
                                                         }
 
 
@@ -707,7 +742,8 @@ namespace AirTreeV1
                                                             custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
 
                                                         if (KZHS == true && kMS == true && dP == false)
                                                         {
@@ -719,7 +755,8 @@ namespace AirTreeV1
                                                             element.ModelVelocity = Convert.ToString(custom.Velocity);
                                                             element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                             PDyn = element.LocRes * custom.Velocity * custom.Velocity*0.6;
-                                                        }
+                                                        element.PDyn = PDyn;
+                                                    }
 
                                                         if (FKMS ==true && KZHS ==true && kMS ==true )
                                                         {
@@ -741,7 +778,8 @@ namespace AirTreeV1
                                                             {
                                                                 element.LocRes = Element.Element.LookupParameter("AirTree_КМС").AsDouble();
                                                                 PDyn = element.LocRes * custom.Velocity * custom.Velocity * 0.6;
-                                                            }
+                                                            element.PDyn = PDyn;
+                                                        }
                                                         
                                                         }
                                                         /*if (element.Element.LookupParameter("AirTree_F(КМС)").AsDouble() != 0)

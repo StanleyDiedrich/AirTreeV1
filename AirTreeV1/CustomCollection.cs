@@ -106,16 +106,17 @@ namespace AirTreeV1
                                     {
                                         var element2 = element;
                                     }
-                                    
+
                                     CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
-                                    element.Volume = customAirTerminal.Volume.ToString();
+                                    //element.Volume = customAirTerminal.Volume.ToString();
                                     /*element.ModelWidth = customAirTerminal.Width.ToString();
                                     element.ModelHeight = customAirTerminal.Height.ToString();*/
                                     /*element.ModelDiameter = customAirTerminal.Diameter.ToString();
                                     element.ModelHydraulicArea = customAirTerminal.HArea.ToString();*/
                                     element.PDyn = customAirTerminal.PDyn;
                                     element.Ptot = customAirTerminal.PDyn;
-                                    branch.Pressure += element.Ptot;
+                                    branch.Pressure += element.PDyn;
+                                   // branch.Pressure += element.Ptot;
                                 }
                                 catch
                                 {
@@ -349,6 +350,36 @@ namespace AirTreeV1
             }
             foreach (var branch in Collection)
             {
+                /*foreach (var element in branch.Elements)
+                {
+                    if (element.DetailType == CustomElement.Detail.AirTerminal)
+                    {
+                        try
+                        {
+                            if (element.ElementId.IntegerValue == 5301590)
+                            {
+                                var element2 = element;
+                            }
+
+                            CustomAirTerminal customAirTerminal = new CustomAirTerminal(Document, element);
+                            element.Volume = customAirTerminal.Volume.ToString();
+                            *//*element.ModelWidth = customAirTerminal.Width.ToString();
+                            element.ModelHeight = customAirTerminal.Height.ToString();*/
+                            /*element.ModelDiameter = customAirTerminal.Diameter.ToString();
+                            element.ModelHydraulicArea = customAirTerminal.HArea.ToString();*//*
+                            element.PDyn = customAirTerminal.PDyn;
+                            element.Ptot = customAirTerminal.PDyn;
+                            branch.Pressure += element.Ptot;
+                        }
+                        catch
+                        {
+                            ActiveElement = element;
+                            ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
+                        //Сюда допишем простую логику на воздухораспределитель по magicad
+                    }
+                }*/
                 foreach (var element in branch.Elements)
                 {
                     try
@@ -421,6 +452,9 @@ namespace AirTreeV1
                     }
 
                 }
+
+
+                
             }
 
             //Финальный пересчет
@@ -482,6 +516,43 @@ namespace AirTreeV1
                     break; // Прекращаем дальнейший обход после нахождения основной ветви 
                 }
             }
+
+            //Вписываем новую фичу
+            /* List<CustomBranch> newCollection = new List<CustomBranch>();
+
+             newCollection = Collection.OrderByDescending(x => x.Pressure).ToList();
+
+
+             foreach (var branch in newCollection)
+             {
+                 if (branch.Number == customBranch.Number)
+                 {
+                     continue;
+                 }
+
+                 CustomBranch newCustomBranch = new CustomBranch(Document);
+                 int trackCounter = 0;
+
+                 foreach (var element in branch.Elements)
+                 {
+                     // Если элемент уже есть в основной ветви, пропускаем его 
+                     if (checkedElements.Contains(element.ElementId))
+                     {
+                         continue;
+                     }
+
+                     // Устанавливаем номера и добавляем элемент в новую ветвь 
+                     element.TrackNumber = trackCounter;
+                     element.BranchNumber = branch.Number;
+                     newCustomBranch.Add(element);
+                     checkedElements.Add(element.ElementId);
+                     trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
+                 }
+
+                 newCustomCollection.Add(newCustomBranch);
+             }*/
+
+
 
             // Обрабатываем остальные ветви 
             foreach (var branch in Collection)

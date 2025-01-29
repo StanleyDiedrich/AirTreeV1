@@ -374,7 +374,7 @@ namespace AirTreeV1
                 }
                 else
                 {
-                   element. PDyn = Velocity * Velocity * 0.6;
+                   element.PDyn = Velocity * Velocity * 0.6;
                 }
 
 
