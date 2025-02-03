@@ -46,6 +46,13 @@ namespace AirTreeV1
                 }
             }
         }
+        public void AddSpecial (CustomElement customElement)
+        {
+            if (customElement != null)
+            {
+                Elements.Add(customElement);
+            }
+        }
         public void Remove(CustomElement customElement)
         {
             // Находим индекс узла с указанным ElementId
