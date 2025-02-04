@@ -841,7 +841,7 @@ namespace AirTreeV1
                                         /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
                                         LocRes = roundTeeData.Interpolation2(relA, relQ);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -883,7 +883,7 @@ namespace AirTreeV1
                                         /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
                                         LocRes = roundTeeData.Interpolation2(relA, relC);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -923,7 +923,7 @@ namespace AirTreeV1
                                         LocRes = rectTeeData.Interpolation(100000);
 
                                     }
-                                    element.IsReversed = true;
+                                  
                                 }
                                 else
                                 {
@@ -960,7 +960,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                    
                                 }
                                 else
                                 {
@@ -999,7 +999,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                 
                                 }
                                 else
                                 {
@@ -1034,7 +1034,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                    
                                 }
                                 // Тройник на ответвление
                                 else
@@ -1073,7 +1073,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                  
                                 }
                                 else
                                 {
@@ -1108,7 +1108,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                  
                                 }
                                 else
                                 {
@@ -1146,7 +1146,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                     element.IsReversed = true;
+                                     
                                 }
                                 else
                                 {
@@ -1181,7 +1181,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1220,7 +1220,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1257,7 +1257,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1290,7 +1290,7 @@ namespace AirTreeV1
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
                                 LocRes = roundTeeData.Interpolation(100000, relA, relQ);
-                                element.IsReversed = true;
+                               
                                 }
                                 else
                                 {
@@ -1317,7 +1317,7 @@ namespace AirTreeV1
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
                                     LocRes = roundTeeData.Interpolation(100000, relA, relQ);
-                                    element.IsReversed = true;
+                                   
                                 }
 
                                 else
@@ -1355,7 +1355,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1391,7 +1391,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                        element.IsReversed = true;
+                                       
                                 }
                                 else
                                 {
@@ -1432,7 +1432,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
                                         LocRes = roundTeeData.Interpolation2(relA, relQ);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1466,7 +1466,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
                                         LocRes = roundTeeData.Interpolation2(relC, relQ);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1505,7 +1505,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1540,7 +1540,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1581,7 +1581,7 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
-                                element.IsReversed =true;
+                               
                                 }
                                 else
                                 {
@@ -1616,7 +1616,7 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
-                                element.IsReversed = true;
+                               
                             }
                             else
                             {
@@ -1654,7 +1654,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1689,7 +1689,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                  
                                 }
                                 else
                                 {
@@ -1728,7 +1728,7 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
-                                element.IsReversed = true;
+                                
                             }
                             else
                             {
@@ -1763,7 +1763,7 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
-                                element.IsReversed = true;
+                                
                             }
 
                             else
@@ -1803,7 +1803,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1838,7 +1838,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1874,7 +1874,7 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
                                     LocRes = roundTeeData.Interpolation(100000, relA, relQ);
 
-                                    element.IsReversed = true;
+                                  
                                 }
                                 else
                                 {
@@ -1899,7 +1899,7 @@ namespace AirTreeV1
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
                                     LocRes = roundTeeData.Interpolation(100000, relA, relQ);
-                                    element.IsReversed = true;
+                                   
                                 }
                                 else
                                 {
@@ -1934,7 +1934,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                  
                                 }
                                 else
                                 {
@@ -1969,7 +1969,7 @@ namespace AirTreeV1
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
-                                    element.IsReversed = true;
+                                    
                                 }
                                 else
                                 {

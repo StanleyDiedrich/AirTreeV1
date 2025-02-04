@@ -84,16 +84,18 @@ namespace AirTreeV1
 
 
 
+            
+
+
+            RoundFlexDuct,
+            RectFlexDuct,
+
             RoundTeeBranch,
             RoundTeeStraight,
             RectTeeBranch,
             RectTeeStraight,
             RectRoundTeeBranch,
             RectRoundTeeStraight,
-
-
-            RoundFlexDuct,
-            RectFlexDuct,
 
             RoundInRoundDuctInsertStraight,
             RoundInRoundDuctInsertBranch,

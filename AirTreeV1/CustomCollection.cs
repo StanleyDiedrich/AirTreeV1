@@ -390,7 +390,7 @@ namespace AirTreeV1
                         var element = branch.Elements[i];
                         if (element.DetailType == CustomElement.Detail.TapAdjustable)
                         {
-                            if (element.ElementId.IntegerValue == 10307812)
+                            if (element.ElementId.IntegerValue == 10307806)
 
                             {
                                 var element3 = element;
@@ -974,7 +974,7 @@ namespace AirTreeV1
                 // Сравниваем ID и проверяем поле IsReversed
                 if (previousElement.ElementId == element.ElementId)
                 {
-                    return previousElement.IsReversed;
+                    return true;
                 }
             }
 
@@ -1081,17 +1081,51 @@ namespace AirTreeV1
                 foreach (var element in branch.Elements)
                 {
                     // Если элемент уже есть в основной ветви, пропускаем его 
+                    if(element.ElementId.IntegerValue == 10307806)
+                    {
+                        var element2 = element;
+                    }
                     if (checkedElements.Contains(element.ElementId))
                     {
-                        continue;
+                        // Проверяем DetailType на соответствие списку значений
+                        if (element.DetailType == CustomElement.Detail.RectInRectDuctInsertBranch ||
+                            element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RoundTeeBranch ||
+                            element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                            element.DetailType == CustomElement.Detail.RectTeeBranch ||
+                            element.DetailType == CustomElement.Detail.RectTeeStraight ||
+                            element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                            element.DetailType == CustomElement.Detail.RectRoundTeeStraight ||
+                            element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertBranch ||
+                            element.DetailType == CustomElement.Detail.RoundInRectDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RoundInRectDuctInsertBranch ||
+                            element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
+                        {
+                            element.TrackNumber = trackCounter;
+                            element.BranchNumber = branch.Number;
+                            newCustomBranch.AddSpecial(element);
+                            //checkedElements.Add(element.ElementId);
+                            trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        // Устанавливаем номера и добавляем элемент в новую ветвь 
+                        element.TrackNumber = trackCounter;
+                        element.BranchNumber = branch.Number;
+                        newCustomBranch.Add(element);
+                        checkedElements.Add(element.ElementId);
+                        trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
                     }
 
-                    // Устанавливаем номера и добавляем элемент в новую ветвь 
-                    element.TrackNumber = trackCounter;
-                    element.BranchNumber = branch.Number;
-                    newCustomBranch.Add(element);
-                    checkedElements.Add(element.ElementId);
-                    trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
+                    
                 }
 
                 newCustomCollection.Add(newCustomBranch);
