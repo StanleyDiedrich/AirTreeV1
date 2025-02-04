@@ -128,49 +128,7 @@ namespace AirTreeV1
         public double RQ { get; set; }
         public double RC { get; set; }
 
-        public CustomElement Clone(Autodesk.Revit.DB.Document doc, ElementId elementId, CustomElement customElement)
-        {
-            // Создаём новый элемент
-            CustomElement copiedElement = new CustomElement(doc, elementId)
-            {
-                Element = customElement.Element,
-                ElementId = customElement.ElementId,
-                NextElementId = customElement.NextElementId,
-                MSystem = customElement.MSystem,
-                Model = customElement.Model,
-                Name = customElement.Name,
-                SystemName = customElement.SystemName,
-                ShortSystemName = customElement.ShortSystemName,
-                Lvl = customElement.Lvl,
-                SystemType = customElement.SystemType,
-                SelectedConnector = customElement.SelectedConnector,
-                SecondaryConnectors = new List<CustomConnector>(customElement.SecondaryConnectors), // Создаём новый список 
-                OwnConnectors = customElement.OwnConnectors,
-                Volume = customElement.Volume,
-                ModelWidth = customElement.ModelWidth,
-                ModelHeight = customElement.ModelHeight,
-                NewModelWidth = customElement.NewModelWidth,
-                NewModelHeight = customElement.NewModelHeight,
-                ModelLength = customElement.ModelLength,
-                ModelDiameter = customElement.ModelDiameter,
-                ModelVelocity = customElement.ModelVelocity,
-                ModelHydraulicDiameter = customElement.ModelHydraulicDiameter,
-                EquiDiameter = customElement.EquiDiameter,
-                ModelHydraulicArea = customElement.ModelHydraulicArea,
-                LocRes = customElement.LocRes,
-                PDyn = customElement.PDyn,
-                PStat = customElement.PStat,
-                Ptot = customElement.Ptot,
-                AirTree_Area = customElement.AirTree_Area,
-                IsReversed = customElement.IsReversed,
-                DetailType = customElement.DetailType,
-                TrackNumber = customElement.TrackNumber,
-                BranchNumber = customElement.BranchNumber,
-                MainTrack = customElement.MainTrack
-            };
-
-            return copiedElement;
-        }
+        
         private string GetValue(string primaryvolume)
         {
             // Используем регулярное выражение, чтобы найти и вернуть только числовую часть

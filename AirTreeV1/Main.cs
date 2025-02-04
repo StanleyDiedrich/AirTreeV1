@@ -423,6 +423,7 @@ namespace AirTreeV1
 
 
                     collection.Calcualate(mainViewModel.Density);
+                    
                     collection.ResCalculate();
                     CustomBranch selectedbranch = collection.SelectMainBranch();
                     /*foreach (var element in selectedbranch.Elements)

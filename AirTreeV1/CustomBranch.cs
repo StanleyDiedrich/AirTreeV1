@@ -86,6 +86,13 @@ namespace AirTreeV1
                 Elements.Add(customElement);
                 nextElement = customElement.NextElementId;
                 customElement = new CustomElement(document, nextElement);
+                //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
+                if (customElement.DetailType==CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
+                {
+                    CustomElement customElement2 = new CustomElement(document, nextElement);
+                    Elements.Add(customElement2);
+                }
+                    //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
                 //i++;
             }
             while (nextElement != null /*|| i==10000*/);
