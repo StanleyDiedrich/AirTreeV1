@@ -472,23 +472,43 @@ namespace AirTreeV1
                             element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
                             element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
                             element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
-                        {
-                            var previouselement = FindPrevious2(element, branch);
-                            if (element.ElementId == previouselement)
                             {
-                                continue;
-                                /*int previousIndex = branch.GetIndex(element) - 1;
-                                branch.RemoveAt(previousIndex);*/
+                                var previouselement = FindPrevious2(element, branch);
+                                if (element.ElementId == previouselement)
+                                {
+                                    continue;
+                                    //continue;
+                                    /*int previousIndex = branch.GetIndex(element) - 1;
+                                    branch.RemoveAt(previousIndex);*/
+                                   /* element.TrackNumber = trackCounter;
+                                    element.BranchNumber = branch.Number;
+                                    element.MainTrack = true;
+                                    newCustomBranch.AddSpecial(element);
+                                    //checkedElements.Add(element.ElementId);
+                                    trackCounter++;*/
+                                }
+                                else
+                                {
+                                    element.TrackNumber = trackCounter;
+                                    element.BranchNumber = branch.Number;
+                                    element.MainTrack = true;
+                                    newCustomBranch.AddSpecial(element);
+                                    //checkedElements.Add(element.ElementId);
+                                    trackCounter++;
+                                }
                             }
 
+                        else
+                        {
+                            element.TrackNumber = trackCounter;
+                            element.BranchNumber = branch.Number;
+                            element.MainTrack = true;
+                            newCustomBranch.Add(element);
+                            //checkedElements.Add(element.ElementId);
+                            trackCounter++;
                         }
 
-                        element.TrackNumber = trackCounter;
-                        element.BranchNumber = branch.Number;
-                        element.MainTrack = true;
-                        newCustomBranch.Add(element);
-                        //checkedElements.Add(element.ElementId);
-                        trackCounter++;
+                        
                     }
                     newCustomCollection.Add(newCustomBranch);
                     break; // Прекращаем дальнейший обход после нахождения основной ветви 
@@ -535,26 +555,39 @@ namespace AirTreeV1
                             element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
                             element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
                         {
-                            if (element.IsReversed ==true)
+                            /*var previouselement = FindPrevious2(element, branch);
+                            if (element.ElementId == previouselement)
                             {
+
+                               
+                                *//*int previousIndex = newCustomBranch.GetIndex(element);
+                                newCustomBranch.RemoveAt(previousIndex);*//*
                                 element.TrackNumber = trackCounter;
                                 element.BranchNumber = branch.Number;
+                                //element.MainTrack = true;
                                 newCustomBranch.AddSpecial(element);
-                                //int previousIndex = newCustomBranch.GetIndex(element);
-                                //newCustomBranch.RemoveAt(previousIndex);
                                 //checkedElements.Add(element.ElementId);
                                 trackCounter++;
                             }
                             else
                             {
                                 continue;
+                               *//* element.TrackNumber = trackCounter;
+                                element.BranchNumber = branch.Number;
+                                element.MainTrack = true;
+                                newCustomBranch.AddSpecial(element);
+                                //checkedElements.Add(element.ElementId);
+                                trackCounter++;*//*
+                            }*/
+
+                        }
+                            else
+                            {
+                                element.TrackNumber = trackCounter;
+                                element.BranchNumber = branch.Number;
+                                newCustomBranch.Add(element);
+                                trackCounter++;
                             }
-                           
-                        }
-                        else
-                        {
-                            continue;
-                        }
                     }
                     else
                     {
@@ -562,7 +595,7 @@ namespace AirTreeV1
                         element.TrackNumber = trackCounter;
                         element.BranchNumber = branch.Number;
                         newCustomBranch.Add(element);
-                        //checkedElements.Add(element.ElementId);
+                        checkedElements.Add(element.ElementId);
                         trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
                     }
 
@@ -673,58 +706,54 @@ namespace AirTreeV1
 
         public void ReMark()
         {
-            List<CustomBranch> newCustomCollection = new List<CustomBranch>();
-            HashSet<ElementId> checkedElements = new HashSet<ElementId>();
-
-
             Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
-            foreach(var branch in Collection)
+            foreach (var branch in Collection)
             {
-                foreach (var element in branch.Elements)
+                foreach (var el in branch.Elements)
                 {
-                    element.MainTrack = false;
+                    el.MainTrack = false;
                 }
             }
-            var mainbranch = Collection.OrderByDescending(x => x.PBTot).First();
-            CustomBranch newCustomBranch = new CustomBranch(Document);
-            foreach (var element in mainbranch.Elements)
-            {
-                element.MainTrack = true;
-                newCustomBranch.Add(element);
-                checkedElements.Add(element.ElementId);
-            }
-            newCustomCollection.Add(newCustomBranch);
 
+            List<CustomBranch> newCustomCollection = new List<CustomBranch>();
+            HashSet<ElementId> checkedElements = new HashSet<ElementId>();
+            var newmainbranch = Collection.First();
+            CustomBranch customBranch = new CustomBranch(Document);
+            foreach (var el in newmainbranch.Elements)
+            {
+                el.MainTrack = true;
+                customBranch.Add(el);
+                checkedElements.Add(el.ElementId);
+            }
 
             foreach (var branch in Collection)
             {
-                CustomBranch newCustomBranchDop = new CustomBranch(Document);
-                if (branch.Number == mainbranch.Number)
+                foreach (var el in branch.Elements)
                 {
-                    continue;
-                }
-                else
-                {
-                    foreach (var element in branch.Elements)
+                    // Проверяем, если элемент еще не добавлен в checkedElements
+                    if (checkedElements.Add(el.ElementId)) // Добавляет и возвращает true, если элемент не был добавлен ранее
                     {
-                       if (!checkedElements.Contains(element.ElementId))
-                        {
-                            newCustomBranchDop.Add(element);
-                            checkedElements.Add(element.ElementId);
-                        }
+                        // Если элемент уникальный, добавляем его в новую коллекцию
+                        customBranch.Add(el);
                     }
                 }
-                newCustomCollection.Add(newCustomBranchDop);
             }
 
-
-
-
-
-
-
-
+            newCustomCollection.Add(customBranch);
             Collection = newCustomCollection;
+
+
+
         }
+
+
+
+
+
+
+
+
+           
+        
     }
 }
