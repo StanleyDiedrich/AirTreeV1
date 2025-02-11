@@ -64,6 +64,17 @@ namespace AirTreeV1
                 Elements.RemoveAt(nodeIndex);
             }
         }
+        public void RemoveAt(int index)
+        {
+            // Находим индекс узла с указанным ElementId
+           
+
+            if (index >= 0)
+            {
+                // Если найден, удаляем узел
+                Elements.RemoveAt(index);
+            }
+        }
         public void AddRange(CustomBranch branch)
         {
             if (branch != null)
@@ -87,21 +98,30 @@ namespace AirTreeV1
                 nextElement = customElement.NextElementId;
                 customElement = new CustomElement(document, nextElement);
                 //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
-                if (customElement.DetailType==CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
+                if (customElement.DetailType == CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
                 {
                     CustomElement customElement2 = new CustomElement(document, nextElement);
                     Elements.Add(customElement2);
                 }
-                    //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
+                //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
                 //i++;
             }
             while (nextElement != null /*|| i==10000*/);
 
         }
 
-        
+        internal int GetIndex(CustomElement element)
+        {
+            int index = 0;
 
-
-        
+            for (int i=0;i<Elements.Count;i++)
+            {
+                if (Elements[i].ElementId == element.ElementId)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 }

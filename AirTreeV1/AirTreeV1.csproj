@@ -67,6 +67,7 @@
     <Compile Include="CustomMultiport.cs" />
     <Compile Include="CustomTee.cs" />
     <Compile Include="CustomTee2.cs" />
+    <Compile Include="CustomTee3.cs" />
     <Compile Include="CustomTransition.cs" />
     <Compile Include="CustomValve.cs" />
     <Compile Include="ElbowData.cs" />
