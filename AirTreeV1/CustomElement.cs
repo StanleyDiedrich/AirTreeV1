@@ -10,6 +10,7 @@ using System.Windows.Media.Media3D;
 using Autodesk.Revit.Creation;
 using System.Text.RegularExpressions;
 using System.Security.Policy;
+using System.Windows.Controls;
 
 namespace AirTreeV1
 {
@@ -48,7 +49,7 @@ namespace AirTreeV1
         public double PStat { get; set; }
         public double Ptot { get; set; }
         public double AirTree_Area { get; set; }
-
+        public bool IsReversed { get; set; } 
 
         public enum Detail
         {
@@ -83,16 +84,18 @@ namespace AirTreeV1
 
 
 
+            
+
+
+            RoundFlexDuct,
+            RectFlexDuct,
+
             RoundTeeBranch,
             RoundTeeStraight,
             RectTeeBranch,
             RectTeeStraight,
             RectRoundTeeBranch,
             RectRoundTeeStraight,
-
-
-            RoundFlexDuct,
-            RectFlexDuct,
 
             RoundInRoundDuctInsertStraight,
             RoundInRoundDuctInsertBranch,
@@ -127,7 +130,7 @@ namespace AirTreeV1
         public double RQ { get; set; }
         public double RC { get; set; }
 
-
+        
         private string GetValue(string primaryvolume)
         {
             // Используем регулярное выражение, чтобы найти и вернуть только числовую часть

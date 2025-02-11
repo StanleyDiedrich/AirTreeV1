@@ -58,7 +58,7 @@ namespace AirTreeV1
         public double RQ { get; set; }
         public double RC { get; set; }
 
-        public CustomDuctInsert2(Autodesk.Revit.DB.Document document, CustomElement element, List<CustomBranch> collection)
+        public CustomDuctInsert2(Autodesk.Revit.DB.Document document, CustomElement element, List<CustomBranch> collection, bool isReversed)
         {
             Document = document;
             Element = element;
@@ -826,36 +826,80 @@ namespace AirTreeV1
                         {
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.Area / InletConnector.Area;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                    /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    if (relC > 2)
+                                    { relC = 2; }
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
+                                        LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    }
                                 }
                             }
+                                
+                        
                             else
                             {
-                                relA = selectedConnector.Area / InletConnector.Area;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                if (relC > 2)
-                                { relC = 2; }
-                                RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                    /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
-                                    LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    if (relC > 2)
+                                    { relC = 2; }
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
+                                        LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    }
                                 }
                             }
                         }
@@ -864,34 +908,75 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+
+                                    }
+                                  
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
 
                                 }
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+
+                                    }
                                 }
                             }
                         }
@@ -900,33 +985,72 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                 
                                 }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                }
+                               
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                    
+                                }
+                                // Тройник на ответвление
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                         }
@@ -935,33 +1059,71 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                  
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                  
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                         }
@@ -970,33 +1132,71 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                     
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
 
@@ -1006,33 +1206,73 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
+                                
+                            
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                         }
@@ -1041,7 +1281,8 @@ namespace AirTreeV1
                             // Все коннекторы круглые
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                // Тройник прямой
+                               if (isReversed == false)
+                               {
                                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
                                 relQ = OutletConnector1.Flow / InletConnector.Flow;
                                 RA = relA;
@@ -1049,17 +1290,47 @@ namespace AirTreeV1
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
                                 LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                               
+                                }
+                                else
+                                {
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                }
+                                // Тройник прямой
+                                
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
-                                RA = relA;
-                                RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                if (isReversed == false)
+                                {
+                                    // Тройник на ответвление
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                   
+                                }
+
+                                else
+                                {
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                }
+                               
                             }
 
 
@@ -1069,33 +1340,73 @@ namespace AirTreeV1
                             // Все коннекторы по одному случаю смешанные (прямоугольный — круглый — круглый)
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
                                 }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                }
+                                
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                       
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                         }
@@ -1107,33 +1418,72 @@ namespace AirTreeV1
                         {
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.Area / InletConnector.Area;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                        LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                    }
                                 }
                             }
                             else
-                            {
-                                relA = selectedConnector.Area / InletConnector.Area;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                            {   
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                        LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                    }
+                                   
                                 }
+                                else
+                                {
+                                    relA = selectedConnector.Area / InletConnector.Area;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    }
+                                }
+                               
                             }
                         }
                         else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
@@ -1141,41 +1491,84 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
                                 }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                }
+                               
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
+                                // Тройник на ответвление
+                                
+                            
                         }
                         else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
                         {
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
+                                if (isReversed == false)
+                                {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
                                 relC = selectedConnector.Velocity / InletConnector.Velocity;
@@ -1188,8 +1581,27 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
+                               
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                }
                             }
                             else
+                            {
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1204,6 +1616,23 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
+                               
+                            }
+                            else
+                            {
+                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                relQ = selectedConnector.Flow / InletConnector.Flow;
+                                relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                RA = relA;
+                                RQ = relQ;
+                                RC = relC;
+                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                {
+                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    LocRes = rectTeeData.Interpolation(100000);
+                                }
+                            }
                             }
                         }
                         else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
@@ -1211,6 +1640,82 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
+                                if (isReversed == false)
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (isReversed == false)
+                                {
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                  
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                            }
+                        }
+                        else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
+                        {
+                        // Смешанный случай
+                        if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
+                        {
+                            if (isReversed == false)
+                            {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
                                 relC = selectedConnector.Velocity / InletConnector.Velocity;
@@ -1223,10 +1728,10 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
+                                
                             }
                             else
                             {
-                                // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
                                 relC = selectedConnector.Velocity / InletConnector.Velocity;
@@ -1241,25 +1746,9 @@ namespace AirTreeV1
                                 }
                             }
                         }
-                        else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
+                        else
                         {
-                            // Смешанный случай
-                            if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
-                            {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
-                                {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
-                                }
-                            }
-                            else
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1274,7 +1763,25 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
+                                
                             }
+
+                            else
+                            {
+                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                relQ = selectedConnector.Flow / InletConnector.Flow;
+                                relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                RA = relA;
+                                RQ = relQ;
+                                RC = relC;
+                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                {
+                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    LocRes = rectTeeData.Interpolation(100000);
+                                }
+                            }
+                        }
 
                         }
                         else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
@@ -1282,33 +1789,72 @@ namespace AirTreeV1
                             // Смешанный случай
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                   
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                    
                                 }
                             }
                         }
@@ -1317,25 +1863,54 @@ namespace AirTreeV1
                             // Все коннекторы круглые
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                // Тройник прямой
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
-                                RA = relA;
-                                RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                if (isReversed == false)
+                                {
+                                    // Тройник прямой
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+
+                                  
+                                }
+                                else
+                                {
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                }
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
-                                RA = relA;
-                                RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                if (isReversed == false)
+                                {
+                                    // Тройник на ответвление
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                   
+                                }
+                                else
+                                {
+                                    relA = OutletConnector1.AOutlet / InletConnector.AInlet;
+                                    relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                }
                             }
 
 
@@ -1345,33 +1920,71 @@ namespace AirTreeV1
                             // Все коннекторы по одному случаю смешанные (прямоугольный — круглый — круглый)
                             if (InletConnector.ConnectorType == selectedConnector.ConnectorType)
                             {
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                  
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                             else
                             {
-                                // Тройник на ответвление
-                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
-                                RA = relA;
-                                RQ = relQ;
-                                RC = relC;
-                                MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
-                                if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                if (isReversed == false)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                    LocRes = rectTeeData.Interpolation(100000);
+                                    // Тройник на ответвление
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                    relQ = selectedConnector.Flow / InletConnector.Flow;
+                                    relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                    RA = relA;
+                                    RQ = relQ;
+                                    RC = relC;
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
+                                    if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
+                                    {
+                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        LocRes = rectTeeData.Interpolation(100000);
+                                    }
                                 }
                             }
                         }
