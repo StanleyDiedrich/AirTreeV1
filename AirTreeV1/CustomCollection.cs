@@ -103,7 +103,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 5301590)
+                                    if (element.ElementId.IntegerValue == 11599218)
                                     {
                                         var element2 = element;
                                     }
@@ -301,7 +301,7 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType == CustomElement.Detail.FireProtectValve)
                             {
-                                if (element.ElementId.IntegerValue == 9760075)
+                                if (element.ElementId.IntegerValue == 20659396)
                                 {
                                     var element2 = element;
                                 }
