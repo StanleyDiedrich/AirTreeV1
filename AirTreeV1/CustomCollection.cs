@@ -223,17 +223,17 @@ namespace AirTreeV1
                                 }
                             }
 
-                           /* else if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                            else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
 
-
+                                if (element.ElementId.IntegerValue == 10307806)
                                 {
                                     var element2 = element;
                                 }
-
-                                CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
-                                element.IA = customDuctInsert.IA;
+                                bool isReversed = FindPrevious(element, branch);
+                                CustomDuctInsert3 customDuctInsert = new CustomDuctInsert3(Document, element, branch, isReversed );
+                               /* element.IA = customDuctInsert.IA;
                                 element.IQ = customDuctInsert.IQ;
                                 element.IC = customDuctInsert.IC;
                                 element.O1A = customDuctInsert.O1A;
@@ -243,11 +243,11 @@ namespace AirTreeV1
                                 element.O2Q = customDuctInsert.O2Q;
                                 element.RA = customDuctInsert.RA;
                                 element.RQ = customDuctInsert.RQ;
-                                element.RC = customDuctInsert.RC;
+                                element.RC = customDuctInsert.RC;*/
                                 element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes; 
-                                branch.Pressure += 1;
-                            }*/
+                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                //branch.Pressure += 1;
+                            }
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
                                 if (element.ElementId.IntegerValue == 8976273)
