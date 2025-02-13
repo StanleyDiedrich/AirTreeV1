@@ -423,15 +423,23 @@ namespace AirTreeV1
 
 
                     collection.Calcualate(mainViewModel.Density);
-                    
-                    collection.ResCalculate();
-                    CustomBranch selectedbranch = collection.SelectMainBranch();
+
+                    //collection.ResCalculate();
+                    //CustomBranch selectedbranch = collection.SelectMainBranch();
                     /*foreach (var element in selectedbranch.Elements)
                     {
                         selectedelements.Add(element.ElementId);
                     }*/
 
-                    collection.MarkCollection(selectedbranch);
+                    //collection.MarkCollection(selectedbranch);
+
+                    collection.MarkCollection();
+
+                    Tree tree = new Tree(collection);
+
+
+
+
                     string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try

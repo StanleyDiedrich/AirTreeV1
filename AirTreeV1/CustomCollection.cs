@@ -21,7 +21,7 @@ namespace AirTreeV1
 
     public class CustomCollection
     {
-        List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
+        public List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
         Autodesk.Revit.DB.Document Document { get; set; }
         public double Density { get; set; }
         public CustomElement ActiveElement { get; set; }
@@ -170,7 +170,7 @@ namespace AirTreeV1
 
                                      element.LocRes = customTee.LocRes;
                                      element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;*/
-                                    branch.Pressure += 7;
+                                    //branch.Pressure += 7;
                                 }
                                 catch
                                 {
@@ -1006,13 +1006,13 @@ namespace AirTreeV1
             return maxbranch;
         }
 
-        public void MarkCollection(CustomBranch customBranch)
+        public void MarkCollection()
         {
             List<CustomBranch> newCustomCollection = new List<CustomBranch>();
             HashSet<ElementId> checkedElements = new HashSet<ElementId>();
 
             // Сначала обрабатываем основную ветвь 
-            foreach (var branch in Collection)
+            /*foreach (var branch in Collection)
             {
                 if (branch.Number == customBranch.Number)
                 {
@@ -1028,7 +1028,7 @@ namespace AirTreeV1
                     newCustomCollection.Add(branch);
                     break; // Прекращаем дальнейший обход после нахождения основной ветви 
                 }
-            }
+            }*/
 
             //Вписываем новую фичу
             /* List<CustomBranch> newCollection = new List<CustomBranch>();
@@ -1070,10 +1070,10 @@ namespace AirTreeV1
             // Обрабатываем остальные ветви 
             foreach (var branch in Collection)
             {
-                if (branch.Number == customBranch.Number)
+                /*if (branch.Number == customBranch.Number)
                 {
                     continue;
-                }
+                }*/
 
                 CustomBranch newCustomBranch = new CustomBranch(Document);
                 int trackCounter = 0;

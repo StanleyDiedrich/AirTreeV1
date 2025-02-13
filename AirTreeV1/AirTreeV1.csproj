@@ -84,6 +84,8 @@
     <Compile Include="RoundTransitionData.cs" />
     <Compile Include="SystemElement.cs" />
     <Compile Include="SystemNumber.cs" />
+    <Compile Include="Tree.cs" />
+    <Compile Include="TreeNode.cs" />
     <Compile Include="UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>
