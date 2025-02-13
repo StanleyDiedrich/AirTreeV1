@@ -42,26 +42,31 @@ namespace AirTreeV1
             
         }
 
-        internal void FindElements(CustomElement element, CustomCollection collection)
+        internal void FindElements(CustomElement element, CustomBranch branch)
         {
+            
             int index = 0;
 
             // Assuming CustomBranch contains a collection of CustomElements
-            foreach (var branch in collection.Collection)
-            {
+           
                 for (int i = 0; i < branch.Elements.Count; i++)
                 {
                     // Perform your logic to find the element
-                    if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
+                    if (element!=null)
                     {
-                        index = i;
-                        break;
+                        if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
+                        {
+                            index = i;
+                            break;
+                        }
                     }
+                    
 
                 }
-                //index++;
-                for (int j = index; j < branch.Elements.Count; j++)
+                
+                for (int j = index+1; j < branch.Elements.Count; j++)
                 {
+                    
                     if (branch.Elements[j].DetailType == CustomElement.Detail.Tee || branch.Elements[j].DetailType == CustomElement.Detail.TapAdjustable)
                     {
                         NextNode = branch.Elements[j];
@@ -74,7 +79,7 @@ namespace AirTreeV1
 
                     }
                 }
-            }
+           
             
 
         }

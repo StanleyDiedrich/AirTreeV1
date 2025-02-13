@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
+using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace AirTreeV1
@@ -37,24 +38,47 @@ namespace AirTreeV1
                         if (element.DetailType == CustomElement.Detail.AirTerminal)
                         {
                             TreeNode treeNode = new TreeNode(element);
-                            checkedElements.Add(element.ElementId);
-                            treeNode.FindElements(element, CustomCollection);
-                            treeNode.NodeCalcPressure();
-                            TreeNodes.Add(treeNode);
+                            if (treeNode.Id.IntegerValue == 643925)
+                            {
+                                var treenode2 = treeNode;
+                            }
+                                if (!checkedElements.Contains(element.ElementId))
+                            {
+                                treeNode.FindElements(treeNode.CElement, branch);
+                                treeNode.NodeCalcPressure();
+                                TreeNodes.Add(treeNode);
+                                checkedElements.Add(element.ElementId);
+                            }
                         }
-                        else if (element.DetailType == CustomElement.Detail.Tee || element.DetailType == CustomElement.Detail.TapAdjustable)
+                        if (element.DetailType==CustomElement.Detail.Tee || element.DetailType == CustomElement.Detail.TapAdjustable)
                         {
                             TreeNode treeNode = new TreeNode(element);
-                            checkedElements.Add(element.ElementId);
-                            treeNode.FindElements(element, CustomCollection);
-                            treeNode.NodeCalcPressure();
-                            TreeNodes.Add(treeNode);
+
+                            if (!checkedElements.Contains(element.ElementId))
+                            {
+                                treeNode.FindElements(treeNode.CElement, branch);
+                                treeNode.NodeCalcPressure();
+                                TreeNodes.Add(treeNode);
+                                checkedElements.Add(element.ElementId);
+                            }
                         }
-                      
+                        
+
                     }
                 }
+                /*foreach (var node in TreeNodes)
+                {
+                    if (node.Id.IntegerValue == 643847)
+                    {
+                        var treenode2 = node;
+                    }
+                    node.FindElements(node.CElement, branch);
+                    node.NodeCalcPressure();
+                }*/
             }
 
+            
+           
             UpdateAdjacencyMatrix();
         }
 
@@ -68,33 +92,51 @@ namespace AirTreeV1
                 var nextnode = TreeNodes[i].NextNode;
                 if (TreeNodes[i].NextNode != null)
                 {
-                    var foundNode = TreeNodes.FirstOrDefault(x => x.Id.IntegerValue == nextnode.ElementId.IntegerValue);
-                    var k = TreeNodes.IndexOf(foundNode);
 
-                    AdjacencyMatrix[i, k] = TreeNodes[i].Pressure;
-                    for (int j = 0; j < size; j++)
+                    int foundedelem = 0;
+                    for (int k = 0; k < size;k++)
                     {
-                        if (i == j)
+                        if (TreeNodes[k].Id.IntegerValue == nextnode.ElementId.IntegerValue)
                         {
-                            continue;
+                            foundedelem = k;
+                            break;
                         }
-                        else if (j == k)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            /*if (TreeNodes[i].Edge.Contains(TreeNodes[j].NextNode))
-                            {
-                                AdjacencyMatrix[i, j] = TreeNodes[i].Pressure;
-                            }*/
-
-
-                            AdjacencyMatrix[i, j] = 0;
-
-                        }
-
                     }
+                   /* var foundNode = TreeNodes.FirstOrDefault(x => x.Id.IntegerValue == nextnode.ElementId.IntegerValue);
+                    var k = TreeNodes.IndexOf(foundNode);*/
+
+                    AdjacencyMatrix[i, foundedelem] = TreeNodes[i].Pressure;
+                    if (size==0)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            if (i == j)
+                            {
+                                continue;
+                            }
+                            else if (j == foundedelem)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                /*if (TreeNodes[i].Edge.Contains(TreeNodes[j].NextNode))
+                                {
+                                    AdjacencyMatrix[i, j] = TreeNodes[i].Pressure;
+                                }*/
+
+
+                                AdjacencyMatrix[i, j] = 0;
+
+                            }
+
+                        }
+                    }
+                    
                 }
                 
 
