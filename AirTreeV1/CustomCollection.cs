@@ -1106,7 +1106,7 @@ namespace AirTreeV1
                         {
                             element.TrackNumber = trackCounter;
                             element.BranchNumber = branch.Number;
-                            newCustomBranch.AddSpecial(element);
+                            newCustomBranch.Add(element);
                             //checkedElements.Add(element.ElementId);
                             trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
                         }
@@ -1121,7 +1121,7 @@ namespace AirTreeV1
                         element.TrackNumber = trackCounter;
                         element.BranchNumber = branch.Number;
                         newCustomBranch.Add(element);
-                        checkedElements.Add(element.ElementId);
+                        //checkedElements.Add(element.ElementId);
                         trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
                     }
 

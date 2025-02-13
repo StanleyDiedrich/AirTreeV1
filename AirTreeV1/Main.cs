@@ -436,11 +436,16 @@ namespace AirTreeV1
                     collection.MarkCollection();
 
                     Tree tree = new Tree(collection);
+                    tree.AddNodes(collection);
+                    string matrixcontent = tree.PrintMatrix();
+                    tree.SaveFile(matrixcontent);
 
 
 
+                    // ЭТО ВАЖНО!!!!
 
-                    string content = collection.GetContent();
+
+                    /*string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try
                     {
@@ -450,7 +455,10 @@ namespace AirTreeV1
                     catch
                     {
                         TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
-                    }
+                    }*/
+
+
+                    //ВЕРНИ КАК БЫЛО!
                 }
                 else
                 {

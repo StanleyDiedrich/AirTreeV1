@@ -10,6 +10,7 @@ namespace AirTreeV1
     public class TreeNode
     {
         public string Name { get; set; }
+        public string StrId { get; set; }
         public ElementId Id { get; set; }
          public CustomElement CElement { get; set; }
          public CustomElement NextNode { get; set; }
@@ -22,6 +23,7 @@ namespace AirTreeV1
             CElement = customElement;
             Name = CElement.Name;
             Id = CElement.ElementId;
+            StrId = Id.IntegerValue.ToString();
 
             if (CElement.DetailType == CustomElement.Detail.AirTerminal)
             {
@@ -32,6 +34,7 @@ namespace AirTreeV1
 
         public void NodeCalcPressure()
         {
+            Pressure += CElement.PDyn;
             foreach(var element in Edge)
             {
                 Pressure += element.PDyn + element.PStat;
@@ -39,34 +42,40 @@ namespace AirTreeV1
             
         }
 
-        internal void FindElements(CustomElement element, CustomBranch branch)
+        internal void FindElements(CustomElement element, CustomCollection collection)
         {
             int index = 0;
 
             // Assuming CustomBranch contains a collection of CustomElements
-            for (int i =0; i<branch.Elements.Count;i++)
+            foreach (var branch in collection.Collection)
             {
-                // Perform your logic to find the element
-                if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
+                for (int i = 0; i < branch.Elements.Count; i++)
                 {
-                    index = i;
-                }
-               
-            }
-            index++;
-            for (int j = index;j<branch.Elements.Count;j++)
-            {
-                if (branch.Elements[j].DetailType == CustomElement.Detail.Tee || branch.Elements[j].DetailType == CustomElement.Detail.TapAdjustable)
-                {
-                    NextNode = branch.Elements[j];
-                    break;
-                }
-                else
-                {
-                    Edge.Add(branch.Elements[j]);
+                    // Perform your logic to find the element
+                    if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
+                    {
+                        index = i;
+                        break;
+                    }
 
                 }
+                //index++;
+                for (int j = index; j < branch.Elements.Count; j++)
+                {
+                    if (branch.Elements[j].DetailType == CustomElement.Detail.Tee || branch.Elements[j].DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        NextNode = branch.Elements[j];
+                        Edge.Add(NextNode);
+                        break;
+                    }
+                    else
+                    {
+                        Edge.Add(branch.Elements[j]);
+
+                    }
+                }
             }
+            
 
         }
     }
