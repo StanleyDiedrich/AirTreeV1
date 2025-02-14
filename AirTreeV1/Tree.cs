@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.ExtensibleStorage;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,7 +27,53 @@ namespace AirTreeV1
             //HashSet<ElementId> checkedElements = new HashSet<ElementId>();
             
         }
-        
+
+        public void MatrixCalc()
+        {
+            double maxpressure = double.MinValue;
+            TreeNode selectedNode = null;
+            int size = TreeNodes.Count;
+            for (int i=0; i<size;i++)
+            {
+                if (TreeNodes[i].IsStart==true && TreeNodes[i].IsVisited==false)
+                {
+                    var nextnode = TreeNodes[i].NextNode;
+                    int index = 0;
+                    for (int k =0; k<size;k++)
+                    {
+                        if (TreeNodes[k].Id.IntegerValue == nextnode.ElementId.IntegerValue)
+                        {
+                            index = k;
+                        }
+                    }
+                    CustomElement element = TreeNodes[i].NextNode;
+
+                    if (element.DetailType == CustomElement.Detail.Tee)
+                    {
+                        CustomTee2 customDuctInsert = new CustomTee2(CustomCollection.Document, element, CustomCollection.Collection, false);
+                        element.LocRes = customDuctInsert.LocRes;
+                        element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+
+                        TreeNodes[i].Pressure += element.PDyn;
+                        //TreeNodes[i].Pressure += TreeNodes[i].Pressure;
+                    }
+                    if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        //bool isReversed = FindPrevious(element, branch);
+
+                        CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(CustomCollection.Document, element, CustomCollection.Collection, false);
+                        element.LocRes = customDuctInsert.LocRes;
+                        element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                        TreeNodes[i].Pressure += element.PDyn;
+                        //TreeNodes[index].Pressure += TreeNodes[i].Pressure;
+                    }
+                    TreeNodes[i].IsVisited = true;
+                }
+                UpdateAdjacencyMatrix();
+            }
+            int left_nodes = TreeNodes.Select(x => x).Where(x => x.IsVisited == false).Count();
+
+        }
         public void AddNodes(CustomCollection customCollection)
         {
             foreach (var branch in customCollection.Collection)
@@ -171,7 +218,7 @@ namespace AirTreeV1
                     {
                         sb.Append(TreeNodes[i].StrId.ToString());
                         sb.Append(";");
-                        sb.Append(TreeNodes[i].Name.ToString());
+                        sb.Append(TreeNodes[i].CElement.DetailType.ToString());
                         sb.Append(";");
                     }
                     sb.Append(AdjacencyMatrix[i, j]);

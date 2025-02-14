@@ -22,7 +22,7 @@ namespace AirTreeV1
     public class CustomCollection
     {
         public List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
-        Autodesk.Revit.DB.Document Document { get; set; }
+        public Autodesk.Revit.DB.Document Document { get; set; }
         public double Density { get; set; }
         public CustomElement ActiveElement { get; set; }
         public string FirstElement { get; set; }

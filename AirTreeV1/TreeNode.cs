@@ -16,6 +16,7 @@ namespace AirTreeV1
          public CustomElement NextNode { get; set; }
         public bool IsStart { get; set;}
         public bool IsVisited { get; set; }
+        public bool IsMain { get; set; }
          public double Pressure { get; set; }
         public List<CustomElement> Edge { get; set; } = new List<CustomElement>();
         public TreeNode (CustomElement customElement)
@@ -83,5 +84,7 @@ namespace AirTreeV1
             
 
         }
+
+
     }
 }
