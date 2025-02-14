@@ -339,7 +339,7 @@ namespace AirTreeV1
         {
             foreach (var branch in Collection)
             {
-                branch.PBTot = 0;
+                
 
                 for (int i = 1; i < branch.Elements.Count; i++)
                 {
@@ -348,7 +348,7 @@ namespace AirTreeV1
                     branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i - 1].Ptot;
 
                 }
-
+                branch.PBTot = branch.Elements.Last().Ptot;
             }
         }
            /* List<CustomBranch> newCollection = new List<CustomBranch>();
@@ -1003,7 +1003,7 @@ namespace AirTreeV1
             {
                 branches.Add(branch);
             }
-            var maxbranch = branches.OrderByDescending(x => x.Pressure).FirstOrDefault();
+            var maxbranch = branches.OrderByDescending(x => x.PBTot).FirstOrDefault();
             return maxbranch;
         }
 
@@ -1011,7 +1011,7 @@ namespace AirTreeV1
         {
             List<CustomBranch> newCustomCollection = new List<CustomBranch>();
             HashSet<ElementId> checkedElements = new HashSet<ElementId>();
-
+            
             // Сначала обрабатываем основную ветвь 
             /*foreach (var branch in Collection)
             {
@@ -1144,7 +1144,7 @@ namespace AirTreeV1
         {
             List<CustomBranch> newCustomCollection = new List<CustomBranch>();
             HashSet<ElementId> checkedElements = new HashSet<ElementId>();
-
+            
             // Сначала обрабатываем основную ветвь 
             foreach (var branch in Collection)
             {

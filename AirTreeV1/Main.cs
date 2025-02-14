@@ -434,17 +434,17 @@ namespace AirTreeV1
                     //collection.MarkCollection(selectedbranch);
 
                     collection.MarkCollection();
-
+                    collection.ResCalculate();
                     Tree tree = new Tree(collection);
                     tree.AddNodes(collection);
                     tree.MatrixCalc();
                     //string matrixcontent = tree.PrintMatrix();
 
                     //tree.SaveFile(matrixcontent);
-
+                    collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
                     CustomBranch selectedbranch = collection.SelectMainBranch();
                     collection.ReMarkCollection(selectedbranch);
-
+                    
                     // ЭТО ВАЖНО!!!!
 
 
