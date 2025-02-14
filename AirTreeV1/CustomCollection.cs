@@ -343,13 +343,14 @@ namespace AirTreeV1
 
                 for (int i = 1; i < branch.Elements.Count; i++)
                 {
-
+                   
+                    
                     branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i - 1].Ptot;
 
                 }
 
             }
-
+        }
            /* List<CustomBranch> newCollection = new List<CustomBranch>();
 
             foreach (var branch in Collection)
@@ -378,7 +379,7 @@ namespace AirTreeV1
             Collection = newCollection;*/
 
 
-            foreach (var branch in Collection)
+            /*foreach (var branch in Collection)
             {
                 for (int i =0; i<branch.Elements.Count;i++)
                 //foreach (var element in branch.Elements)
@@ -414,7 +415,7 @@ namespace AirTreeV1
                             element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
 
 
-                           /* CustomElement element2 = new CustomElement(Document, branch.Elements[i + 1].ElementId);
+                           *//* CustomElement element2 = new CustomElement(Document, branch.Elements[i + 1].ElementId);
                             CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, true);
                             element2.IA = customDuctInsert2.IA;
                             element2.IQ = customDuctInsert2.IQ;
@@ -429,7 +430,7 @@ namespace AirTreeV1
                             element2.RC = customDuctInsert2.RC;
                             element2.LocRes = customDuctInsert2.LocRes;
                             element2.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element2.LocRes;
-                            i++;*/
+                            i++;*//*
 
                         }
 
@@ -461,20 +462,20 @@ namespace AirTreeV1
 
                         }
                         
-                    }
+                    }*/
                     
-                    catch
+                    /*catch
                     {
                         //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                        /*ActiveElement = element;
-                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*/
+                        *//*ActiveElement = element;
+                        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";*//*
                         //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-                    }
+                    }*/
                    
-                }
+            /*    }
                 
                
-            }
+            }*/
             
 
 
@@ -930,7 +931,7 @@ namespace AirTreeV1
             Collection = newCollection2;*/
 
 
-            foreach (var branch in Collection)
+          /*  foreach (var branch in Collection)
             {
                 branch.PBTot = 0;
 
@@ -960,7 +961,7 @@ namespace AirTreeV1
             //Финальный пересчет
 
 
-        }
+        }*/
 
         private bool FindPrevious(CustomElement element, CustomBranch branch)
         {
@@ -1126,6 +1127,71 @@ namespace AirTreeV1
                     }
 
                     
+                }
+
+                branch.Number++;
+                newCustomBranch.Number = branch.Number;
+                newCustomCollection.Add(newCustomBranch);
+                
+            }
+
+            // Обновляем коллекцию 
+            Collection = newCustomCollection;
+        }
+
+
+        public void ReMarkCollection(CustomBranch selectedBranch)
+        {
+            List<CustomBranch> newCustomCollection = new List<CustomBranch>();
+            HashSet<ElementId> checkedElements = new HashSet<ElementId>();
+
+            // Сначала обрабатываем основную ветвь 
+            foreach (var branch in Collection)
+            {
+                if (branch.Number == selectedBranch.Number)
+                {
+                    int trackCounter = 0;
+                    foreach (var element in branch.Elements)
+                    {
+                        element.TrackNumber = trackCounter;
+                        element.BranchNumber = branch.Number;
+                        element.MainTrack = true;
+                        checkedElements.Add(element.ElementId);
+                        trackCounter++;
+                    }
+                    newCustomCollection.Add(branch);
+                    break; // Прекращаем дальнейший обход после нахождения основной ветви 
+                }
+            }
+
+            // Обрабатываем остальные ветви 
+            foreach (var branch in Collection)
+            {
+                if (branch.Number == selectedBranch.Number)
+                {
+                    continue;
+                }
+
+                CustomBranch newCustomBranch = new CustomBranch(Document);
+                int trackCounter = 0;
+
+                foreach (var element in branch.Elements)
+                {
+                    if (checkedElements.Contains(element.ElementId))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        element.TrackNumber = trackCounter;
+                        element.BranchNumber = branch.Number;
+                        newCustomBranch.Add(element);
+                        checkedElements.Add(element.ElementId);
+                        trackCounter++;
+                    }
+                        
+
+
                 }
 
                 newCustomCollection.Add(newCustomBranch);

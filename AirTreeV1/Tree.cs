@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -55,7 +56,7 @@ namespace AirTreeV1
                         element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
 
                         TreeNodes[i].Pressure += element.PDyn;
-                        //TreeNodes[i].Pressure += TreeNodes[i].Pressure;
+                        TreeNodes[index].Pressure += TreeNodes[i].Pressure;
                     }
                     if (element.DetailType == CustomElement.Detail.TapAdjustable)
                     {
@@ -65,13 +66,77 @@ namespace AirTreeV1
                         element.LocRes = customDuctInsert.LocRes;
                         element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
                         TreeNodes[i].Pressure += element.PDyn;
-                        //TreeNodes[index].Pressure += TreeNodes[i].Pressure;
+                        TreeNodes[index].Pressure += TreeNodes[i].Pressure;
                     }
                     TreeNodes[i].IsVisited = true;
                 }
                 UpdateAdjacencyMatrix();
             }
             int left_nodes = TreeNodes.Select(x => x).Where(x => x.IsVisited == false).Count();
+            int res_counter = 0;
+
+            
+                //res_counter++;
+                left_nodes = TreeNodes.Select(x => x).Where(x => x.IsVisited == false).Count();
+                for (int k = 0; k < size; k++)
+                {
+                    int counter = 0;
+                    if (TreeNodes[k].IsStart == false && TreeNodes[k].IsVisited == false)
+                    {
+                        for (int i = 0; i < size; i++)
+                        {
+                            if (TreeNodes[i].NextNode != null && TreeNodes[k].CElement != null)
+                            {
+                                if (TreeNodes[i].NextNode.ElementId.IntegerValue == TreeNodes[k].CElement.ElementId.IntegerValue)
+                                {
+                                    if (counter == 1)
+                                    {
+                                        int check_index = 0;
+                                        CustomElement element = TreeNodes[k].CElement;
+
+                                        if (element.DetailType == CustomElement.Detail.Tee)
+                                        {
+                                            check_index = k;
+                                            CustomTee2 customDuctInsert = new CustomTee2(CustomCollection.Document, element, CustomCollection.Collection, false);
+                                            element.LocRes = customDuctInsert.LocRes;
+                                            element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+
+                                            TreeNodes[i].Pressure += element.PDyn;
+                                            TreeNodes[k].Pressure += TreeNodes[i].Pressure;
+                                        }
+                                    if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                                    {
+                                        //bool isReversed = FindPrevious(element, branch);
+                                        check_index = k;
+                                        CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(CustomCollection.Document, element, CustomCollection.Collection, false);
+                                        element.LocRes = customDuctInsert.LocRes;
+                                        element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                        TreeNodes[i].Pressure += element.PDyn;
+                                        TreeNodes[k].Pressure += TreeNodes[i].Pressure;
+                                    }
+                                    TreeNodes[check_index].IsVisited = true;
+                                        CustomCollection.ResCalculate();
+                                        UpdateAdjacencyMatrix();
+                                    }
+                                    else
+                                    {
+                                        counter++;
+                                    }
+
+                                }
+                            }
+                            else
+                            { continue; }
+
+                        }
+                    }
+
+                }
+
+                
+            
+
+            
 
         }
         public void AddNodes(CustomCollection customCollection)

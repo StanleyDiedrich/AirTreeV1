@@ -424,7 +424,7 @@ namespace AirTreeV1
 
                     collection.Calcualate(mainViewModel.Density);
 
-                    //collection.ResCalculate();
+                    collection.ResCalculate();
                     //CustomBranch selectedbranch = collection.SelectMainBranch();
                     /*foreach (var element in selectedbranch.Elements)
                     {
@@ -438,16 +438,17 @@ namespace AirTreeV1
                     Tree tree = new Tree(collection);
                     tree.AddNodes(collection);
                     tree.MatrixCalc();
-                    string matrixcontent = tree.PrintMatrix();
+                    //string matrixcontent = tree.PrintMatrix();
 
-                    tree.SaveFile(matrixcontent);
+                    //tree.SaveFile(matrixcontent);
 
-
+                    CustomBranch selectedbranch = collection.SelectMainBranch();
+                    collection.ReMarkCollection(selectedbranch);
 
                     // ЭТО ВАЖНО!!!!
 
 
-                    /*string content = collection.GetContent();
+                    string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try
                     {
@@ -457,7 +458,7 @@ namespace AirTreeV1
                     catch
                     {
                         TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
-                    }*/
+                    }
 
 
                     //ВЕРНИ КАК БЫЛО!
