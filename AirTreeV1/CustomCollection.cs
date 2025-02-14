@@ -1177,8 +1177,59 @@ namespace AirTreeV1
 
                 foreach (var element in branch.Elements)
                 {
+                    if (element.ElementId.IntegerValue == 642765)
+                    {
+                        var element2 = element;
+                    }
                     if (checkedElements.Contains(element.ElementId))
                     {
+                        if (element.IsReversed==true)
+                        {
+                            CustomElement newelement = new CustomElement(Document, element.ElementId);
+                            if (
+                           element.DetailType == CustomElement.Detail.RoundTeeBranch ||
+                           element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                           element.DetailType == CustomElement.Detail.RectTeeBranch ||
+                           element.DetailType == CustomElement.Detail.RectTeeStraight ||
+                           element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                           element.DetailType == CustomElement.Detail.RectRoundTeeStraight )
+                          
+
+                            {
+                                CustomTee2 customDuctInsert = new CustomTee2(Document, newelement, Collection, true);
+                                newelement.LocRes = customDuctInsert.LocRes;
+                                newelement.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * newelement.LocRes;
+                                newelement.TrackNumber = trackCounter;
+                                newelement.BranchNumber = branch.Number;
+                                newCustomBranch.AddSpecial(newelement);
+                                //checkedElements.Add(newelement.ElementId);
+                                trackCounter++;
+
+                                
+                            }
+                            if (
+                          
+                           element.DetailType == CustomElement.Detail.RectInRectDuctInsertBranch ||
+                           element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertBranch ||
+                           element.DetailType == CustomElement.Detail.RoundInRectDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RoundInRectDuctInsertBranch ||
+                           element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
+                            {
+                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, newelement, Collection, true);
+                                newelement.LocRes = customDuctInsert.LocRes;
+                                newelement.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * newelement.LocRes;
+                                newelement.TrackNumber = trackCounter;
+                                newelement.BranchNumber = branch.Number;
+                                newCustomBranch.AddSpecial(newelement);
+                                //checkedElements.Add(newelement.ElementId);
+                                trackCounter++;
+                                
+                            }
+                        }
                         break;
                     }
                     else
@@ -1199,6 +1250,7 @@ namespace AirTreeV1
 
             // Обновляем коллекцию 
             Collection = newCustomCollection;
+            ResCalculate();
         }
 
 

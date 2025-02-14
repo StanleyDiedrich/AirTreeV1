@@ -100,7 +100,7 @@ namespace AirTreeV1
                                             CustomTee2 customDuctInsert = new CustomTee2(CustomCollection.Document, element, CustomCollection.Collection, false);
                                             element.LocRes = customDuctInsert.LocRes;
                                             element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
-
+                                            element.IsTee = true;
                                             TreeNodes[i].Pressure += element.PDyn;
                                             TreeNodes[k].Pressure += TreeNodes[i].Pressure;
                                         }
@@ -111,6 +111,7 @@ namespace AirTreeV1
                                         CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(CustomCollection.Document, element, CustomCollection.Collection, false);
                                         element.LocRes = customDuctInsert.LocRes;
                                         element.PDyn = CustomCollection.Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                        element.IsTapAdjustable = true;
                                         TreeNodes[i].Pressure += element.PDyn;
                                         TreeNodes[k].Pressure += TreeNodes[i].Pressure;
                                     }

@@ -112,7 +112,8 @@ namespace AirTreeV1
 
             
         }
-
+        public bool IsTee { get; set; }
+        public bool IsTapAdjustable { get; set; }
         public Detail DetailType { get;  set; }
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
