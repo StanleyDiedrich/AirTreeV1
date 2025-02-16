@@ -130,6 +130,7 @@ namespace AirTreeV1
         public double RA { get; set; }
         public double RQ { get; set; }
         public double RC { get; set; }
+        public bool IsNonPrinted { get; set; }
 
         
         private string GetValue(string primaryvolume)

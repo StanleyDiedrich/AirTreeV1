@@ -155,8 +155,8 @@ namespace AirTreeV1
                                     {
                                         var element2 = element;
                                     }
-                                    /* CustomTee customTee = new CustomTee(Document, element);
-                                     element.IA = customTee.IA;
+                                    CustomTee2 customTee = new CustomTee2(Document, element, Collection, true);
+                                    element.IA = customTee.IA;
                                      element.IQ = customTee.IQ;
                                      element.IC = customTee.IC;
                                      element.O1A = customTee.O1A;
@@ -169,7 +169,9 @@ namespace AirTreeV1
                                      element.RC = customTee.RC;
 
                                      element.LocRes = customTee.LocRes;
-                                     element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;*/
+                                     element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+
+                                     
                                     //branch.Pressure += 7;
                                 }
                                 catch
@@ -219,7 +221,7 @@ namespace AirTreeV1
                                 }
                             }
 
-                           /* else if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                           else if (element.DetailType == CustomElement.Detail.TapAdjustable)
                             {
 
 
@@ -228,7 +230,7 @@ namespace AirTreeV1
                                     var element2 = element;
                                 }
 
-                                CustomDuctInsert customDuctInsert = new CustomDuctInsert(Document, element);
+                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection, true);
                                 element.IA = customDuctInsert.IA;
                                 element.IQ = customDuctInsert.IQ;
                                 element.IC = customDuctInsert.IC;
@@ -242,8 +244,8 @@ namespace AirTreeV1
                                 element.RC = customDuctInsert.RC;
                                 element.LocRes = customDuctInsert.LocRes;
                                 element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes; 
-                                branch.Pressure += 1;
-                            }*/
+                                //branch.Pressure += 1;
+                            }
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
                                 if (element.ElementId.IntegerValue == 8976273)
@@ -1082,11 +1084,78 @@ namespace AirTreeV1
                 foreach (var element in branch.Elements)
                 {
                     // Если элемент уже есть в основной ветви, пропускаем его 
-                    if(element.ElementId.IntegerValue == 10307806)
+                    if (element.ElementId.IntegerValue == 644209)
                     {
                         var element2 = element;
                     }
-                    if (checkedElements.Contains(element.ElementId))
+                    /*if (checkedElements.Contains(element.ElementId))
+                    {*/
+
+
+                            CustomElement newelement = new CustomElement(Document, element.ElementId);
+                            if (
+                           element.DetailType == CustomElement.Detail.RoundTeeBranch ||
+                           element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                           element.DetailType == CustomElement.Detail.RectTeeBranch ||
+                           element.DetailType == CustomElement.Detail.RectTeeStraight ||
+                           element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                           element.DetailType == CustomElement.Detail.RectRoundTeeStraight)
+
+
+                            {
+                                CustomTee2 customDuctInsert = new CustomTee2(Document, newelement, Collection, true);
+                                newelement.LocRes = customDuctInsert.LocRes;
+                                newelement.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * newelement.LocRes;
+                                newelement.TrackNumber = trackCounter;
+                                newelement.BranchNumber = branch.Number;
+                                newCustomBranch.AddSpecial(newelement);
+                                //checkedElements.Add(newelement.ElementId);
+                                trackCounter++;
+
+
+                            }
+                            if (
+
+                           element.DetailType == CustomElement.Detail.RectInRectDuctInsertBranch ||
+                           element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertBranch ||
+                           element.DetailType == CustomElement.Detail.RoundInRectDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RoundInRectDuctInsertBranch ||
+                           element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
+                           element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
+                            {
+                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, newelement, Collection, true);
+                                newelement.LocRes = customDuctInsert.LocRes;
+                                newelement.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * newelement.LocRes;
+                                newelement.TrackNumber = trackCounter;
+                                newelement.BranchNumber = branch.Number;
+                                newCustomBranch.AddSpecial(newelement);
+                                //checkedElements.Add(newelement.ElementId);
+                                trackCounter++;
+
+                            }
+                    
+
+
+
+                        //}
+                        //break;
+
+                        else
+                    {
+                        element.TrackNumber = trackCounter;
+                        element.BranchNumber = branch.Number;
+                        newCustomBranch.Add(element);
+                        //checkedElements.Add(element.ElementId);
+                        trackCounter++;
+                    }
+
+
+
+
+                   /* if (checkedElements.Contains(element.ElementId))
                     {
                         // Проверяем DetailType на соответствие списку значений
                         if (element.DetailType == CustomElement.Detail.RectInRectDuctInsertBranch ||
@@ -1107,7 +1176,7 @@ namespace AirTreeV1
                         {
                             element.TrackNumber = trackCounter;
                             element.BranchNumber = branch.Number;
-                            newCustomBranch.Add(element);
+                            newCustomBranch.AddSpecial(element);
                             //checkedElements.Add(element.ElementId);
                             trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
                         }
@@ -1121,10 +1190,10 @@ namespace AirTreeV1
                         // Устанавливаем номера и добавляем элемент в новую ветвь 
                         element.TrackNumber = trackCounter;
                         element.BranchNumber = branch.Number;
-                        newCustomBranch.Add(element);
+                        newCustomBranch.AddSpecial(element);
                         //checkedElements.Add(element.ElementId);
                         trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
-                    }
+                    }*/
 
                     
                 }
@@ -1138,13 +1207,31 @@ namespace AirTreeV1
             // Обновляем коллекцию 
             Collection = newCustomCollection;
         }
+        private int GetNeighbour(ElementId element, List<CustomBranch> collection)
+        {
 
+
+            /*foreach (var branch in collection)
+            {
+                foreach (var element in branch.Elements)
+                {
+                    if (element.ElementId == neighbourg)
+                    {
+                       
+                        return branch.Number; // возвращаем элемент сразу после нахождения
+                    }
+                }
+            }
+            // если не найден, просто возвращаем null*/
+            return -1;
+        }
 
         public void ReMarkCollection(CustomBranch selectedBranch)
         {
             List<CustomBranch> newCustomCollection = new List<CustomBranch>();
             HashSet<ElementId> checkedElements = new HashSet<ElementId>();
-            
+           
+            Dictionary< CustomElement,int> duplicatedElements = new Dictionary<CustomElement , int>();
             // Сначала обрабатываем основную ветвь 
             foreach (var branch in Collection)
             {
@@ -1153,11 +1240,49 @@ namespace AirTreeV1
                     int trackCounter = 0;
                     foreach (var element in branch.Elements)
                     {
-                        element.TrackNumber = trackCounter;
-                        element.BranchNumber = branch.Number;
-                        element.MainTrack = true;
-                        checkedElements.Add(element.ElementId);
-                        trackCounter++;
+                        if (element.ElementId.IntegerValue == 644208)
+                        {
+                            var element2 = element;
+                        }
+                        if (checkedElements.Contains(element.ElementId))
+                        {
+                            if (element.DetailType == CustomElement.Detail.RectInRectDuctInsertBranch ||
+                            element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RoundTeeBranch ||
+                            element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                            element.DetailType == CustomElement.Detail.RectTeeBranch ||
+                            element.DetailType == CustomElement.Detail.RectTeeStraight ||
+                            element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                            element.DetailType == CustomElement.Detail.RectRoundTeeStraight ||
+                            element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertBranch ||
+                            element.DetailType == CustomElement.Detail.RoundInRectDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RoundInRectDuctInsertBranch ||
+                            element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
+                            element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
+                            {
+                                //element.IsNonPrinted = true;
+                                
+                                
+                                element.IsNonPrinted = true;
+                                trackCounter--;
+                            }
+                        }
+                        else
+                        {
+                            element.TrackNumber = trackCounter;
+                            element.BranchNumber = branch.Number;
+                            element.MainTrack = true;
+                            
+                            checkedElements.Add(element.ElementId);
+                            trackCounter++;
+                        }
+
+
+
+
+                        
                     }
                     newCustomCollection.Add(branch);
                     break; // Прекращаем дальнейший обход после нахождения основной ветви 
@@ -1167,6 +1292,7 @@ namespace AirTreeV1
             // Обрабатываем остальные ветви 
             foreach (var branch in Collection)
             {
+                HashSet<ElementId> checkedBranchElements = new HashSet<ElementId>();
                 if (branch.Number == selectedBranch.Number)
                 {
                     continue;
@@ -1177,22 +1303,66 @@ namespace AirTreeV1
 
                 foreach (var element in branch.Elements)
                 {
-                    if (element.ElementId.IntegerValue == 642765)
+                    if (element.ElementId.IntegerValue == 644208)
                     {
                         var element2 = element;
                     }
                     if (checkedElements.Contains(element.ElementId))
                     {
-                        if (element.IsReversed==true)
+                        if (element.DetailType == CustomElement.Detail.RoundTeeBranch ||
+                               element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                               element.DetailType == CustomElement.Detail.RectTeeBranch ||
+                               element.DetailType == CustomElement.Detail.RectTeeStraight ||
+                               element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                               element.DetailType == CustomElement.Detail.RectRoundTeeStraight ||
+                               element.DetailType == CustomElement.Detail.RectInRectDuctInsertBranch ||
+                               element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                               element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertStraight ||
+                               element.DetailType == CustomElement.Detail.RoundInRoundDuctInsertBranch ||
+                               element.DetailType == CustomElement.Detail.RoundInRectDuctInsertStraight ||
+                               element.DetailType == CustomElement.Detail.RoundInRectDuctInsertBranch ||
+                               element.DetailType == CustomElement.Detail.RectInRectDuctInsertStraight ||
+                               element.DetailType == CustomElement.Detail.RectInRoundDuctInsertStraight ||
+                               element.DetailType == CustomElement.Detail.RectInRoundDuctInsertBranch)
+                            {
+                            if (checkedElements.Contains(element.ElementId))
+                            {
+                                if (!checkedBranchElements.Contains(element.ElementId))
+                                {
+                                   
+                                    checkedBranchElements.Add(element.ElementId);
+                                    element.IsNonPrinted = true;
+                                    
+                                }
+                                else
+                                {
+                                    element.TrackNumber = trackCounter;
+                                    element.BranchNumber = branch.Number;
+                                    newCustomBranch.Add(element);
+                                    checkedBranchElements.Add(element.ElementId);
+                                    trackCounter++;
+                                    break;
+                                }
+                            }
+                        }
+                       
+
+                               
+
+
+
+
+
+                        /*if (element.IsReversed==true)
                         {
                             CustomElement newelement = new CustomElement(Document, element.ElementId);
                             if (
-                           element.DetailType == CustomElement.Detail.RoundTeeBranch ||
-                           element.DetailType == CustomElement.Detail.RoundTeeStraight ||
-                           element.DetailType == CustomElement.Detail.RectTeeBranch ||
-                           element.DetailType == CustomElement.Detail.RectTeeStraight ||
-                           element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
-                           element.DetailType == CustomElement.Detail.RectRoundTeeStraight )
+                               element.DetailType == CustomElement.Detail.RoundTeeBranch ||
+                               element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                               element.DetailType == CustomElement.Detail.RectTeeBranch ||
+                               element.DetailType == CustomElement.Detail.RectTeeStraight ||
+                               element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                               element.DetailType == CustomElement.Detail.RectRoundTeeStraight )
                           
 
                             {
@@ -1204,8 +1374,8 @@ namespace AirTreeV1
                                 newCustomBranch.AddSpecial(newelement);
                                 //checkedElements.Add(newelement.ElementId);
                                 trackCounter++;
-
                                 
+
                             }
                             if (
                           
@@ -1227,10 +1397,13 @@ namespace AirTreeV1
                                 newCustomBranch.AddSpecial(newelement);
                                 //checkedElements.Add(newelement.ElementId);
                                 trackCounter++;
-                                
+                               
                             }
                         }
-                        break;
+                        // break;
+                        var checkedelement = element.NextElementId;
+                        //int number = GetNeighbour(checkedelement, Collection);
+                        //duplicatedElements.Add(element, number);*/
                     }
                     else
                     {
@@ -1240,13 +1413,36 @@ namespace AirTreeV1
                         checkedElements.Add(element.ElementId);
                         trackCounter++;
                     }
-                        
+                    
 
 
                 }
 
                 newCustomCollection.Add(newCustomBranch);
+               
+               
             }
+
+           
+                foreach (var kvp in duplicatedElements)
+                {
+                    var number = kvp.Value;
+                    var customElement = kvp.Key;
+                 
+
+                    
+                        if (number == selectedBranch.Number)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            
+                        }
+                    
+                }
+
+            
 
             // Обновляем коллекцию 
             Collection = newCustomCollection;
@@ -1266,20 +1462,26 @@ namespace AirTreeV1
 
                 foreach (var element in branch.Elements)
                 {
-
+                    if (element.IsNonPrinted)
+                    {
+                        continue;
+                    }
                     /*string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
                          $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.IA};{element.IQ};{element.IC};{element.O1A};{element.O1Q};{element.O1C};{element.O2A};{element.O2Q};{element.O2C};{element.RA};{element.RQ};{element.RC};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
 
                          $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";*/
-                    element.NewModelWidth = Convert.ToString(Convert.ToDouble(element.ModelWidth) );
-                    element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
-                    element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
-                    element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
-                    string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
-                        $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
 
-                        $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
-                    csvcontent.AppendLine(a);
+                    element.NewModelWidth = Convert.ToString(Convert.ToDouble(element.ModelWidth));
+                        element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
+                        element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
+                        element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
+                        string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                            $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
+
+                            $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
+                        csvcontent.AppendLine(a);
+                    
+                   
                 }
             }
 

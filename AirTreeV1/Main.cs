@@ -435,9 +435,9 @@ namespace AirTreeV1
 
                     collection.MarkCollection();
                     collection.ResCalculate();
-                    Tree tree = new Tree(collection);
-                    tree.AddNodes(collection);
-                    tree.MatrixCalc();
+                    //Tree tree = new Tree(collection);
+                    //tree.AddNodes(collection);
+                    //tree.MatrixCalc();
                     //string matrixcontent = tree.PrintMatrix();
 
                     //tree.SaveFile(matrixcontent);
