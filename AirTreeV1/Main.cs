@@ -443,14 +443,18 @@ namespace AirTreeV1
                     //tree.SaveFile(matrixcontent);
                     collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
                     CustomBranch selectedbranch = collection.SelectMainBranch();
-                    collection.TeeSolver(selectedbranch);
+                    
+                    (collection.Collection, selectedbranch) = collection.TeeSolver(selectedbranch);
+
+                    
                     //collection.TeeFinder();
+                    //selectedbranch = collection.SelectMainBranch();
                     //collection.ReMarkCollection(selectedbranch);
 
                     // ЭТО ВАЖНО!!!!
 
 
-                    string content = collection.GetContent();
+                    string content = collection.GetContent(selectedbranch);
                     string filemname = collection.FirstElement;
                     try
                     {
