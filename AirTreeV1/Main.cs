@@ -422,9 +422,9 @@ namespace AirTreeV1
                     //collection.Calcualate(mainViewModel.Density);
 
 
-                    collection.Calcualate(mainViewModel.Density);
+                    //collection.Calcualate(mainViewModel.Density);
 
-                    collection.ResCalculate();
+                    //collection.ResCalculate();
                     //CustomBranch selectedbranch = collection.SelectMainBranch();
                     /*foreach (var element in selectedbranch.Elements)
                     {
@@ -433,8 +433,8 @@ namespace AirTreeV1
 
                     //collection.MarkCollection(selectedbranch);
 
-                    collection.MarkCollection();
-                    collection.ResCalculate();
+                    //collection.MarkCollection();
+                    //collection.ResCalculate();
                     //Tree tree = new Tree(collection);
                     //tree.AddNodes(collection);
                     //tree.MatrixCalc();
@@ -443,8 +443,10 @@ namespace AirTreeV1
                     //tree.SaveFile(matrixcontent);
                     collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
                     CustomBranch selectedbranch = collection.SelectMainBranch();
-                    collection.ReMarkCollection(selectedbranch);
-                    
+                    collection.TeeSolver(selectedbranch);
+                    //collection.TeeFinder();
+                    //collection.ReMarkCollection(selectedbranch);
+
                     // ЭТО ВАЖНО!!!!
 
 

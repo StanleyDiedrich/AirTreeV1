@@ -28,6 +28,10 @@ namespace AirTreeV1
         public string FirstElement { get; set; }
 
         public string ErrorString { get; set; }
+
+        public List<CustomElement> Tees { get; set; } = new List<CustomElement>();
+
+        List<ElementId> CreatedElements { get; set; } = new List<ElementId>();
         public void Add(CustomBranch branch)
         {
             Collection.Add(branch);
@@ -35,8 +39,10 @@ namespace AirTreeV1
 
         public void CreateBranch(Document document, ElementId airterminal)
         {
+
             CustomBranch customBranch = new CustomBranch(Document, airterminal);
             customBranch.CreateNewBranch(Document, airterminal);
+            customBranch.Number++;
             //CustomElement customElement = new CustomElement(Document,  airterminal);
             Collection.Add(customBranch);
 
@@ -78,7 +84,8 @@ namespace AirTreeV1
 
         public void Calcualate(double density)
         {
-
+            List<ElementId> checkedElements = new List<ElementId>();
+            List<CustomBranch> newCollection = new List<CustomBranch>();
             IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "," };
             IFormatProvider formatter2 = new NumberFormatInfo { NumberDecimalSeparator = "." };
             Density = density;
@@ -91,6 +98,9 @@ namespace AirTreeV1
             {
                 foreach (var branch in Collection)
                 {
+                    int branchnnumber = branch.Number;
+                   
+                    
                     foreach (var element in branch.Elements)
                     {
                         try
@@ -99,6 +109,7 @@ namespace AirTreeV1
                             {
                                 continue;
                             }
+                            
                             if (element.DetailType == CustomElement.Detail.AirTerminal)
                             {
                                 try
@@ -116,7 +127,8 @@ namespace AirTreeV1
                                     element.ModelHydraulicArea = customAirTerminal.HArea.ToString();*/
                                     element.PDyn = customAirTerminal.PDyn;
                                     element.Ptot = customAirTerminal.PDyn;
-                                    branch.Pressure += element.PDyn;
+                                    //branch.Pressure += element.PDyn;
+                                   
                                    // branch.Pressure += element.Ptot;
                                 }
                                 catch
@@ -138,7 +150,8 @@ namespace AirTreeV1
                                     CustomElbow customElbow = new CustomElbow(Document, element);
                                     element.LocRes = customElbow.LocRes;
                                     element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
-                                    branch.Pressure += element.PDyn;
+                                    
+                                    //branch.Pressure += element.PDyn;
                                 }
                                 catch
                                 {
@@ -151,11 +164,18 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 6856285)
+                                    if (element.ElementId.IntegerValue == 644205)
                                     {
                                         var element2 = element;
                                     }
-                                    CustomTee2 customTee = new CustomTee2(Document, element, Collection, true);
+                                   
+                                    Tees.Add(element);
+                                   
+                                    
+
+                                    //newbranch.Add(element);
+
+                                    /*CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
                                     element.IA = customTee.IA;
                                      element.IQ = customTee.IQ;
                                      element.IC = customTee.IC;
@@ -169,9 +189,9 @@ namespace AirTreeV1
                                      element.RC = customTee.RC;
 
                                      element.LocRes = customTee.LocRes;
-                                     element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                                     element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;*/
 
-                                     
+
                                     //branch.Pressure += 7;
                                 }
                                 catch
@@ -188,7 +208,8 @@ namespace AirTreeV1
                                 {
                                     element.LocRes = 0;
                                     element.PDyn = 0;
-                                    branch.Pressure += 0;
+                                   
+                                    //branch.Pressure += 0;
                                 }
                                 catch
                                 {
@@ -208,7 +229,8 @@ namespace AirTreeV1
                                     CustomMultiport customElbow = new CustomMultiport(Document, element);
                                     element.LocRes = customElbow.LocRes;
                                     element.PDyn = Density * Math.Pow(customElbow.Velocity, 2) / 2 * element.LocRes;
-                                    branch.Pressure += element.PDyn;
+                                    
+                                    //branch.Pressure += element.PDyn;
 
 
                                     //branch.Pressure += 1;
@@ -229,21 +251,26 @@ namespace AirTreeV1
                                 {
                                     var element2 = element;
                                 }
+                               
+                                Tees.Add(element);
+                                
+                                //newbranch = new CustomBranch(Document);
+                                
 
-                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection, true);
-                                element.IA = customDuctInsert.IA;
-                                element.IQ = customDuctInsert.IQ;
-                                element.IC = customDuctInsert.IC;
-                                element.O1A = customDuctInsert.O1A;
-                                element.O1Q = customDuctInsert.O1Q;
-                                element.O1C = customDuctInsert.O1C;
-                                element.O2A = customDuctInsert.O2A;
-                                element.O2Q = customDuctInsert.O2Q;
-                                element.RA = customDuctInsert.RA;
-                                element.RQ = customDuctInsert.RQ;
-                                element.RC = customDuctInsert.RC;
-                                element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes; 
+                                /* CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection, false);
+                                 element.IA = customDuctInsert.IA;
+                                 element.IQ = customDuctInsert.IQ;
+                                 element.IC = customDuctInsert.IC;
+                                 element.O1A = customDuctInsert.O1A;
+                                 element.O1Q = customDuctInsert.O1Q;
+                                 element.O1C = customDuctInsert.O1C;
+                                 element.O2A = customDuctInsert.O2A;
+                                 element.O2Q = customDuctInsert.O2Q;
+                                 element.RA = customDuctInsert.RA;
+                                 element.RQ = customDuctInsert.RQ;
+                                 element.RC = customDuctInsert.RC;
+                                 element.LocRes = customDuctInsert.LocRes;
+                                 element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes; */
                                 //branch.Pressure += 1;
                             }
                             else if (element.DetailType == CustomElement.Detail.Transition)
@@ -258,7 +285,8 @@ namespace AirTreeV1
 
                                     element.LocRes = customTransition.LocRes;
                                     element.PDyn = Density * Math.Pow(customTransition.Velocity, 2) / 2 * element.LocRes;
-                                    branch.Pressure += element.PDyn;
+                                    
+                                    //branch.Pressure += element.PDyn;
                                 }
                                 catch
                                 {
@@ -266,13 +294,14 @@ namespace AirTreeV1
                                     ActiveElement = element;
                                     element.LocRes = 0.11;
                                     element.PDyn = Density * Math.Pow(customTransition.Velocity, 2) / 2 * element.LocRes;
-                                    branch.Pressure += element.PDyn;
+                                   
+                                    //branch.Pressure += element.PDyn;
                                 }
 
                             }
                             else if (element.DetailType == CustomElement.Detail.RectangularDuct || element.DetailType == CustomElement.Detail.RoundDuct)
                             {
-                                if (element.ElementId.IntegerValue == 6448413)
+                                if (element.ElementId.IntegerValue == 644200)
                                 {
                                     var element2 = element;
                                 }
@@ -282,13 +311,15 @@ namespace AirTreeV1
                                 {
 
                                     element.PStat = double.Parse(pressureDropString[0], formatter);
-                                    branch.Pressure += element.PStat;
+                                    
+                                    //branch.Pressure += element.PStat;
                                 }
                                 catch
                                 {
                                     ActiveElement = element;
                                     element.PStat = double.Parse(pressureDropString[0], formatter2);
-                                    branch.Pressure += element.PStat;
+                                   
+                                    //branch.Pressure += element.PStat;
                                 }
                                 // Проверяем, что строка не пустая или null
 
@@ -298,7 +329,8 @@ namespace AirTreeV1
                                 //branch.Pressure += element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsDouble();
                                 string[] pressureDropString = element.Element.get_Parameter(BuiltInParameter.RBS_PRESSURE_DROP).AsValueString().Split();
                                 element.PStat = double.Parse(pressureDropString[0], formatter);
-                                branch.Pressure += element.PStat;
+                                
+                                //branch.Pressure += element.PStat;
 
                             }
                             else if (element.DetailType == CustomElement.Detail.FireProtectValve)
@@ -308,16 +340,18 @@ namespace AirTreeV1
                                     var element2 = element;
                                 }
                                 CustomValve customValve = new CustomValve(Document, element);
+                                
                                 //element.PDyn = Density * Math.Pow(customValve.Velocity, 2) / 2 * customValve.LocRes;
                                 //element.LocRes = customValve.LocRes;
-                               /* if (element.Element.LookupParameter("AirTree_dP").AsDouble() != 0)
-                                { element.PDyn = element.Element.LookupParameter("AirTree_dP").AsDouble(); }
-                                element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);*/
+                                /* if (element.Element.LookupParameter("AirTree_dP").AsDouble() != 0)
+                                 { element.PDyn = element.Element.LookupParameter("AirTree_dP").AsDouble(); }
+                                 element.ModelHydraulicArea = Convert.ToString(customValve.AirTree_Area);*/
                                 //branch.Pressure += 6;
                                 branch.Pressure += element.PDyn;
                             }
                             else if (element.DetailType == CustomElement.Detail.Union)
                             {
+                                
                                 branch.Pressure += 0;
                             }
                         }
@@ -328,16 +362,44 @@ namespace AirTreeV1
                             ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
                             //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                         }
+                        
                     }
-
+                  
+                    branch.Number++;
                 }
 
                 FirstElement = Collection.First().Elements.First().SystemName;
             }
+            foreach (var branch in Collection)
+            {
+                foreach (var el in branch.Elements)
+                {
+                    el.BranchNumber = branch.Number;
+                }
+                branch.BranchCalc();
+            }
 
-
+           
         }
-        public void ResCalculate()
+
+        public void BranchCalculate(CustomBranch branch)
+        {
+            
+            for (int i = 1; i < branch.Elements.Count; i++)
+            {
+
+
+                branch.Elements[i].Ptot = branch.Elements[i].PDyn + branch.Elements[i].PStat + branch.Elements[i - 1].Ptot;
+
+            }
+            branch.PBTot = branch.Elements.Last().Ptot;
+        }
+
+
+
+
+
+        /*public void ResCalculate()
         {
             foreach (var branch in Collection)
             {
@@ -352,7 +414,7 @@ namespace AirTreeV1
                 }
                 branch.PBTot = branch.Elements.Last().Ptot;
             }
-        }
+        }*/
            /* List<CustomBranch> newCollection = new List<CustomBranch>();
 
             foreach (var branch in Collection)
@@ -995,9 +1057,191 @@ namespace AirTreeV1
 
 
         //foreach (var element in branch.Elements)*/
+        /*public void TeeFinder()
+        {
+            List<ElementId> checkedIds = new List<ElementId>();
+            Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
+
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+            //CustomBranch selectedBranch = Collection.OrderByDescending(x => x.PBTot).FirstOrDefault();
+            foreach (var selectedBranch in Collection)
+            {
+                if (selectedBranch.IsVisited==true)
+                {
+                    continue;
+                }
+
+                if (selectedBranch.Elements.First().DetailType == CustomElement.Detail.AirTerminal)
+                {
+                    CustomElement lastElement = null;
+                   
+                    //selectedBranch.IsVisited = true;
+                    CustomBranch newBranch = new CustomBranch(Document);
+                    newBranch = selectedBranch;
+                    //CustomBranch selectedBranch2 = selectedBranch;
+                    lastElement=  selectedBranch.Elements.Last();
+                        *//*do
+                        {*//*
+                        ElementId selectedElement = lastElement.NextElementId;
+                    CustomElement customElement = Tees.Select(x => x).Where(x => x.ElementId == selectedElement;
+                            if (Tees.Select(x=>x).Where(x=>x.ElementId==selectedElement) )
+                            {
+                                if (element.ElementId.IntegerValue == 644205)
+                                {
+                                    var element2 = element;
+                                }
+                                if (element.DetailType == CustomElement.Detail.Tee)
+                                {
+                                    CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
+                                    element.IA = customTee.IA;
+                                    element.IQ = customTee.IQ;
+                                    element.IC = customTee.IC;
+                                    element.O1A = customTee.O1A;
+                                    element.O1Q = customTee.O1Q;
+                                    element.O1C = customTee.O1C;
+                                    element.O2A = customTee.O2A;
+                                    element.O2Q = customTee.O2Q;
+                                    element.RA = customTee.RA;
+                                    element.RQ = customTee.RQ;
+                                    element.RC = customTee.RC;
+
+                                    element.LocRes = customTee.LocRes;
+                                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                                    checkedIds.Add(element.ElementId);
+                                }
+                                if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                                {
+                                    CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection, false);
+                                    element.IA = customDuctInsert.IA;
+                                    element.IQ = customDuctInsert.IQ;
+                                    element.IC = customDuctInsert.IC;
+                                    element.O1A = customDuctInsert.O1A;
+                                    element.O1Q = customDuctInsert.O1Q;
+                                    element.O1C = customDuctInsert.O1C;
+                                    element.O2A = customDuctInsert.O2A;
+                                    element.O2Q = customDuctInsert.O2Q;
+                                    element.RA = customDuctInsert.RA;
+                                    element.RQ = customDuctInsert.RQ;
+                                    element.RC = customDuctInsert.RC;
+                                    element.LocRes = customDuctInsert.LocRes;
+                                    element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                    checkedIds.Add(element.ElementId);
+                                }
+                                selectedBranch.Add(element);
+                                selectedBranch.BranchCalc();
+                            }
+                        
+
+                    CustomElement nextElement = null;
+                    do
+                    {
+                        nextElement = FindNext(selectedBranch, Collection);
+                    }
+                    while (nextElement != null);
 
 
+                   
+                    
+                   
+                    newCollection.Add(selectedBranch);
+                }
 
+             }
+
+            Collection = newCollection;
+        }*/
+
+        public CustomElement FindNext(CustomBranch selectedBranch, List<CustomBranch> collection )
+        {
+            if(selectedBranch.Elements.Last().ElementId==null)
+            { return null; }
+            CustomElement lastElement = null;
+            foreach (var branch in collection)
+            
+                if (branch.IsVisited==false)
+                {
+                    if (selectedBranch.Elements.Last().NextElementId == branch.Elements.First().ElementId)
+                    {
+                        branch.IsVisited = true;
+                        selectedBranch.AddRange(branch);
+                        selectedBranch.BranchCalc();
+                        lastElement = selectedBranch.Elements.Last();
+
+                        foreach (var nbranch in Collection)
+                        {
+                            if (nbranch.IsVisited==false)
+                            {
+                                if (lastElement.NextElementId == nbranch.Elements.First().ElementId)
+                                {
+                                    selectedBranch.AddRange(nbranch);
+                                    selectedBranch.BranchCalc();
+                                    lastElement = nbranch.Elements.Last();
+
+
+                                    foreach (var element in Tees)
+                                    {
+                                        if (element.ElementId.IntegerValue== 644206)
+                                        {
+                                            var element2 = element;
+                                        }
+                                        if (lastElement.NextElementId==element.ElementId)
+                                        {
+
+                                            if (element.DetailType == CustomElement.Detail.Tee)
+                                            {
+                                                CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
+                                                element.IA = customTee.IA;
+                                                element.IQ = customTee.IQ;
+                                                element.IC = customTee.IC;
+                                                element.O1A = customTee.O1A;
+                                                element.O1Q = customTee.O1Q;
+                                                element.O1C = customTee.O1C;
+                                                element.O2A = customTee.O2A;
+                                                element.O2Q = customTee.O2Q;
+                                                element.RA = customTee.RA;
+                                                element.RQ = customTee.RQ;
+                                                element.RC = customTee.RC;
+
+                                                element.LocRes = customTee.LocRes;
+                                                element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                                                //checkedIds.Add(element.ElementId);
+                                            }
+                                            if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                                            {
+                                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection, false);
+                                                element.IA = customDuctInsert.IA;
+                                                element.IQ = customDuctInsert.IQ;
+                                                element.IC = customDuctInsert.IC;
+                                                element.O1A = customDuctInsert.O1A;
+                                                element.O1Q = customDuctInsert.O1Q;
+                                                element.O1C = customDuctInsert.O1C;
+                                                element.O2A = customDuctInsert.O2A;
+                                                element.O2Q = customDuctInsert.O2Q;
+                                                element.RA = customDuctInsert.RA;
+                                                element.RQ = customDuctInsert.RQ;
+                                                element.RC = customDuctInsert.RC;
+                                                element.LocRes = customDuctInsert.LocRes;
+                                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
+                                                //checkedIds.Add(element.ElementId);
+                                            }
+                                            selectedBranch.Add(element);
+                                            selectedBranch.BranchCalc();
+                                            lastElement = element;
+                                            return lastElement;
+                                        }
+                                    }
+                                    //return lastElement;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            return null;
+           
+        }
+
+        /*public CustomBranch FindLoadedBranch ()*/
         public CustomBranch SelectMainBranch()
         {
             List<CustomBranch> branches = new List<CustomBranch>();
@@ -1226,6 +1470,271 @@ namespace AirTreeV1
             return -1;
         }
 
+        public void TeeSolver(CustomBranch selectedBranch)
+        {
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+            CustomBranch resultBranch = new CustomBranch(Document);
+            CustomBranch researchedBranch = selectedBranch;
+
+            double pressure1 = 0;
+            double pressure2 = 0;
+            int selectedend = 0;
+            CustomElement element = null;
+            ElementId elementId = null;
+            do
+            {
+                for (int i = 0; i < researchedBranch.Elements.Count; i++)
+                {
+
+                    element = selectedBranch.Elements[i];
+
+                    if (element.ElementId.IntegerValue == 644211)
+                    {
+                        var element2 = element;
+                    }
+                    // Проверяем наличие элемента Tee
+                    if (element.DetailType == CustomElement.Detail.Tee)
+                    {
+                        pressure1 = selectedBranch.Elements[i - 1].Ptot;
+                        elementId = selectedBranch.Elements[i - 1].ElementId;
+
+                        CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
+                        element.IA = customTee.IA;
+                        element.IQ = customTee.IQ;
+                        element.IC = customTee.IC;
+                        element.O1A = customTee.O1A;
+                        element.O1Q = customTee.O1Q;
+                        element.O1C = customTee.O1C;
+                        element.O2A = customTee.O2A;
+                        element.O2Q = customTee.O2Q;
+                        element.RA = customTee.RA;
+                        element.RQ = customTee.RQ;
+                        element.RC = customTee.RC;
+
+                        element.LocRes = customTee.LocRes;
+                        element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                        selectedBranch.BranchCalc();
+                        pressure1 = selectedBranch.Elements[i].Ptot;
+                        selectedend = i + 1; // Так как i увеличится в следующей итерации
+                        i++;
+                        // Здесь мы продолжаем цикл
+
+                        // Здесь начинается поиск в других коллекциях
+                        int brNum = 0;
+                        for (int k = 0; k < Collection.Count; k++)
+                        {
+                            if (Collection[k] == researchedBranch || Collection[k].IsVisited==true)
+                            {
+                                continue;
+                            }
+                            for (int j = 0; j < Collection[k].Elements.Count; j++)
+                            {
+                                if (Collection[k].Elements[j].ElementId == elementId)
+                                {
+                                    Collection[k].Elements[j].IsNonPrinted = true;
+
+                                    // Обработка следующего элемента
+
+                                    CustomElement element2 = Collection[k].Elements[++j];
+                                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                                    element2.IA = customTee2.IA;
+                                    element2.IQ = customTee2.IQ;
+                                    element2.IC = customTee2.IC;
+                                    element2.O1A = customTee2.O1A;
+                                    element2.O1Q = customTee2.O1Q;
+                                    element2.O1C = customTee2.O1C;
+                                    element2.O2A = customTee2.O2A;
+                                    element2.O2Q = customTee2.O2Q;
+                                    element2.RA = customTee2.RA;
+                                    element2.RQ = customTee2.RQ;
+                                    element2.RC = customTee2.RC;
+
+                                    element2.LocRes = customTee2.LocRes;
+                                    element2.PDyn = Density * Math.Pow(customTee2.Velocity, 2) / 2 * element2.LocRes;
+                                    Collection[k].BranchCalc();
+                                    pressure2 = Collection[k].Elements[j].Ptot;
+                                    brNum = k;
+                                    Collection[k].IsVisited = true;
+                                    break; // Выходим из внутреннего цикла, как только нашли
+
+                                }
+                            }
+                        }
+                        // Сравнение давлений и маркировка
+                        if (pressure1 > pressure2)
+                        {
+                            for (int l = 0; i < selectedend; i++)
+                            {
+                                researchedBranch.Elements[l].MainTrack = true;
+                                resultBranch.Add(researchedBranch.Elements[i]);
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 0; j < Collection[brNum].Elements.Count; j++)
+                            {
+                                Collection[brNum].Elements[j].MainTrack = true;
+                                resultBranch.Add(Collection[brNum].Elements[j]);
+                            }
+                            researchedBranch = Collection[brNum];
+                        }
+
+                    }
+
+                }
+            }
+
+            while (element.NextElementId != null);
+            Collection.Add(resultBranch);
+
+
+
+
+
+
+
+
+
+
+
+            /*
+                            // Проверяем, чтобы продолжить, пока nextElementId не равно null
+                            if (element.NextElementId != null)
+                            {
+                                continue; // Продолжаем искать элементы
+                            }
+                            else
+                            {
+                                break; // Завершаем цикл, если достигнут конец ветви
+                            }*/
+        }
+
+            
+
+            
+
+            
+        
+
+
+
+
+
+
+        /*public void TeeSolver(CustomBranch selectedBranch)
+        {
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+            CustomBranch resultBranch = new CustomBranch(Document);
+            CustomBranch researchedBranch = selectedBranch;
+
+            double pressure1 = 0;
+            double pressure2 = 0;
+            int start = 0;
+            int selectedend = 0;
+            int branchend = 0;
+            ElementId elementId = null;
+
+
+
+            for (int i=0; i< researchedBranch.Elements.Count;i++)
+            {
+                CustomElement element = selectedBranch.Elements[i];
+                if (element.DetailType==CustomElement.Detail.Tee)
+                {
+                    pressure1 = selectedBranch.Elements[i - 1].Ptot;
+                    elementId = selectedBranch.Elements[i - 1].ElementId;
+
+                    CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
+                    element.IA = customTee.IA;
+                    element.IQ = customTee.IQ;
+                    element.IC = customTee.IC;
+                    element.O1A = customTee.O1A;
+                    element.O1Q = customTee.O1Q;
+                    element.O1C = customTee.O1C;
+                    element.O2A = customTee.O2A;
+                    element.O2Q = customTee.O2Q;
+                    element.RA = customTee.RA;
+                    element.RQ = customTee.RQ;
+                    element.RC = customTee.RC;
+
+                    element.LocRes = customTee.LocRes;
+                    element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+                    selectedBranch.BranchCalc();
+                    pressure1 = selectedBranch.Elements[i].Ptot;
+                    i=+2;
+                    selectedend = i;
+
+                    break;
+
+                }
+
+            }
+            int brNum = 0;
+            for (int k=0; k<Collection.Count;k++)
+            {
+                if (Collection[k] == researchedBranch)
+                {
+                    continue;
+                }
+                else
+                {
+                    for (int j = 0; j < Collection[k].Elements.Count; j++)
+                    {
+                        if (Collection[k].Elements[j].ElementId == elementId)
+                        {
+                            Collection[k].Elements[j].IsNonPrinted = true;
+                            j++;
+                            CustomElement element2 = Collection[k].Elements[j];
+                            CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                            element2.IA = customTee2.IA;
+                            element2.IQ = customTee2.IQ;
+                            element2.IC = customTee2.IC;
+                            element2.O1A = customTee2.O1A;
+                            element2.O1Q = customTee2.O1Q;
+                            element2.O1C = customTee2.O1C;
+                            element2.O2A = customTee2.O2A;
+                            element2.O2Q = customTee2.O2Q;
+                            element2.RA = customTee2.RA;
+                            element2.RQ = customTee2.RQ;
+                            element2.RC = customTee2.RC;
+
+                            element2.LocRes = customTee2.LocRes;
+                            element2.PDyn = Density * Math.Pow(customTee2.Velocity, 2) / 2 * element2.LocRes;
+                            Collection[k].BranchCalc();
+                            pressure2 = Collection[k].Elements[j].Ptot;
+                            brNum = k;
+                            branchend = j;
+                            break;
+                        }
+
+                    }
+
+                }
+            }
+            if (pressure1 > pressure2)
+            {
+                for (int i = 0; i < selectedend; i++)
+                {
+                    researchedBranch.Elements[i].MainTrack = true;
+                    resultBranch.Add(selectedBranch.Elements[i]);
+                }
+            }
+            else
+            {
+                for (int j = 0; j < branchend; j++)
+                {
+                    Collection[brNum].Elements[j].MainTrack = true;
+                    resultBranch.Add(Collection[brNum].Elements[j]);
+
+                }
+                researchedBranch = Collection[brNum];
+            }
+
+
+            Collection.Add(selectedBranch);
+
+
+        }*/
         public void ReMarkCollection(CustomBranch selectedBranch)
         {
             List<CustomBranch> newCustomCollection = new List<CustomBranch>();
@@ -1446,7 +1955,7 @@ namespace AirTreeV1
 
             // Обновляем коллекцию 
             Collection = newCustomCollection;
-            ResCalculate();
+            //ResCalculate();
         }
 
 
@@ -1534,5 +2043,7 @@ namespace AirTreeV1
             var match = System.Text.RegularExpressions.Regex.Match(primaryvolume, @"\d+(\.\d+)?");
             return match.Success ? match.Value : string.Empty; // Вернуть число или пустую строку, если числ
         }
+
+      
     }
 }

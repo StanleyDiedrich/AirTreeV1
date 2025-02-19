@@ -116,7 +116,7 @@ namespace AirTreeV1
                                         TreeNodes[k].Pressure += TreeNodes[i].Pressure;
                                     }
                                     TreeNodes[check_index].IsVisited = true;
-                                        CustomCollection.ResCalculate();
+                                        //CustomCollection.ResCalculate();
                                         UpdateAdjacencyMatrix();
                                     }
                                     else
