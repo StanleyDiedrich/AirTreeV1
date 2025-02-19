@@ -1615,14 +1615,44 @@ namespace AirTreeV1
         public (List<CustomBranch>, CustomBranch) TeeSolver()
         {
             CustomBranch selectedBranch = null;
+            List<CustomElement> tees = new List<CustomElement>();
+            CustomElement selectedTee = null;
+            int selectedBranchNumber;
             foreach (var branch in Collection)
             {
                 foreach (var el in branch.Elements)
                 {
-
+                    if (el.ElementId.IntegerValue== 644211)
+                    {
+                        var el2 = el;
+                    }
+                    foreach (Connector connector in el.OwnConnectors)
+                    {
+                        if (connector.Flow ==0)
+                        {
+                            selectedTee = el;
+                            selectedBranch = branch;
+                            selectedBranchNumber = el.BranchNumber;
+                            break;
+                        }
+                    }
                 }
             }
+            int nextelement = -1;
+            for (int i =0; i<selectedBranch.Elements.Count;i++)
+            {
+                if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+                {
+                    CustomElement element2 = selectedBranch.Elements[i];
+                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
+                    UpdateElementProperties(element2, customTee2);
+                    nextelement = i + 1;
+                    selectedBranch.BranchCalc(nextelement);
+                }
+            }
+            
 
+            
             List<CustomBranch> newCollection = new List<CustomBranch>();
             CustomBranch resultBranch = new CustomBranch(Document);
             CustomBranch researchedBranch = selectedBranch;

@@ -83,6 +83,17 @@ namespace AirTreeV1
                 }
             }
         }
+        public void BranchCalc(int nextelement)
+        {
+            for (int i = 1; i < nextelement; i++)
+            {
+
+
+                Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+
+
+            }
+        }
         public void BranchCalc()
         {
 
