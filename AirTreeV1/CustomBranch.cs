@@ -16,6 +16,9 @@ namespace AirTreeV1
         public int Number { get; set; }
         public double Pressure { get; set; }
         public double PBTot { get; set; }
+        public bool IsStart { get; set; }
+        public bool IsVisited { get; set; }
+        public bool IsMain { get; set; }
         public List<CustomElement> Elements { get; set; } = new List<CustomElement>();
         public CustomBranch (Autodesk.Revit.DB.Document document, ElementId elementId)
         {
@@ -26,7 +29,13 @@ namespace AirTreeV1
         public CustomBranch (Autodesk.Revit.DB.Document document)
         {
             Document = document;
+            Number = _counter;
+            _counter++;
         }
+        /*public CustomBranch (Autodesk.Revit.DB.Document document)
+        {
+            Document = document;
+        }*/
         public void Add (CustomElement customElement)
         {
             if (customElement != null)
@@ -74,7 +83,36 @@ namespace AirTreeV1
                 }
             }
         }
+        public void BranchCalc(int nextelement)
+        {
+            for (int i = 1; i < nextelement+1; i++)
+            {
 
+                if (Elements[i].ElementId == Elements[i-1].ElementId)
+                {
+                    continue;
+                }
+                else
+                {
+                    Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+                }
+               
+
+
+            }
+            PBTot = Elements[nextelement].Ptot;
+        }
+        public void BranchCalc()
+        {
+
+            for (int i = 1; i < Elements.Count; i++)
+            {
+
+                Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+                
+            }
+            PBTot = Elements.Last().Ptot;
+        }
         public void CreateNewBranch(Document document, ElementId airterminal)
         {
             //int i = 0;
@@ -87,11 +125,12 @@ namespace AirTreeV1
                 nextElement = customElement.NextElementId;
                 customElement = new CustomElement(document, nextElement);
                 //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
-                if (customElement.DetailType==CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
+               /* if (customElement.DetailType==CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
                 {
                     CustomElement customElement2 = new CustomElement(document, nextElement);
                     Elements.Add(customElement2);
-                }
+                }*/
+
                     //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
                 //i++;
             }

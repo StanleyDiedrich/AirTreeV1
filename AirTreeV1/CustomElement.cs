@@ -15,8 +15,12 @@ using System.Windows.Controls;
 namespace AirTreeV1
 {
 
+    
+    
     public class CustomElement
     {
+        static int _id = 0;
+        public int PluginId { get; set; }
         public Element Element { get; set; }
         public ElementId ElementId { get; set; }
         public ElementId NextElementId { get; set; }
@@ -112,7 +116,8 @@ namespace AirTreeV1
 
             
         }
-
+        public bool IsTee { get; set; }
+        public bool IsTapAdjustable { get; set; }
         public Detail DetailType { get;  set; }
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
@@ -129,6 +134,7 @@ namespace AirTreeV1
         public double RA { get; set; }
         public double RQ { get; set; }
         public double RC { get; set; }
+        public bool IsNonPrinted { get; set; }
 
         
         private string GetValue(string primaryvolume)
@@ -139,6 +145,8 @@ namespace AirTreeV1
         }
         public CustomElement(Autodesk.Revit.DB.Document doc, ElementId elementId)
         {
+            PluginId = _id;
+            _id++;
             if (elementId == null)
             {
                 return;

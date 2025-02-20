@@ -422,7 +422,7 @@ namespace AirTreeV1
                     //collection.Calcualate(mainViewModel.Density);
 
 
-                    collection.Calcualate(mainViewModel.Density);
+                    //collection.Calcualate(mainViewModel.Density);
 
                     //collection.ResCalculate();
                     //CustomBranch selectedbranch = collection.SelectMainBranch();
@@ -433,11 +433,25 @@ namespace AirTreeV1
 
                     //collection.MarkCollection(selectedbranch);
 
-                    collection.MarkCollection();
+                    //collection.MarkCollection();
+                    //collection.ResCalculate();
+                    //Tree tree = new Tree(collection);
+                    //tree.AddNodes(collection);
+                    //tree.MatrixCalc();
+                    //string matrixcontent = tree.PrintMatrix();
 
-                    Tree tree = new Tree(collection);
+                    //tree.SaveFile(matrixcontent);
+                    collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
+                    CustomBranch selectedbranch = collection.SelectMainBranch();
+                    
+                    (collection.Collection, selectedbranch) = collection.TeeSolver();
+                    collection.SecondaryBranchSolver(selectedbranch);
+                    
+                    //collection.TeeFinder();
+                    //selectedbranch = collection.SelectMainBranch();
+                    //collection.ReMarkCollection(selectedbranch);
 
-
+                    // ЭТО ВАЖНО!!!!
 
 
                     string content = collection.GetContent();
@@ -451,6 +465,9 @@ namespace AirTreeV1
                     {
                         TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
                     }
+
+
+                    //ВЕРНИ КАК БЫЛО!
                 }
                 else
                 {
