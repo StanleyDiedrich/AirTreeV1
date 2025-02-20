@@ -85,14 +85,22 @@ namespace AirTreeV1
         }
         public void BranchCalc(int nextelement)
         {
-            for (int i = 1; i < nextelement; i++)
+            for (int i = 1; i < nextelement+1; i++)
             {
 
-
-                Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+                if (Elements[i].ElementId == Elements[i-1].ElementId)
+                {
+                    continue;
+                }
+                else
+                {
+                    Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+                }
+               
 
 
             }
+            PBTot = Elements[nextelement].Ptot;
         }
         public void BranchCalc()
         {
@@ -100,10 +108,8 @@ namespace AirTreeV1
             for (int i = 1; i < Elements.Count; i++)
             {
 
-
                 Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
-               
-
+                
             }
             PBTot = Elements.Last().Ptot;
         }
@@ -119,11 +125,11 @@ namespace AirTreeV1
                 nextElement = customElement.NextElementId;
                 customElement = new CustomElement(document, nextElement);
                 //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
-                if (customElement.DetailType==CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
+               /* if (customElement.DetailType==CustomElement.Detail.TapAdjustable || customElement.DetailType == CustomElement.Detail.Tee)
                 {
                     CustomElement customElement2 = new CustomElement(document, nextElement);
                     Elements.Add(customElement2);
-                }
+                }*/
 
                     //ВОТ ЭТУ ШТУКУ ДОБАВИЛ 04.02.25
                 //i++;

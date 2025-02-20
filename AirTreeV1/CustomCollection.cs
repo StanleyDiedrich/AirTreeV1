@@ -1598,10 +1598,15 @@ namespace AirTreeV1
                     //pressure1 = researchedBranch.Elements[i - 1].Ptot;
                     //elementId = researchedBranch.Elements[i].ElementId;
 
+                    //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
                     CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
                     UpdateElementProperties(element, customTee);
+                    //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
 
-                    researchedBranch.BranchCalc();
+
+
+
+                    researchedBranch.BranchCalc(i);
                     //pressure1 = researchedBranch.Elements[i - 1].Ptot;
                     selectedend = i; // Так как i увеличится в следующей итерации
                     
@@ -1618,40 +1623,95 @@ namespace AirTreeV1
             List<CustomElement> tees = new List<CustomElement>();
             CustomElement selectedTee = null;
             int selectedBranchNumber;
+            //Тут обработали ветку, на которой расположен тройник, который имеет только присоединение одной решетки.
             foreach (var branch in Collection)
             {
-                foreach (var el in branch.Elements)
+                for (int ind =0;ind<branch.Elements.Count; ind++)
                 {
+                    CustomElement el = branch.Elements[ind];
                     if (el.ElementId.IntegerValue== 644211)
                     {
                         var el2 = el;
                     }
-                    foreach (Connector connector in el.OwnConnectors)
+                    if (el.DetailType == CustomElement.Detail.Tee)
                     {
-                        if (connector.Flow ==0)
+                        foreach (Connector connector in el.OwnConnectors)
                         {
-                            selectedTee = el;
-                            selectedBranch = branch;
-                            selectedBranchNumber = el.BranchNumber;
-                            break;
+                            if (connector.Flow == 0)
+                            {
+                                selectedTee = el;
+                                selectedBranch = branch;
+                                selectedBranchNumber = el.BranchNumber;
+                                ind++;
+                                break;
+                            }
+                            
                         }
                     }
+                   
                 }
             }
             int nextelement = -1;
-            for (int i =0; i<selectedBranch.Elements.Count;i++)
+
+            for (int i = 0; i < selectedBranch.Elements.Count; i++)
+            {
+                if (selectedBranch.Elements[i].ElementId.IntegerValue == 644211)
+                {
+                    var el2 = selectedBranch.Elements[i];
+                }
+                if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+                {
+                    CustomElement element2 = selectedBranch.Elements[i];
+                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                    UpdateElementProperties(element2, customTee2);
+                    nextelement = i;
+                    selectedBranch.BranchCalc(nextelement);
+                    break; // Завершить цикл после обработки первого найденного элемента
+                }
+            }
+
+            /*for (int i =0; i<selectedBranch.Elements.Count;i++)
             {
                 if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
                 {
                     CustomElement element2 = selectedBranch.Elements[i];
-                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
+                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
                     UpdateElementProperties(element2, customTee2);
-                    nextelement = i + 1;
+                    nextelement = i + 2;
                     selectedBranch.BranchCalc(nextelement);
+                    break;
                 }
-            }
+            }*/
             
 
+
+            // Тут надо обработвть оставшиеся ветки, кроме выбранной ветки selectedBranch
+
+          
+            foreach (var branch in Collection)
+            {
+                if (branch.Number == selectedBranch.Number)
+                {
+                    continue;
+                }
+                else
+                {
+                    foreach (var el in branch.Elements)
+                    {
+                        if (el.DetailType == CustomElement.Detail.Tee)
+                        {
+                            int index = GetElementIndex(branch, 0);
+                           
+                            branch.BranchCalc(index-1);
+                            break;
+                                
+                            
+                        }
+                    }
+                }
+            }
+            Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
+            selectedBranch = Collection.First();
             
             List<CustomBranch> newCollection = new List<CustomBranch>();
             CustomBranch resultBranch = new CustomBranch(Document);
@@ -1673,17 +1733,34 @@ namespace AirTreeV1
             int selectedend = 0;
             CustomElement element = null;
             ElementId elementId = null;
+            if (nextelement != -1)
+            {
+                selectedend = nextelement;
+            }
             do
             {
+                
                 selectedend = GetElementIndex(researchedBranch, selectedend);
                 if (selectedend==-1)
                 {
                     break;
                 }
                 elementId = researchedBranch.Elements[selectedend].ElementId;
-                pressure1 = researchedBranch.Elements[selectedend - 2].Ptot;
+                if (researchedBranch.Elements[selectedend].PluginId==44)
+                {
+                    var el3 = researchedBranch.Elements[selectedend];
+                }
+                if (elementId == researchedBranch.Elements[selectedend-1].ElementId)
+                {
+                    continue;
+                }
+               /* if (elementId.IntegerValue==644208)
+                {
+                    var el3 = researchedBranch.Elements[selectedend];
+                }*/
+                //pressure1 = researchedBranch.Elements[selectedend - 2].Ptot;
+                pressure1 = researchedBranch.Elements[selectedend-1].Ptot;
 
-           
 
                 int brNum = 0;
                 int minimalIndex = 1000000;
@@ -1691,6 +1768,7 @@ namespace AirTreeV1
                 int correctBranch = 0;
                 for (int k = 0; k < Collection.Count; k++)
                 {
+
                     // Убедитесь, что мы игнорируем уже посещенные ветви
                     if (Collection[k] == researchedBranch || Collection[k].IsVisited)
                     {
@@ -1724,14 +1802,14 @@ namespace AirTreeV1
                                         correctBranch = k;
                                         // Вы можете добавить дополнительную логику здесь, если это необходимо
                                     }
-                                    Collection[correctBranch].BranchCalc();
-                                    CustomElement element2 = Collection[correctBranch].Elements[minimalIndex];
+                                    Collection[correctBranch].BranchCalc(minimalIndex);
+                                    CustomElement element2 = Collection[k].Elements[minimalIndex];
                                     //CustomElement element3 = new CustomElement(Document, element2.ElementId);
                                     CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
                                     UpdateElementProperties(element2, customTee2);
 
-                                    Collection[correctBranch].BranchCalc();
-                                    pressure2 = Collection[correctBranch].Elements[minimalIndex].Ptot;
+                                    Collection[correctBranch].BranchCalc(minimalIndex);
+                                    pressure2 = Collection[correctBranch].Elements[minimalIndex-1].Ptot;
                                     Collection[correctBranch].IsVisited = true;
                                 }
 
@@ -1739,7 +1817,7 @@ namespace AirTreeV1
                                
                                 if (pressure1 > pressure2)
                                 {
-                                    for (int l = minimalIndex + 2; l < Collection[correctBranch].Elements.Count; l++)
+                                    for (int l = minimalIndex + 1; l < Collection[correctBranch].Elements.Count; l++)
                                     {
                                         researchedBranch.Elements[l].MainTrack = true;
                                         resultBranch.Add(researchedBranch.Elements[l]);
@@ -1753,7 +1831,7 @@ namespace AirTreeV1
                                 {
                                     researchedBranch = Collection[correctBranch];
                                     ElementId elementId2 = Collection[correctBranch].Elements.Last().ElementId;
-                                    for (int j = minimalIndex+2; j < Collection[correctBranch].Elements.Count; j++)
+                                    for (int j = minimalIndex+1; j < Collection[correctBranch].Elements.Count; j++)
                                     {
                                         /*do
                                         {*/
@@ -1817,10 +1895,10 @@ namespace AirTreeV1
                 {
                     break;
                 }
-                selectedend += 2;
+                selectedend += 1;
             }
             while (researchedBranch.Elements.Last().NextElementId==null);
-
+            researchedBranch.BranchCalc(researchedBranch.Elements.Count-1);
             List<ElementId> checkedIds = new List<ElementId>();
             foreach (var el in researchedBranch.Elements)
             {
@@ -2244,7 +2322,7 @@ namespace AirTreeV1
             Collection.Add(selectedBranch);
             var csvcontent = new StringBuilder();
             //csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;IA;IQ;IC;O1A;O1Q;O1C;O2A;O2Q;O2C;RA;RQ;RC;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
-            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            csvcontent.AppendLine("PluginId;ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
             foreach (var branch in Collection)
             {
 
@@ -2263,7 +2341,7 @@ namespace AirTreeV1
                     element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
                     element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
                     element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
-                    string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                    string a = $"{element.PluginId};{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
                         $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
 
                         $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
@@ -2324,6 +2402,50 @@ namespace AirTreeV1
             return match.Success ? match.Value : string.Empty; // Вернуть число или пустую строку, если числ
         }
 
-      
+        public  void SecondaryBranchSolver(CustomBranch selectedbranch)
+        {
+            List<ElementId> checkedElements = new List<ElementId>();
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+
+            foreach (var el in selectedbranch.Elements)
+            {
+                checkedElements.Add(el.ElementId);
+            }
+            newCollection.Add(selectedbranch);
+            foreach(CustomBranch customBranch in Collection)
+            {
+                if (customBranch.Number!= selectedbranch.Number)
+                {
+                    CustomBranch branch1 = new CustomBranch(Document);
+                    foreach (var el in customBranch.Elements)
+                    {
+                        if (!checkedElements.Contains(el.ElementId))
+                        {
+                            checkedElements.Add(el.ElementId);
+                            branch1.Add(el);
+                        }
+                        else
+                        {
+                            if (el.DetailType.ToString().Contains("Tee"))  
+                            {
+                                CustomTee2 customTee = new CustomTee2(Document, el, Collection, true);
+                                UpdateElementProperties(el, customTee);
+                                branch1.Add(el);
+                            }
+                            if (el.DetailType.ToString().Contains("Insert"))
+                            {
+
+                            }
+                            break;
+                        }
+                       
+                    }
+                    branch1.BranchCalc(branch1.Elements.Count - 1);
+                    newCollection.Add(branch1);
+                }
+               
+            }
+            Collection = newCollection;
+        }
     }
 }

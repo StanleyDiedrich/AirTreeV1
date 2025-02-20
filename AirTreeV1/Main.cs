@@ -445,7 +445,7 @@ namespace AirTreeV1
                     CustomBranch selectedbranch = collection.SelectMainBranch();
                     
                     (collection.Collection, selectedbranch) = collection.TeeSolver();
-
+                    collection.SecondaryBranchSolver(selectedbranch);
                     
                     //collection.TeeFinder();
                     //selectedbranch = collection.SelectMainBranch();
@@ -454,7 +454,7 @@ namespace AirTreeV1
                     // ЭТО ВАЖНО!!!!
 
 
-                    string content = collection.GetContent(selectedbranch);
+                    string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try
                     {

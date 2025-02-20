@@ -15,8 +15,12 @@ using System.Windows.Controls;
 namespace AirTreeV1
 {
 
+    
+    
     public class CustomElement
     {
+        static int _id = 0;
+        public int PluginId { get; set; }
         public Element Element { get; set; }
         public ElementId ElementId { get; set; }
         public ElementId NextElementId { get; set; }
@@ -141,6 +145,8 @@ namespace AirTreeV1
         }
         public CustomElement(Autodesk.Revit.DB.Document doc, ElementId elementId)
         {
+            PluginId = _id;
+            _id++;
             if (elementId == null)
             {
                 return;
