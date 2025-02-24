@@ -53,8 +53,9 @@ namespace AirTreeV1
         public double PStat { get; set; }
         public double Ptot { get; set; }
         public double AirTree_Area { get; set; }
-        public bool IsReversed { get; set; } 
-
+        public bool IsReversed { get; set; }
+        public bool IsStartPart { get; set; }
+        public bool IsPart { get; set; }
         public enum Detail
         {
             RectangularDuct,

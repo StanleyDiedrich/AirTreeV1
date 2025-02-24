@@ -16,6 +16,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 using Autodesk.Revit.DB.Structure;
 using System.Xml.Linq;
 using System.Windows;
+using Autodesk.Revit.DB.Visual;
+using System.Windows.Documents;
 
 namespace AirTreeV1
 {
@@ -116,7 +118,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    if (element.ElementId.IntegerValue == 643925)
+                                    if (element.ElementId.IntegerValue == 659023)
                                     {
                                         var element2 = element;
                                     }
@@ -1575,6 +1577,89 @@ namespace AirTreeV1
 
             element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
         }
+
+        private void UpdateElementProperties(CustomElement element, CustomDuctInsert2 customTee)
+        {
+           
+            element.IA = customTee.IA;
+            element.IQ = customTee.IQ;
+            element.IC = customTee.IC;
+            element.O1A = customTee.O1A;
+            element.O1Q = customTee.O1Q;
+            element.O1C = customTee.O1C;
+            element.O2A = customTee.O2A;
+            element.O2Q = customTee.O2Q;
+            element.RA = customTee.RA;
+            element.RQ = customTee.RQ;
+            element.RC = customTee.RC;
+            element.LocRes = customTee.LocRes;
+
+
+            element.PDyn = Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+        }
+
+
+        public int GetIndex(CustomBranch researchedBranch, int selectedend)
+        {
+            if (selectedend == -1)
+            {
+                return -1;
+            }
+            for (int i = selectedend; i < researchedBranch.Elements.Count; i++)
+            {
+
+                CustomElement element = researchedBranch.Elements[i];
+
+
+
+                if (element.ElementId.IntegerValue == 644211)
+                {
+                    var element2 = element;
+                }
+                // Проверяем наличие элемента Tee
+                if (element.DetailType == CustomElement.Detail.Tee)
+                {
+                    
+                    //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
+
+
+
+
+                    researchedBranch.BranchCalc(i);
+                    
+                    selectedend = i; 
+
+
+                    return selectedend;
+
+                }
+                if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                {
+                   
+                    
+                    
+
+                    researchedBranch.BranchCalc(i);
+                    
+                    selectedend = i; 
+
+
+                    return selectedend;
+
+                }
+                if (element.DetailType.ToString().Contains("Insert"))
+                {
+                    researchedBranch.BranchCalc(i);
+
+                    selectedend = i;
+
+
+                    return selectedend;
+                }
+            }
+
+            return -1;
+        }
         public int GetElementIndex(CustomBranch researchedBranch, int selectedend)
         {
             if (selectedend ==-1)
@@ -1583,11 +1668,7 @@ namespace AirTreeV1
             }
             for (int i = selectedend; i < researchedBranch.Elements.Count; i++)
             {
-                
-                    CustomElement element = researchedBranch.Elements[i];
-                
-                
-
+                CustomElement element = researchedBranch.Elements[i];
                 if (element.ElementId.IntegerValue == 644211)
                 {
                     var element2 = element;
@@ -1602,14 +1683,29 @@ namespace AirTreeV1
                     CustomTee2 customTee = new CustomTee2(Document, element, Collection, false);
                     UpdateElementProperties(element, customTee);
                     //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
-
-
-
-
                     researchedBranch.BranchCalc(i);
                     //pressure1 = researchedBranch.Elements[i - 1].Ptot;
                     selectedend = i; // Так как i увеличится в следующей итерации
+                    return selectedend;
+
+                }
+                if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                { 
+                    //pressure1 = researchedBranch.Elements[i - 1].Ptot;
+                    //elementId = researchedBranch.Elements[i].ElementId;
+
+                    //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
+                    CustomDuctInsert2 customTee = new CustomDuctInsert2(Document, element, Collection, false);
+                    UpdateElementProperties(element, customTee);
                     
+                    
+                    //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
+
+                    researchedBranch.BranchCalc(i);
+                    //pressure1 = researchedBranch.Elements[i - 1].Ptot;
+                    i++;
+                    selectedend = i; // Так как i увеличится в следующей итерации
+
 
                     return selectedend;
 
@@ -1617,77 +1713,410 @@ namespace AirTreeV1
             }
             return -1;
         }
+
+        public (List<CustomBranch>, CustomBranch) TeeTapSolver(CustomBranch researchedBranch,int nextelement )
+        {
+            CustomBranch resultBranch = new CustomBranch(Document);
+            double pressure1 = 0;
+            double pressure2 = 0;
+            int selectedend = 0;
+            int prevBranchNumber = 0;
+            CustomElement element = null;
+            ElementId elementId = null;
+            if (nextelement != -1)
+            {
+                selectedend = nextelement;
+            }
+            do
+            {
+                selectedend = GetElementIndex(researchedBranch, selectedend);
+                if (selectedend == -1)
+                {
+                    break;
+                }
+                elementId = researchedBranch.Elements[selectedend].ElementId;
+                if (researchedBranch.Elements[selectedend].PluginId == 71)
+                {
+                    var el3 = researchedBranch.Elements[selectedend];
+                }
+                if (elementId == researchedBranch.Elements[selectedend - 1].ElementId)
+                {
+                    continue;
+                }
+                pressure1 = researchedBranch.Elements[selectedend - 1].Ptot;
+                int brNum = 0;
+                int minimalIndex = 1000000;
+
+                int correctBranch = 0;
+                prevBranchNumber = researchedBranch.Number;
+                CustomElement previousElement = researchedBranch.Elements[selectedend - 1];
+                for (int k = 0; k < Collection.Count; k++)
+                {
+                    // Убедитесь, что мы игнорируем уже посещенные ветви
+                    if (Collection[k] == researchedBranch || Collection[k].IsVisited)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        if (Collection[k].Elements.Any(x => x.ElementId == elementId))
+                        {
+                            try
+                            {
+                                CustomElement foundedElement = Collection[k].Elements.First(x => x.ElementId == elementId);
+                                if (foundedElement == null)
+                                {
+                                    break;
+                                }
+                                if (foundedElement.ElementId.IntegerValue == 659308)
+                                {
+                                    var element5 = element;
+                                }
+                                // Проверяем, нашли ли мы элемент
+                                if (foundedElement != null)
+                                {
+                                    int foundedIndex = Collection[k].Elements.FindIndex(x => x.ElementId == elementId);
+                                    if (foundedIndex < minimalIndex)
+                                    {
+                                        minimalIndex = foundedIndex;
+                                        correctBranch = k;
+                                    }
+
+
+                                    Collection[correctBranch].BranchCalc(minimalIndex);
+
+                                    // Тут находится логика для обработки тройника
+                                    CustomElement element2 = Collection[correctBranch].Elements[minimalIndex];
+
+                                    if (element2.DetailType==CustomElement.Detail.Tee)
+                                    {
+                                        CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
+                                        UpdateElementProperties(element2, customTee2);
+                                        Collection[correctBranch].BranchCalc(minimalIndex);
+                                        pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        Collection[correctBranch].IsVisited = true;
+                                    }
+                                    if (element2.DetailType.ToString().Contains("Duct"))
+                                    {
+                                        CustomElement element3 = previousElement;
+                                        CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element3, Collection, true);
+                                        element2.DetailType = element3.DetailType;
+                                        element2.PStat = 0;
+                                        UpdateElementProperties(element2, customDuctInsert2);
+                                        
+                                        Collection[correctBranch].BranchCalc(minimalIndex);
+                                        pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        Collection[correctBranch].IsVisited = true;
+                                        
+                                    }
+                                    
+                                    // Тут находится логика для обработки тройника
+                                }
+
+                                if (pressure1 > pressure2)
+                                {
+                                    for (int l = minimalIndex + 1; l < Collection[correctBranch].Elements.Count; l++)
+                                    {
+                                        researchedBranch.Elements[l].MainTrack = true;
+                                        resultBranch.Add(researchedBranch.Elements[l]);
+                                        if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.Tee)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    researchedBranch = Collection[correctBranch];
+                                    ElementId elementId2 = Collection[correctBranch].Elements.Last().ElementId;
+                                    for (int j = minimalIndex + 1; j < Collection[correctBranch].Elements.Count; j++)
+                                    {
+                                        Collection[correctBranch].Elements[j].MainTrack = true;
+                                        resultBranch.Add(Collection[correctBranch].Elements[j]);
+                                      
+                                        if (Collection[correctBranch].Elements[j].DetailType == CustomElement.Detail.Tee)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    selectedend = GetElementIndex(researchedBranch, selectedend);
+                                    if (selectedend == -1)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                selectedend = GetElementIndex(researchedBranch, selectedend);
+                                if (selectedend == -1)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                selectedend = GetElementIndex(researchedBranch, selectedend);
+                if (selectedend == -1)
+                {
+                    break;
+                }
+                selectedend += 1;
+            }
+            while (researchedBranch.Elements.Last().NextElementId == null);
+            researchedBranch.BranchCalc(researchedBranch.Elements.Count - 1);
+            List<ElementId> checkedIds = new List<ElementId>();
+            foreach (var el in researchedBranch.Elements)
+            {
+                if (!checkedIds.Contains(el.ElementId))
+                {
+                    checkedIds.Add(el.ElementId);
+                    el.MainTrack = true;
+                }
+                else
+                { continue; }
+            }
+            return (Collection, researchedBranch);
+        }
+        public (CustomBranch researchedBranch, int nextelement)  BranchSelector()
+        {
+            CustomBranch selectedBranch = null;
+            CustomElement selectedTee = null;
+            int selectedBranchNumber;
+
+            int tapcounter = 0;
+            foreach (var branch in Collection)
+            {
+                foreach (var el in branch.Elements)
+                {
+                    if (el.DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        tapcounter++;
+                    }
+                }
+            }
+            int nextelement = -1;
+
+            // Выбор ветви, если счетчик врезок равен нулю, то выберем вариант алгоритма с тройниками 
+            if (tapcounter != 0)
+            {
+                int index1 = 0;
+                selectedBranch = Collection
+               .Select(branch => new
+               {
+                   Branch = branch,
+                   index = GetIndex(branch, 0),
+                   TapCount = branch.Elements.Count(el => el.DetailType == CustomElement.Detail.TapAdjustable),
+                   PBtot = branch.BranchCalc_Pressure(index1)
+               })
+                .OrderByDescending(x => x.TapCount)
+                .ThenByDescending(x => x.PBtot)
+                .FirstOrDefault()?.Branch;
+
+                selectedTee = selectedBranch.Elements.Select(x => x).Where(x => x.DetailType == CustomElement.Detail.TapAdjustable).First();
+                nextelement = selectedBranch.Elements.IndexOf(selectedTee);
+
+                return (selectedBranch, nextelement);
+            }
+            else
+            {
+                // В этом случае мы находим тройник с нуль-расход-коннектором.
+                // В этом случае он самый плохой и мы обходим по этому пути.
+                // И обходим сразу до воздуховода, который сразу после этого тройника
+                foreach (var branch in Collection)
+                {
+                    for (int ind = 0; ind < branch.Elements.Count; ind++)
+                    {
+                        CustomElement el = branch.Elements[ind];
+                        if (el.ElementId.IntegerValue == 644211)
+                        {
+                            var el2 = el;
+                        }
+                        if (el.DetailType == CustomElement.Detail.Tee)
+                        {
+                            foreach (Connector connector in el.OwnConnectors)
+                            {
+                                if (connector.Flow == 0)
+                                {
+                                    selectedTee = el;
+                                    selectedBranch = branch;
+                                    selectedBranchNumber = el.BranchNumber;
+                                    ind++;
+                                    break;
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+                if(selectedBranch!=null)
+                {
+                    for (int i = 0; i < selectedBranch.Elements.Count; i++)
+                    {
+                        if (selectedBranch.Elements[i].ElementId.IntegerValue == 658817)
+                        {
+                            var el2 = selectedBranch.Elements[i];
+                        }
+                        if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+                        {
+                            if (selectedTee.DetailType == CustomElement.Detail.Tee)
+                            {
+                                CustomElement element2 = selectedBranch.Elements[i];
+                                CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                                UpdateElementProperties(element2, customTee2);
+                                nextelement = i;
+                                selectedBranch.BranchCalc(nextelement);
+                                break; // Завершить цикл после обработки первого найденного элемента
+                            }
+
+
+                        }
+                    }
+                }
+                else
+                {
+                    int index1 = 0;
+                    selectedBranch = Collection.OrderByDescending(x => x.PBTot).First();
+                    /*selectedBranch = Collection
+                   .Select(branch => new
+                   {
+                       Branch = branch,
+                       index = GetIndex(branch, 0),
+                      
+                       PBtot = branch.BranchCalc_Pressure(index1)
+                   })
+                    .OrderByDescending(x => x.PBtot)
+                    .FirstOrDefault()?.Branch;*/
+
+                   
+                    nextelement = 0;
+                }
+                
+            }
+           
+             
+            return (selectedBranch, nextelement);
+        }
+
+
         public (List<CustomBranch>, CustomBranch) TeeSolver()
         {
             CustomBranch selectedBranch = null;
             List<CustomElement> tees = new List<CustomElement>();
             CustomElement selectedTee = null;
             int selectedBranchNumber;
-            //Тут обработали ветку, на которой расположен тройник, который имеет только присоединение одной решетки.
+
+            int tapcounter = 0;
             foreach (var branch in Collection)
             {
-                for (int ind =0;ind<branch.Elements.Count; ind++)
+                foreach (var el in branch.Elements)
                 {
-                    CustomElement el = branch.Elements[ind];
-                    if (el.ElementId.IntegerValue== 644211)
+                    if (el.DetailType == CustomElement.Detail.TapAdjustable)
                     {
-                        var el2 = el;
+                        tapcounter++;
                     }
-                    if (el.DetailType == CustomElement.Detail.Tee)
-                    {
-                        foreach (Connector connector in el.OwnConnectors)
-                        {
-                            if (connector.Flow == 0)
-                            {
-                                selectedTee = el;
-                                selectedBranch = branch;
-                                selectedBranchNumber = el.BranchNumber;
-                                ind++;
-                                break;
-                            }
-                            
-                        }
-                    }
-                   
                 }
             }
             int nextelement = -1;
-
-            for (int i = 0; i < selectedBranch.Elements.Count; i++)
+            if (tapcounter != 0)
             {
-                if (selectedBranch.Elements[i].ElementId.IntegerValue == 644211)
+                int index1 = 0;
+                selectedBranch = Collection
+               .Select(branch => new
+               {
+                   Branch = branch,
+                   index = GetIndex(branch, 0),
+                   TapCount = branch.Elements.Count(el => el.DetailType == CustomElement.Detail.TapAdjustable),
+                   PBtot = branch.BranchCalc_Pressure(index1)
+               })
+                .OrderByDescending(x => x.TapCount)
+                .ThenByDescending(x => x.PBtot)
+                .FirstOrDefault()?.Branch;
+
+                selectedTee = selectedBranch.Elements.Select(x => x).Where(x => x.DetailType == CustomElement.Detail.TapAdjustable).First();
+            }
+            else
+            {
+                foreach (var branch in Collection)
                 {
-                    var el2 = selectedBranch.Elements[i];
+                    for (int ind = 0; ind < branch.Elements.Count; ind++)
+                    {
+                        CustomElement el = branch.Elements[ind];
+                        if (el.ElementId.IntegerValue == 644211)
+                        {
+                            var el2 = el;
+                        }
+                        if (el.DetailType == CustomElement.Detail.Tee)
+                        {
+                            foreach (Connector connector in el.OwnConnectors)
+                            {
+                                if (connector.Flow == 0)
+                                {
+                                    selectedTee = el;
+                                    selectedBranch = branch;
+                                    selectedBranchNumber = el.BranchNumber;
+                                    ind++;
+                                    break;
+                                }
+
+                            }
+                        }
+
+
+                    }
                 }
-                if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+
+               
+
+                for (int i = 0; i < selectedBranch.Elements.Count; i++)
                 {
-                    CustomElement element2 = selectedBranch.Elements[i];
-                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
-                    UpdateElementProperties(element2, customTee2);
-                    nextelement = i;
-                    selectedBranch.BranchCalc(nextelement);
-                    break; // Завершить цикл после обработки первого найденного элемента
+                    if (selectedBranch.Elements[i].ElementId.IntegerValue == 658817)
+                    {
+                        var el2 = selectedBranch.Elements[i];
+                    }
+                    if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+                    {
+                        if (selectedTee.DetailType == CustomElement.Detail.Tee)
+                        {
+                            CustomElement element2 = selectedBranch.Elements[i];
+                            CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                            UpdateElementProperties(element2, customTee2);
+                            nextelement = i;
+                            selectedBranch.BranchCalc(nextelement);
+                            break; // Завершить цикл после обработки первого найденного элемента
+                        }
+
+
+                    }
                 }
             }
+            //Тут обработали ветку, на которой расположен тройник, который имеет только присоединение одной решетки.
+           
+           
 
-            /*for (int i =0; i<selectedBranch.Elements.Count;i++)
+
+           /* if (selectedTee.DetailType == CustomElement.Detail.TapAdjustable)
             {
-                if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
-                {
-                    CustomElement element2 = selectedBranch.Elements[i];
-                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
-                    UpdateElementProperties(element2, customTee2);
-                    nextelement = i + 2;
-                    selectedBranch.BranchCalc(nextelement);
-                    break;
-                }
+                CustomElement element2 = selectedBranch.Elements[i];
+                CustomDuctInsert2 customTee2 = new CustomDuctInsert2(Document, element2, Collection, false);
+                CustomElement element2next = selectedBranch.Elements[i + 1];
+                CustomDuctInsert2 customTee3 = new CustomDuctInsert2(Document, element2, Collection, true);
+                UpdateElementProperties(element2, customTee2);
+                UpdateElementProperties(element2next, customTee3);
+                nextelement = i + 1;
+                selectedBranch.BranchCalc(nextelement);
+                break; // Завершить цикл после обработки первого найденного элемента
             }*/
-            
-
 
             // Тут надо обработвть оставшиеся ветки, кроме выбранной ветки selectedBranch
 
-          
+            int index = 0;
             foreach (var branch in Collection)
             {
                 if (branch.Number == selectedBranch.Number)
@@ -1700,32 +2129,56 @@ namespace AirTreeV1
                     {
                         if (el.DetailType == CustomElement.Detail.Tee)
                         {
-                            int index = GetElementIndex(branch, 0);
-                           
-                            branch.BranchCalc(index-1);
+                             index = GetElementIndex(branch, 0);
+
+                            branch.BranchCalc(index - 1);
                             break;
-                                
+
+
+                        }
+                        if (el.DetailType == CustomElement.Detail.TapAdjustable)
+                        {
+                            try
+                            {
+                                index = GetElementIndex(branch, 0);
+                                branch.BranchCalc(index - 1);
+                                break;
+                            }
+                            catch
+                            { }
                             
                         }
                     }
                 }
             }
-            Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
-            selectedBranch = Collection.First();
             
+            //Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
+            selectedBranch = Collection
+              .Select(branch => new
+              {
+                  Branch = branch,
+                  index = GetIndex(branch, 0),
+                  TapCount = branch.Elements.Count(el => el.DetailType.ToString().Contains("Insert") || el.DetailType.ToString().Contains("TapAdjustable")),
+                  PBtot = branch.BranchCalc_Pressure(index)
+              })
+               .OrderByDescending(x => x.TapCount)
+               .ThenByDescending(x => x.PBtot)
+               .FirstOrDefault()?.Branch;
+            selectedBranch = Collection.First();
+
             List<CustomBranch> newCollection = new List<CustomBranch>();
             CustomBranch resultBranch = new CustomBranch(Document);
             CustomBranch researchedBranch = selectedBranch;
-            
-           /* for (int l = 0; l < researchedBranch.Elements.Count; l++)
-            {
-                researchedBranch.Elements[l].MainTrack = true;
-                resultBranch.Add(researchedBranch.Elements[l]);
-                if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.Tee)
-                {
-                    break;
-                }
-            }*/
+
+            /* for (int l = 0; l < researchedBranch.Elements.Count; l++)
+             {
+                 researchedBranch.Elements[l].MainTrack = true;
+                 resultBranch.Add(researchedBranch.Elements[l]);
+                 if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.Tee)
+                 {
+                     break;
+                 }
+             }*/
 
 
             double pressure1 = 0;
@@ -1739,27 +2192,27 @@ namespace AirTreeV1
             }
             do
             {
-                
+
                 selectedend = GetElementIndex(researchedBranch, selectedend);
-                if (selectedend==-1)
+                if (selectedend == -1)
                 {
                     break;
                 }
                 elementId = researchedBranch.Elements[selectedend].ElementId;
-                if (researchedBranch.Elements[selectedend].PluginId==44)
+                if (researchedBranch.Elements[selectedend].PluginId == 44)
                 {
                     var el3 = researchedBranch.Elements[selectedend];
                 }
-                if (elementId == researchedBranch.Elements[selectedend-1].ElementId)
+                if (elementId == researchedBranch.Elements[selectedend - 1].ElementId)
                 {
                     continue;
                 }
-               /* if (elementId.IntegerValue==644208)
-                {
-                    var el3 = researchedBranch.Elements[selectedend];
-                }*/
+                /* if (elementId.IntegerValue==644208)
+                 {
+                     var el3 = researchedBranch.Elements[selectedend];
+                 }*/
                 //pressure1 = researchedBranch.Elements[selectedend - 2].Ptot;
-                pressure1 = researchedBranch.Elements[selectedend-1].Ptot;
+                pressure1 = researchedBranch.Elements[selectedend - 1].Ptot;
 
 
                 int brNum = 0;
@@ -1776,7 +2229,7 @@ namespace AirTreeV1
                     }
                     else
                     {
-                        if (Collection[k].Elements.Any(x=>x.ElementId==elementId))
+                        if (Collection[k].Elements.Any(x => x.ElementId == elementId))
                         {
                             try
                             {
@@ -1809,12 +2262,12 @@ namespace AirTreeV1
                                     UpdateElementProperties(element2, customTee2);
 
                                     Collection[correctBranch].BranchCalc(minimalIndex);
-                                    pressure2 = Collection[correctBranch].Elements[minimalIndex-1].Ptot;
+                                    pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
                                     Collection[correctBranch].IsVisited = true;
                                 }
 
-                                
-                               
+
+
                                 if (pressure1 > pressure2)
                                 {
                                     for (int l = minimalIndex + 1; l < Collection[correctBranch].Elements.Count; l++)
@@ -1831,28 +2284,431 @@ namespace AirTreeV1
                                 {
                                     researchedBranch = Collection[correctBranch];
                                     ElementId elementId2 = Collection[correctBranch].Elements.Last().ElementId;
-                                    for (int j = minimalIndex+1; j < Collection[correctBranch].Elements.Count; j++)
+                                    for (int j = minimalIndex + 1; j < Collection[correctBranch].Elements.Count; j++)
                                     {
                                         /*do
                                         {*/
+
+                                        Collection[correctBranch].Elements[j].MainTrack = true;
+                                        resultBranch.Add(Collection[correctBranch].Elements[j]);
+                                        /*if (Collection[correctBranch].Elements[j].ElementId==elementId2)
+                                        {
+                                            break;
+                                        }
+                                        if (Collection[correctBranch].Elements[j].NextElementId==null)
+                                        {
+                                            break;
+                                        }*/
+                                        if (Collection[correctBranch].Elements[j].DetailType == CustomElement.Detail.Tee)
+                                        {
+                                            break;
+                                        }
+
+                                        /*while (true);*/
+
+
+                                    }
+                                    selectedend = GetElementIndex(researchedBranch, selectedend);
+                                    if (selectedend == -1)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                selectedend = GetElementIndex(researchedBranch, selectedend);
+                                if (selectedend == -1)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            /* for (int l = 0; l < Collection[correctBranch].Elements.Count; l++)
+                             {
+                                 researchedBranch.Elements[l].MainTrack = true;
+                                 resultBranch.Add(researchedBranch.Elements[l]);
+                                 if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.Tee)
+                                 {
+                                     break;
+                                 }
+                             }*/
+                            continue;
+                        }
+                        // Находим элемент с заданным ElementId
+
+                    }
+
+
+                }
+                selectedend = GetElementIndex(researchedBranch, selectedend);
+                if (selectedend == -1)
+                {
+                    break;
+                }
+                selectedend += 1;
+            }
+            while (researchedBranch.Elements.Last().NextElementId == null);
+            researchedBranch.BranchCalc(researchedBranch.Elements.Count - 1);
+            List<ElementId> checkedIds = new List<ElementId>();
+            foreach (var el in researchedBranch.Elements)
+            {
+                if (!checkedIds.Contains(el.ElementId))
+                {
+                    checkedIds.Add(el.ElementId);
+                    el.MainTrack = true;
+                }
+                else
+                { continue; }
+            }
+
+
+            return (Collection, researchedBranch);
+            //Collection.Add(researchedBranch);
+
+        }
+
+
+
+       /* public (List<CustomBranch>, CustomBranch) TeeSolver()
+        {
+            CustomBranch selectedBranch = null;
+            List<CustomElement> tees = new List<CustomElement>();
+            CustomElement selectedTee = null;
+            int selectedBranchNumber;
+            //Тут обработали ветку, на которой расположен тройник, который имеет только присоединение одной решетки.
+
+            int tapcounter = 0; 
+            foreach (var branch in Collection)
+            {
+                foreach (var el in branch.Elements)
+                {
+                    if (el.DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        tapcounter++;
+                    }
+                }
+            }
+            if (tapcounter!=0)
+            {
+                int index = 0;
+                selectedBranch = Collection
+               .Select(branch => new
+               {
+                   Branch = branch,
+                   index= GetIndex(branch, 0),
+                   TapCount = branch.Elements.Count(el => el.DetailType == CustomElement.Detail.TapAdjustable),
+                   PBtot =branch.BranchCalc_Pressure(index)
+               })
+                .OrderByDescending(x => x.TapCount)
+                .ThenByDescending(x => x.PBtot)
+                .FirstOrDefault()?.Branch;
+
+                selectedTee = selectedBranch.Elements.Select(x => x).Where(x=>x.DetailType == CustomElement.Detail.TapAdjustable).First();
+            }
+            else
+            {
+                foreach (var branch in Collection)
+                {
+                    for (int ind = 0; ind < branch.Elements.Count; ind++)
+                    {
+                        CustomElement el = branch.Elements[ind];
+                        if (el.ElementId.IntegerValue == 644211)
+                        {
+                            var el2 = el;
+                        }
+                        if (el.DetailType == CustomElement.Detail.Tee)
+                        {
+                            foreach (Connector connector in el.OwnConnectors)
+                            {
+                                if (connector.Flow == 0)
+                                {
+                                    selectedTee = el;
+                                    selectedBranch = branch;
+                                    selectedBranchNumber = el.BranchNumber;
+                                    ind++;
+                                    break;
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            int nextelement = -1;
+            
+            if (selectedBranch!=null)
+            {
+                for (int i = 0; i < selectedBranch.Elements.Count; i++)
+                {
+                    if (selectedBranch.Elements[i].ElementId.IntegerValue == 658872)
+                    {
+                        var el2 = selectedBranch.Elements[i];
+                    }
+                    if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+                    {
+                        if (selectedTee.DetailType==CustomElement.Detail.Tee)
+                        {
+                            CustomElement element2 = selectedBranch.Elements[i];
+                            CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                            UpdateElementProperties(element2, customTee2);
+
+                        }
+                        else if (selectedTee.DetailType==CustomElement.Detail.TapAdjustable)
+                        {
+                            CustomElement element2 = selectedBranch.Elements[i];
+                            CustomDuctInsert2 customInsertNext = new CustomDuctInsert2(Document, element2, Collection, false);
+                            UpdateElementProperties(element2, customInsertNext);
+                        }
+                       
+                        
+                        nextelement = i;
+                        selectedBranch.BranchCalc(nextelement);
+                        break; // Завершить цикл после обработки первого найденного элемента
+                    }
+                }
+
+                foreach (var branch in Collection)
+                {
+                    if (branch.Number == selectedBranch.Number)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        foreach (var el in branch.Elements)
+                        {
+                            if (el.DetailType == CustomElement.Detail.Tee)
+                            {
+                                int index = GetElementIndex(branch, 0);
+
+                                branch.BranchCalc(index - 1);
+                                break;
+
+
+                            }
+                            else if (el.DetailType.ToString().Contains("Insert"))
+                            {
+                                int index = GetIndex(branch, 0);
+                                branch.BranchCalc(index - 1);
+                                break;
+                            }
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var branch in Collection)
+                {
+                    foreach (var el in branch.Elements)
+                    {
+                        if (el.DetailType == CustomElement.Detail.TapAdjustable)
+                        {
+                            int index = GetElementIndex(branch, 0);
+
+                            branch.BranchCalc(index - 1);
+                            break;
+
+                        }
+                    }
+                }
+            }
+           
+                
+            
+           
+
+            *//*for (int i =0; i<selectedBranch.Elements.Count;i++)
+            {
+                if (selectedBranch.Elements[i].ElementId.IntegerValue == selectedTee.ElementId.IntegerValue)
+                {
+                    CustomElement element2 = selectedBranch.Elements[i];
+                    CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, false);
+                    UpdateElementProperties(element2, customTee2);
+                    nextelement = i + 2;
+                    selectedBranch.BranchCalc(nextelement);
+                    break;
+                }
+            }*//*
+            
+
+
+            // Тут надо обработвть оставшиеся ветки, кроме выбранной ветки selectedBranch
+
+          
+           
+            Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
+            selectedBranch = Collection.First();
+            
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+            CustomBranch resultBranch = new CustomBranch(Document);
+            CustomBranch researchedBranch = selectedBranch;
+            
+           *//* for (int l = 0; l < researchedBranch.Elements.Count; l++)
+            {
+                researchedBranch.Elements[l].MainTrack = true;
+                resultBranch.Add(researchedBranch.Elements[l]);
+                if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.Tee)
+                {
+                    break;
+                }
+            }*//*
+
+
+            double pressure1 = 0;
+            double pressure2 = 0;
+            int selectedend = 0;
+            CustomElement element = null;
+            ElementId elementId = null;
+            if (nextelement != -1)
+            {
+                selectedend = nextelement;
+            }
+            do
+            {
+                
+                selectedend = GetElementIndex(researchedBranch, selectedend);
+                if (selectedend==-1)
+                {
+                    break;
+                }
+                elementId = researchedBranch.Elements[selectedend].ElementId;
+                if (researchedBranch.Elements[selectedend].PluginId==44)
+                {
+                    var el3 = researchedBranch.Elements[selectedend];
+                }
+                if (elementId == researchedBranch.Elements[selectedend-1].ElementId)
+                {
+                    continue;
+                }
+               *//* if (elementId.IntegerValue==644208)
+                {
+                    var el3 = researchedBranch.Elements[selectedend];
+                }*//*
+                //pressure1 = researchedBranch.Elements[selectedend - 2].Ptot;
+                pressure1 = researchedBranch.Elements[selectedend-1].Ptot;
+
+
+                int brNum = 0;
+                int minimalIndex = 1000000;
+
+                int correctBranch = 0;
+                for (int k = 0; k < Collection.Count; k++)
+                {
+
+                    // Убедитесь, что мы игнорируем уже посещенные ветви
+                    if (Collection[k] == researchedBranch || Collection[k].IsVisited)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        if (Collection[k].Elements.Any(x=>x.ElementId==elementId))
+                        {
+                            try
+                            {
+
+                                CustomElement foundedElement = Collection[k].Elements.First(x => x.ElementId == elementId);
+                                if (foundedElement == null)
+                                {
+                                    break;
+                                }
+                                if (foundedElement.ElementId.IntegerValue == 658872)
+                                {
+                                    var element5 = element;
+                                }
+                                // Проверяем, нашли ли мы элемент
+                                if (foundedElement != null)
+                                {
+                                    int foundedIndex = Collection[k].Elements.FindIndex(x => x.ElementId == elementId);
+
+                                    // Обновляем minimalIndex, если найденный индекс меньше текущего минимального
+                                    if (foundedIndex < minimalIndex)
+                                    {
+                                        minimalIndex = foundedIndex;
+                                        correctBranch = k;
+                                        // Вы можете добавить дополнительную логику здесь, если это необходимо
+                                    }
+                                    Collection[correctBranch].BranchCalc(minimalIndex);
+                                    CustomElement element2 = Collection[k].Elements[minimalIndex];
+                                    //CustomElement element3 = new CustomElement(Document, element2.ElementId);
+                                    if (element2.DetailType == CustomElement.Detail.Tee)
+                                    {
+                                        CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
+                                        UpdateElementProperties(element2, customTee2);
+                                    }
+                                    if (element2.DetailType == CustomElement.Detail.TapAdjustable)
+                                    {
+                                        CustomElement element3 = Collection[k].Elements[minimalIndex + 1];
+                                        CustomDuctInsert2 customInsert = new CustomDuctInsert2(Document, element3, Collection, true);
+                                        UpdateElementProperties(element2, customInsert);
+
+                                        ///
+                                       *//* CustomElement element3 = new CustomElement(Document, element2.NextElementId);
+                                        CustomDuctInsert2 customInsertNext = new CustomDuctInsert2(Document, element3, Collection, true);
+                                        UpdateElementProperties(element3, customInsertNext);*//*
+                                        ///
+                                    }
+
+                                    Collection[correctBranch].BranchCalc(minimalIndex);
+                                    pressure2 = Collection[correctBranch].Elements[minimalIndex-1].Ptot;
+                                    Collection[correctBranch].IsVisited = true;
+                                }
+
+                                
+                               
+                                if (pressure1 > pressure2)
+                                {
+                                    for (int l = minimalIndex + 1; l < Collection[correctBranch].Elements.Count; l++)
+                                    {
+                                        researchedBranch.Elements[l].MainTrack = true;
+                                        resultBranch.Add(researchedBranch.Elements[l]);
+                                        if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.Tee)
+                                        {
+                                            break;
+                                        }
+                                        if (researchedBranch.Elements[l].DetailType == CustomElement.Detail.TapAdjustable)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    researchedBranch = Collection[correctBranch];
+                                    ElementId elementId2 = Collection[correctBranch].Elements.Last().ElementId;
+                                    for (int j = minimalIndex+1; j < Collection[correctBranch].Elements.Count; j++)
+                                    {
+                                        *//*do
+                                        {*//*
                                             
                                             Collection[correctBranch].Elements[j].MainTrack = true;
                                             resultBranch.Add(Collection[correctBranch].Elements[j]);
-                                            /*if (Collection[correctBranch].Elements[j].ElementId==elementId2)
+                                            *//*if (Collection[correctBranch].Elements[j].ElementId==elementId2)
                                             {
                                                 break;
                                             }
                                             if (Collection[correctBranch].Elements[j].NextElementId==null)
                                             {
                                                 break;
-                                            }*/
+                                            }*//*
                                             if (Collection[correctBranch].Elements[j].DetailType == CustomElement.Detail.Tee)
                                             {
                                                 break;
                                             }
-                                        
-                                        /*while (true);*/
-                                       
+                                            if (Collection[correctBranch].Elements[j].DetailType == CustomElement.Detail.TapAdjustable)
+                                            {
+                                                break;
+                                            }
+
+                                        *//*while (true);*//*
+
 
                                     }
                                     selectedend = GetElementIndex(researchedBranch, selectedend);
@@ -1873,7 +2729,7 @@ namespace AirTreeV1
                         }
                         else
                         {
-                           /* for (int l = 0; l < Collection[correctBranch].Elements.Count; l++)
+                           *//* for (int l = 0; l < Collection[correctBranch].Elements.Count; l++)
                             {
                                 researchedBranch.Elements[l].MainTrack = true;
                                 resultBranch.Add(researchedBranch.Elements[l]);
@@ -1881,7 +2737,7 @@ namespace AirTreeV1
                                 {
                                     break;
                                 }
-                            }*/
+                            }*//*
                             continue;
                         }
                         // Находим элемент с заданным ElementId
@@ -1915,7 +2771,7 @@ namespace AirTreeV1
             return (Collection, researchedBranch);
             //Collection.Add(researchedBranch);
 
-        }
+        }*/
 
         public  void MarkCollection2 (CustomBranch selectedBranch)
         {
@@ -2411,21 +3267,64 @@ namespace AirTreeV1
             {
                 checkedElements.Add(el.ElementId);
             }
+            int trackCounter1 = 0;
+            foreach (var el in selectedbranch.Elements)
+            {
+                el.TrackNumber = trackCounter1;
+                trackCounter1++;
+            }
+
+
             newCollection.Add(selectedbranch);
             foreach(CustomBranch customBranch in Collection)
             {
+                int trackCounter = 0;
                 if (customBranch.Number!= selectedbranch.Number)
                 {
                     CustomBranch branch1 = new CustomBranch(Document);
                     foreach (var el in customBranch.Elements)
                     {
+                        if (el.ElementId.IntegerValue == 658817)
+                        {
+                            var ele = el;
+                        }
                         if (!checkedElements.Contains(el.ElementId))
                         {
+                            if (el.DetailType.ToString().Contains("Tap"))
+                            {
+
+                                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, el, Collection, false);
+                                UpdateElementProperties(el, customDuctInsert2);
+                                branch1.Add(el);
+                            }
                             checkedElements.Add(el.ElementId);
                             branch1.Add(el);
                         }
                         else
                         {
+                            if (el.IsPart ==true)
+                            {
+                                foreach (var branch in Collection)
+                                {
+                                    foreach (var el2 in branch.Elements)
+                                    {
+                                        if (el2.IsStartPart == true && el2.NextElementId.IntegerValue == el.ElementId.IntegerValue)
+                                        {
+                                            CustomElement element3 = el2;
+                                            CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element3, Collection, el2.IsReversed);
+                                            el.DetailType = element3.DetailType;
+                                            el.PStat = 0;
+                                            UpdateElementProperties(el, customDuctInsert2);
+                                            branch1.Add(el);
+
+
+                                           /* CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, el2, Collection, true);
+                                            UpdateElementProperties(el, customDuctInsert2);
+                                            branch1.Add(el);*/
+                                        }
+                                    }
+                                }
+                            }
                             if (el.DetailType.ToString().Contains("Tee"))  
                             {
                                 CustomTee2 customTee = new CustomTee2(Document, el, Collection, true);
@@ -2434,13 +3333,46 @@ namespace AirTreeV1
                             }
                             if (el.DetailType.ToString().Contains("Insert"))
                             {
-
+                                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, el, Collection, true);
+                                UpdateElementProperties(el, customDuctInsert2);
+                                branch1.Add(el);
                             }
+                            if (el.DetailType.ToString().Contains("Tap"))
+                            {
+
+                                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, el, Collection, false);
+                                UpdateElementProperties(el, customDuctInsert2);
+                                branch1.Add(el);
+                            }
+                            
                             break;
                         }
                        
                     }
+
+                    foreach (var el in branch1.Elements)
+                    {
+                        if (el.DetailType == CustomElement.Detail.Tee)
+                        {
+                            CustomTee2 customTee = new CustomTee2(Document, el, Collection, false);
+                            UpdateElementProperties(el, customTee);
+
+                        }
+                        if (el.DetailType == CustomElement.Detail.Tee)
+                        {
+                            CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, el, Collection, false);
+                            UpdateElementProperties(el, customDuctInsert2);
+                        }
+                    }
+
+
+
                     branch1.BranchCalc(branch1.Elements.Count - 1);
+                    foreach (var el in branch1.Elements)
+                    {
+                        el.TrackNumber = trackCounter;
+                        trackCounter++;
+                    }
                     newCollection.Add(branch1);
                 }
                

@@ -102,6 +102,45 @@ namespace AirTreeV1
             }
             PBTot = Elements[nextelement].Ptot;
         }
+        public double BranchCalc_Pressure(int nextelement)
+        {
+            for (int i = 1; i < nextelement + 1; i++)
+            {
+
+                if (Elements[i].ElementId == Elements[i - 1].ElementId)
+                {
+                    continue;
+                }
+                else
+                {
+                    Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+                }
+
+
+
+            }
+            PBTot = Elements[nextelement].Ptot;
+            return PBTot;
+        }
+        public void BranchCalc_2(int nextelement)
+        {
+            for (int i = 1; i < nextelement; i++)
+            {
+
+                if (Elements[i].ElementId == Elements[i - 1].ElementId)
+                {
+                    continue;
+                }
+                else
+                {
+                    Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
+                }
+
+
+
+            }
+            PBTot = Elements[nextelement].Ptot;
+        }
         public void BranchCalc()
         {
 

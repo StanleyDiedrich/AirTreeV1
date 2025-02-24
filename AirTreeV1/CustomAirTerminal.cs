@@ -657,7 +657,7 @@ namespace AirTreeV1
                                                     element.ModelHeight = (custom.Height*1000).ToString();
                                                     if (element.Element.LookupParameter("AirTree_Спецрешетка").AsInteger() == 0)
                                                     {
-                                                    custom.Area = custom.Width / 1000 * custom.Height / 1000;
+                                                    custom.Area = custom.Width  * custom.Height ;
                                                     custom.Velocity = custom.Flow / (custom.Area * 3600);
                                                         //Velocity = OutletConnector.Velocity;
                                                         element.Volume = Convert.ToString(Math.Round(custom.Flow, 0));

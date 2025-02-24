@@ -57,19 +57,31 @@ namespace AirTreeV1
         public double RA { get; set; }
         public double RQ { get; set; }
         public double RC { get; set; }
-
+        
         public CustomDuctInsert2(Autodesk.Revit.DB.Document document, CustomElement element, List<CustomBranch> collection, bool isReversed)
         {
             Document = document;
             Element = element;
+            Element.IsStartPart = true;
             ElementId = element.ElementId;
-
+            
             NextElementId = element.NextElementId;
             Element NextElement = document.GetElement(element.NextElementId);
 
+            foreach (var branch in collection)
+            {
+                foreach (var el in branch.Elements)
+                {
+                    if (el.ElementId == NextElementId)
+                    {
+                        el.IsPart = true;
+                    }
+                }
+            }
+
             if (NextElement is Duct)
             {
-
+                
                 //ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in (NextElement as MEPCurve).ConnectorManager.Connectors)
                 {
