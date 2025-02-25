@@ -455,9 +455,9 @@ namespace AirTreeV1
                     //collection.ReMarkCollection(selectedbranch);
 
                     // ЭТО ВАЖНО!!!!
-                    string content = collection.GetContent();
+                    //string content = collection.GetContent();
 
-                    //string content = collection.GetContent(selectedbranch);
+                    string content = collection.GetContent(selectedbranch);
                     string filemname = collection.FirstElement;
                     try
                     {

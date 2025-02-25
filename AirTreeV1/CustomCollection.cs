@@ -1768,7 +1768,7 @@ namespace AirTreeV1
                                 {
                                     break;
                                 }
-                                if (foundedElement.ElementId.IntegerValue == 659308)
+                                if (foundedElement.ElementId.IntegerValue == 661906)
                                 {
                                     var element5 = element;
                                 }
@@ -1790,10 +1790,15 @@ namespace AirTreeV1
 
                                     if (element2.DetailType==CustomElement.Detail.Tee)
                                     {
-                                        CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
+                                        if (element2.ElementId.IntegerValue == 661906)
+                                        {
+                                            var el3 = element2;
+                                        }
+                                            CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
                                         UpdateElementProperties(element2, customTee2);
                                         Collection[correctBranch].BranchCalc(minimalIndex);
-                                        pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        //pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        pressure2 = Collection[correctBranch].Elements[minimalIndex].Ptot;
                                         Collection[correctBranch].IsVisited = true;
                                     }
                                     if (element2.DetailType.ToString().Contains("Duct"))
@@ -1805,7 +1810,8 @@ namespace AirTreeV1
                                         UpdateElementProperties(element2, customDuctInsert2);
                                         
                                         Collection[correctBranch].BranchCalc(minimalIndex);
-                                        pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        //pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        pressure2 = Collection[correctBranch].Elements[minimalIndex].Ptot;
                                         Collection[correctBranch].IsVisited = true;
                                         
                                     }
