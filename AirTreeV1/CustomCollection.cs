@@ -1685,6 +1685,7 @@ namespace AirTreeV1
                     //ВОТ ЭТО СПОРНЫЙ МОМЕНТ
                     researchedBranch.BranchCalc(i);
                     //pressure1 = researchedBranch.Elements[i - 1].Ptot;
+                    i++;
                     selectedend = i; // Так как i увеличится в следующей итерации
                     return selectedend;
 
@@ -1716,6 +1717,7 @@ namespace AirTreeV1
 
         public (List<CustomBranch>, CustomBranch) TeeTapSolver(CustomBranch researchedBranch,int nextelement )
         {
+            int i = 0;
             CustomBranch resultBranch = new CustomBranch(Document);
             double pressure1 = 0;
             double pressure2 = 0;
@@ -1729,13 +1731,18 @@ namespace AirTreeV1
             }
             do
             {
+
+                if (researchedBranch.Elements[i].ElementId.IntegerValue==10522159)
+                {
+                    var element5 = element;
+                }
                 selectedend = GetElementIndex(researchedBranch, selectedend);
                 if (selectedend == -1)
                 {
                     break;
                 }
                 elementId = researchedBranch.Elements[selectedend].ElementId;
-                if (researchedBranch.Elements[selectedend].PluginId == 71)
+                if (researchedBranch.Elements[selectedend].PluginId == 5236)
                 {
                     var el3 = researchedBranch.Elements[selectedend];
                 }
@@ -1768,7 +1775,7 @@ namespace AirTreeV1
                                 {
                                     break;
                                 }
-                                if (foundedElement.ElementId.IntegerValue == 644208)
+                                if (foundedElement.ElementId.IntegerValue == 10522159)
                                 {
                                     var element5 = element;
                                 }
@@ -1790,15 +1797,15 @@ namespace AirTreeV1
 
                                     if (element2.DetailType==CustomElement.Detail.Tee)
                                     {
-                                        if (element2.ElementId.IntegerValue == 661906)
+                                        if (element2.ElementId.IntegerValue == 10522159)
                                         {
                                             var el3 = element2;
                                         }
                                             CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, true);
                                         UpdateElementProperties(element2, customTee2);
                                         Collection[correctBranch].BranchCalc(minimalIndex);
-                                        //pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
-                                        pressure2 = Collection[correctBranch].Elements[minimalIndex].Ptot;
+                                        pressure2 = Collection[correctBranch].Elements[minimalIndex - 1].Ptot;
+                                        //pressure2 = Collection[correctBranch].Elements[minimalIndex].Ptot;
                                         Collection[correctBranch].IsVisited = true;
                                     }
                                     if (element2.DetailType.ToString().Contains("Duct"))
@@ -1873,6 +1880,7 @@ namespace AirTreeV1
                     break;
                 }
                 selectedend += 1;
+                i++;
             }
             while (researchedBranch.Elements.Last().NextElementId == null);
             researchedBranch.BranchCalc(researchedBranch.Elements.Count - 1);
@@ -1924,7 +1932,8 @@ namespace AirTreeV1
                 .ThenByDescending(x => x.PBtot)
                 .FirstOrDefault()?.Branch;
 
-                selectedTee = selectedBranch.Elements.Select(x => x).Where(x => x.DetailType == CustomElement.Detail.TapAdjustable).First();
+                //selectedTee = selectedBranch.Elements.Select(x => x).Where(x => x.DetailType == CustomElement.Detail.TapAdjustable).First();
+                selectedTee = selectedBranch.Elements.Select(x => x).Where(x => x.DetailType == CustomElement.Detail.TapAdjustable || x.DetailType==CustomElement.Detail.Tee).First();
                 nextelement = selectedBranch.Elements.IndexOf(selectedTee);
 
                 return (selectedBranch, nextelement);

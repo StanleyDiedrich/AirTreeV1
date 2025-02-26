@@ -1546,7 +1546,7 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RC = relC;
-                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
+                                    MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);////
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
                                         element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
