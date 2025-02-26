@@ -885,8 +885,9 @@ namespace AirTreeV1
                             else
                             {
                                 relA = selectedConnector.Area / InletConnector.Area;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                relQ = (InletConnector.Flow-selectedConnector.Flow)/ InletConnector.Flow; // На реверсивных 
+                                relC = (InletConnector.Flow - selectedConnector.Flow) / InletConnector.Flow;
+                                //relC = selectedConnector.Velocity / InletConnector.Velocity;
                                 RA = relA;
                                 RQ = relQ;
                                 RC = relC;
