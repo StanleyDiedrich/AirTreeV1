@@ -390,7 +390,7 @@ namespace AirTreeV1
                     //RC = relC;
                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                     element.DetailType = CustomElement.Detail.RoundTeeStraight;
-                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                 }
                 else
                 {
@@ -401,7 +401,7 @@ namespace AirTreeV1
                     //RC = relC;
                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
                     element.DetailType = CustomElement.Detail.RoundTeeBranch;
-                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                 }
             }
             else if (IsWidth1 == true && IsWidth3 == true && IsHeight1 == true && IsHeight3 == true)

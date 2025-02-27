@@ -1301,7 +1301,7 @@ namespace AirTreeV1
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                
                                 }
                                 else
@@ -1312,7 +1312,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                                 // Тройник прямой
                                 
@@ -1328,7 +1328,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                                    
                                 }
 
@@ -1340,7 +1340,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                                
                             }
@@ -1884,7 +1884,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
 
                                   
                                 }
@@ -1896,7 +1896,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                             }
                             else
@@ -1910,7 +1910,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                                    
                                 }
                                 else
@@ -1921,7 +1921,7 @@ namespace AirTreeV1
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                     element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                             }
 

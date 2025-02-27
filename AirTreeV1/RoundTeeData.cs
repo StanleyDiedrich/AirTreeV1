@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,20 +10,31 @@ using Autodesk.Revit.DB.Mechanical;
 
 namespace AirTreeV1
 {
-    public  class RoundTeeData
+    public class RoundTeeData
     {
         public double[,] Values { get; private set; }
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
+        public bool IsStraight { get; set; }
         public RoundTeeData(DuctSystemType ductSystemType, bool isstraight, double relA, double relQ)
         {
+            IsStraight = isstraight;
             if (ductSystemType == DuctSystemType.ExhaustAir)
             {
-                if (isstraight)
+                if (IsStraight)
                 {
                     Values = new double[,]
                     {
                         {0,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0 },
+                        /*{0.1,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.2,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.3,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.4,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.5,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.6,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.7,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.8,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },
+                        {0.9,0.78,0.70,0.62,0.54,0.47,0.38,0.28,0.16,0 },*/
                         {1,0.79,0.71,0.63,0.55,0.47,0.38,0.28,0.16,0 }
                     };
                 }
@@ -67,30 +79,115 @@ namespace AirTreeV1
         public double Interpolation2(double relA, double relQ)
         {
             double result = 0;
-            List<int> indexB = new List<int>();
-            List<int> indexC = new List<int>();
+            int rows = Values.GetLength(0) - 1;
+            int columns = Values.GetLength(1) - 1;
+            List<int> possibleA = new List<int>();
+            List<int> possibleQ = new List<int>();
+            /* if (SystemType == DuctSystemType.ExhaustAir)
+             {
+                 if (IsStraight)
+                 { 
+                     for (int z=0; z<columns;z++)
+                     {
+                         if (Math.Abs(Values[0,z]-relQ)<=0.099)
+                         {
+                             possibleQ.Add(z);
+                         }
+                     }
 
-            for (int j = 1; j < Values.GetLength(1); j++)
+                 }
+             }*/
+
+
+
+
+            /*  if (possibleA.Count!=0)
+              {
+
+              }*/
+            for (int k = 1; k <= rows; k++)
             {
-                if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
+                if (Values[k, 0] >=relA)
                 {
-                    indexB.Add(j);
+                    possibleA.Add(k);
                 }
             }
 
-            for (int k = 1; k < Values.GetLength(0); k++)
+            for (int l = 1; l <= columns; l++)
             {
-                if (relA > Values[k - 1, 1] && relA < Values[k, 1])
+                if (Values[0, l] >= relQ )
                 {
-                    indexC.Add(k);
-                }
-                else if (relA < Values[k, 1])
-                {
-
-                    indexC.Add(k);
-                    relA = Math.Round(relA, 0);
+                    possibleQ.Add(l);
                 }
             }
+            /*for (int k = 1; k <= rows; k++)
+            {
+                if (Math.Abs(Values[k, 0] - relA) <= 0.099)
+                {
+                    possibleA.Add(k);
+                }
+            }
+
+            for (int l = 1; l <= columns; l++)
+            {
+                if (Math.Abs(Values[0, l] - relQ) <=0.099)
+                {
+                    possibleQ.Add(l);
+                }
+            }*/
+
+
+            for (int i = possibleA.Min(); i <= possibleA.Max(); i++)
+            {
+                if (Values[i, 0] == relA)
+                {
+                    for (int j = possibleQ.Min(); j <= possibleQ.Max(); j++)
+                    {
+                        if (Values[0, j] == relQ)
+                        {
+                           return LocRes = Values[i, j];
+                        }
+                        else if (Values[0, j - 1] < relQ || Values[0, j] >= relQ)
+                        {
+                            double x0 = Values[0, j - 1];
+                            double x1 = Values[0, j];
+                            double y0 = Values[i, j - 1];
+                            double y1 = Values[i, j];
+
+                            return LocRes = LinearInterpolation(x0, x1, y0, y1, relQ);
+                        }
+                    }
+
+                }
+                else if (Values[i - 1, 0] < relA || Values[i, 0] >= relA)
+                {
+                    for (int j = possibleQ.Min(); j <= possibleQ.Max(); j++)
+                    {
+                        if (Values[0, j] == relQ)
+                        {
+                            double x0 = Values[i - 1, 0];
+                            double x1 = Values[i, 0];
+                            double y0 = Values[i - 1, j];
+                            double y1 = Values[i, j];
+
+                            return LocRes = LinearInterpolation(x0, x1, y0, y1, relA);
+                        }
+                        else if (Values[0, j - 1] < relQ || Values[0, j] > relQ)
+                        {
+
+
+
+                            return LocRes = BiLinearInterPolation(Values, i, j, relA, relQ);
+
+                        }
+                    }
+                }
+            }
+
+
+
+
+
 
 
 
@@ -99,6 +196,39 @@ namespace AirTreeV1
 
             return LocRes;
         }
+
+        private double BiLinearInterPolation(double[,] values, int i, int j, double relA, double relQ)
+        {
+            double res = 0;
+
+            double A1 = values[i - 1, 0];
+            double A2 = values[i, 0];
+            double A = relA;
+            double B1 = values[0, j - 1];
+            double B2 = values[0, j];
+            double B = relQ;
+
+            double C11 = values[i - 1, j - 1];
+            double C12 = values[i - 1, j];
+            double C21 = values[i, j - 1];
+            double C22 = values[i, j];
+
+            double res1 = (((B2 - B) / (B2 - B1) * C11) + (B - B1) / (B2 - B1) * C12) * ((A2 - A) / (A2 - A1));
+            double res2 = (((B2 - B) / (B2 - B1) * C21) + (B - B1) / (B2 - B1) * C22) * (A - A1) / (A2 - A1);
+            res = res1 + res2;
+
+
+
+            return res;
+        }
+
+        private double LinearInterpolation(double x0, double x1, double y0, double y1, double target)
+        {
+            double res = y0 + (y1 - y0) * (target - x0) / (x1 - x0);
+            return res;
+        }
+    }
+}
         /*public RoundTeeData(DuctSystemType ductSystemType,bool isstraight, double relA, double relQ)
         {
             if (ductSystemType == DuctSystemType.ExhaustAir)
@@ -149,7 +279,7 @@ namespace AirTreeV1
                 }
             }
         }*/
-        public double Interpolation(double reynolds, double relA, double relQ)
+        /*public double Interpolation(double reynolds, double relA, double relQ)
         {
             double result = 0;
             List<int> indexA = new List<int>();
@@ -280,10 +410,10 @@ namespace AirTreeV1
 
 
             return LocRes = result;
-        }
+        }*/
 
         
 
-    }
-}
+    
+
 
