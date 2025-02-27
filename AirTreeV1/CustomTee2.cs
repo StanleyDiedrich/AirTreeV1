@@ -1337,7 +1337,7 @@ namespace AirTreeV1
                                 relQ = OutletConnector1.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
                                 LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                             }
@@ -1363,7 +1363,7 @@ namespace AirTreeV1
                                 relQ = OutletConnector1.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RectRoundTeeBranch; //
                                 LocRes = roundTeeData.Interpolation(100000, relA, relQ);
                             }

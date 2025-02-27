@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
@@ -13,7 +14,92 @@ namespace AirTreeV1
         public double[,] Values { get; private set; }
         public DuctSystemType SystemType { get; set; }
         public double LocRes { get; set; }
-        public RoundTeeData(DuctSystemType ductSystemType,bool isstraight, double relA, double relQ)
+        public RoundTeeData(DuctSystemType ductSystemType, bool isstraight, double relA, double relQ)
+        {
+            if (ductSystemType == DuctSystemType.ExhaustAir)
+            {
+                if (isstraight)
+                {
+                    Values = new double[,]
+                    {
+                        {0,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0 },
+                        {1,0.79,0.71,0.63,0.55,0.47,0.38,0.28,0.16,0 }
+                    };
+                }
+                else
+                {
+                    Values = new double[,]
+                    {
+                        { 0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1},
+                        {0.1,0.4,3.8,9.2,16,26,37,43,65,82,101 },
+                        { 0.2,-0.37,0.72,2.3,4.3,6.8,9.7,13,17,21,26},
+                        { 0.3,-0.41,0.17,1,2.1,3.2,4.7,6.3,7.9,9.7,12},
+                        {0.4,-0.46,-0.1,0.25,0.66,1.1,1.6,2.1,2.7,3.4,4 },
+                        { 0.5,-0.5,-0.2,0.14,0.42,0.8,1.15,1.5,1.9,2.3,2.85},
+                        { 0.6,-0.5,-0.25,0,0.26,0.66,0.92,1.2,1.5,1.8,2.1},
+                        {0.8,-0.51,-0.25,0,0.2,0.49,0.69,0.88,1.1,1.2,1.4 },
+                        {1,-0.52,-0.25,-0.05,0.2,0.42,0.57,0.72,0.86,0.99,1.1 }
+                    };
+                }
+            }
+            else
+            {
+                if (isstraight)
+                {
+                    Values = new double[,]
+                    {
+                        {0,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1 },
+                        {0.1,0.4,0.324,0.256,0.196,0.144,0.1,0.064,0.036,0.016,0.004,0 },
+                        {1,0.3,0.194,0.115,0.059,0.021,0,-0.064,-0.072,-0.048,-0.016,0 }
+                    };
+                }
+                else
+                {
+                    Values = new double[,]
+                    {
+                        {0,0,0.1,0.2,0.4,0.6,0.8,1,1.2,1.4,1.6,2 },
+                        {0.66,1,1.01,1.04,1.16,1.35,1.64,2,2.44,2.96,3.54,4.6 },
+                        {1,1,1,1.01,1.05,1.11,1.19,1.3,1.43,1.59,1.77,2.2 }
+                    };
+                }
+            }
+        }
+        public double Interpolation2(double relA, double relQ)
+        {
+            double result = 0;
+            List<int> indexB = new List<int>();
+            List<int> indexC = new List<int>();
+
+            for (int j = 1; j < Values.GetLength(1); j++)
+            {
+                if (relQ > Values[0, j - 1] && relQ <= Values[0, j])
+                {
+                    indexB.Add(j);
+                }
+            }
+
+            for (int k = 1; k < Values.GetLength(0); k++)
+            {
+                if (relA > Values[k - 1, 1] && relA < Values[k, 1])
+                {
+                    indexC.Add(k);
+                }
+                else if (relA < Values[k, 1])
+                {
+
+                    indexC.Add(k);
+                    relA = Math.Round(relA, 0);
+                }
+            }
+
+
+
+
+
+
+            return LocRes;
+        }
+        /*public RoundTeeData(DuctSystemType ductSystemType,bool isstraight, double relA, double relQ)
         {
             if (ductSystemType == DuctSystemType.ExhaustAir)
             {
@@ -62,7 +148,7 @@ namespace AirTreeV1
                     };
                 }
             }
-        }
+        }*/
         public double Interpolation(double reynolds, double relA, double relQ)
         {
             double result = 0;
