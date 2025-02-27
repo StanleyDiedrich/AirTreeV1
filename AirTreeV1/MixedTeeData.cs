@@ -83,13 +83,20 @@ namespace AirTreeV1
                 }
                 else
                 {
+                    
                     if (relA > 0.79)
                     {
                         RelA = 0.79;
                     }
+                    
                     else if (relA < 0.35)
                     {
                         RelA = 0.35;
+                    }
+                    else
+                    {
+                        double[] possibleValues = { 0.35, 0.79 };
+                        RelA = possibleValues.OrderBy(value => Math.Abs(value - relA)).First();
                     }
                     Values = new double[,]
                     {
