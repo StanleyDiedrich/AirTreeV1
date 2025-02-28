@@ -36,18 +36,18 @@ namespace AirTreeV1
         public List<CustomConnector> SecondaryConnectors { get; set; }
 
         public ConnectorSet OwnConnectors { get; set; }
-        public string Volume { get; set; }
-        public string ModelWidth { get; set; }
-        public string ModelHeight { get; set; }
+        public string Volume { get; set; } = "0";
+        public string ModelWidth { get; set; } = "0";
+        public string ModelHeight { get; set; } = "0";
 
-        public string NewModelWidth { get; set; }
-        public string NewModelHeight { get; set; }
-        public string ModelLength { get; set; }
-        public string ModelDiameter { get; set; }
-        public string ModelVelocity { get; set; }
-        public string ModelHydraulicDiameter { get; set; }
+        public string NewModelWidth { get; set; } = "0";
+        public string NewModelHeight { get; set; } = "0";
+        public string ModelLength { get; set; } = "0";
+        public string ModelDiameter { get; set; } = "0";
+        public string ModelVelocity { get; set; } = "0";
+        public string ModelHydraulicDiameter { get; set; } = "0";
         public double EquiDiameter { get; set; }
-        public string ModelHydraulicArea { get; set; }
+        public string ModelHydraulicArea { get; set; } = "0";
         public double LocRes { get; set; }
         public double PDyn { get; set; }
         public double PStat { get; set; }

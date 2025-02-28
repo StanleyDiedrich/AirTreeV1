@@ -445,10 +445,10 @@ namespace AirTreeV1
                     collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
                     CustomBranch selectedbranch = collection.SelectMainBranch();
                     (selectedbranch, nextelement) = collection.BranchSelector();
-                    (collection.Collection, selectedbranch) = collection.TeeTapSolver(selectedbranch,nextelement);
+                    //(collection.Collection, selectedbranch) = collection.TeeTapSolver(selectedbranch,nextelement);
 
                     //(collection.Collection, selectedbranch) = collection.TeeSolver();
-                    collection.SecondaryBranchSolver(selectedbranch);
+                    //collection.SecondaryBranchSolver(selectedbranch);
 
                     //collection.TeeFinder();
                     //selectedbranch = collection.SelectMainBranch();
