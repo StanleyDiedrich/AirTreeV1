@@ -132,7 +132,7 @@ namespace AirTreeV1
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 HArea = custom.Area;
                                                 custom.EquiDiameter = custom.Diameter;
-                                                element.ModelDiameter = custom.Diameter.ToString();
+                                                element.ModelDiameter = (custom.Diameter * 1000).ToString();
                                                 element.ModelHydraulicArea = Convert.ToString(Math.Round(custom.Area, 4));
                                                 try
                                                 {
@@ -487,7 +487,7 @@ namespace AirTreeV1
 
                                                     custom.Diameter = connect.Radius * 2 * 0.3125;
                                                     custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                    element.ModelDiameter = custom.Diameter.ToString();
+                                                    element.ModelDiameter = (custom.Diameter * 1000).ToString();
                                                     element.ModelHydraulicArea = Convert.ToString(Math.Round(custom.Area,4 ));
                                                     try
                                                     {

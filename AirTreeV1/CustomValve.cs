@@ -121,7 +121,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;                                               
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
 
-                                                element.ModelDiameter = Convert.ToString(custom.Diameter);
+                                                element.ModelDiameter = Convert.ToString(custom.Diameter*1000);
                                                 
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
@@ -164,7 +164,7 @@ namespace AirTreeV1
                                             {
                                                 ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                element.ModelDiameter = Convert.ToString(custom.Diameter);
+                                                element.ModelDiameter = Convert.ToString(custom.Diameter * 1000); // suki pidarasy
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 custom.EquiDiameter = custom.Diameter;
                                                 try
@@ -212,7 +212,7 @@ namespace AirTreeV1
                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
 
                                                 Diameter = custom.Diameter;
-                                                element.ModelDiameter = Convert.ToString(custom.Diameter);
+                                                element.ModelDiameter = Convert.ToString(custom.Diameter * 1000);
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try
@@ -253,7 +253,7 @@ namespace AirTreeV1
                                                 ProfileType = ConnectorProfileType.Round;
                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
                                                 Diameter = custom.Diameter;
-                                                element.ModelDiameter = Convert.ToString(custom.Diameter);
+                                                element.ModelDiameter = Convert.ToString(custom.Diameter * 1000);
                                                 custom.EquiDiameter = custom.Diameter;
                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
                                                 try

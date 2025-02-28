@@ -1326,7 +1326,7 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }

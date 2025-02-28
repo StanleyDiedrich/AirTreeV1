@@ -3388,7 +3388,21 @@ namespace AirTreeV1
                         el.TrackNumber = trackCounter;
                         trackCounter++;
                     }
+
+                    
                     newCollection.Add(branch1);
+
+                    foreach (var branch in newCollection)
+                    {
+                        branch.BranchCalc();
+                    }
+
+                    var maxbranch = newCollection.OrderByDescending(x => x.PBTot).First();
+
+                    foreach (var el in maxbranch.Elements)
+                    {
+                        el.MainTrack = true;
+                    }
                 }
                
             }
