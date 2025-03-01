@@ -166,7 +166,8 @@ namespace AirTreeV1
                             }
                             else if (element.DetailType==CustomElement.Detail.DuctTap)
                             {
-                                try
+
+                               /* try
                                 {
                                     //element.ElementId = element.TapId;
                                 }
@@ -174,7 +175,7 @@ namespace AirTreeV1
                                 {
                                     ActiveElement = element;
                                     ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
-                                }
+                                }*/
                                
                             }
                             else if (element.DetailType == CustomElement.Detail.Tee)

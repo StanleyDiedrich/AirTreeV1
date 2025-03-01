@@ -154,6 +154,10 @@ namespace AirTreeV1
                 return;
             }
             ElementId = elementId;
+            if (elementId.IntegerValue == 10562992)
+            {
+                var el = Element;
+            }
             Element = doc.GetElement(ElementId);
             SystemName = Element.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
 
@@ -185,15 +189,18 @@ namespace AirTreeV1
                 string primaryvelocity = Convert.ToString(Math.Round(Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsDouble()/3.25,2));
                 //string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
                 ModelVelocity = primaryvelocity;
+                int curveCounter = 0;
+                
                 //ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in OwnConnectors)
                 {
                     ConnectorSet nextconnectors = connector.AllRefs;
-
-                    if (connector.Domain != Domain.DomainHvac)
+                    
+                        if (connector.Domain != Domain.DomainHvac)
                     {
                         continue;
                     }
+                    
                     else if(connector.ConnectorType ==ConnectorType.End)
                     {
                         foreach (Connector connect in nextconnectors)
@@ -395,7 +402,19 @@ namespace AirTreeV1
                         }
                     }
                 }
+                foreach (Connector conn in OwnConnectors)
+                {
 
+                    if (conn.ConnectorType == ConnectorType.Curve)
+                    {
+                        curveCounter++;
+                    }
+                }
+                if (curveCounter != 0)
+                {
+                    DetailType = Detail.DuctTap;
+
+                }
 
 
             }
