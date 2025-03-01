@@ -168,7 +168,7 @@ namespace AirTreeV1
                             {
                                 try
                                 {
-                                    element.ElementId = element.TapId;
+                                    //element.ElementId = element.TapId;
                                 }
                                 catch
                                 {
@@ -270,6 +270,8 @@ namespace AirTreeV1
                                 }
                                
                                 Tees.Add(element);
+                                element.TapId = element.ElementId;
+                                element.ElementId = element.NextElementId;
                                 
                                 //newbranch = new CustomBranch(Document);
                                 
