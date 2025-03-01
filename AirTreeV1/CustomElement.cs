@@ -24,6 +24,7 @@ namespace AirTreeV1
         public Element Element { get; set; }
         public ElementId ElementId { get; set; }
         public ElementId NextElementId { get; set; }
+        public ElementId TapId { get; set; }
         public MEPSystem MSystem { get; set; }
         public MEPModel Model { get; set; }
         public string Name { get; set; }
@@ -89,7 +90,7 @@ namespace AirTreeV1
 
 
 
-            
+            DuctTap,
 
 
             RoundFlexDuct,
@@ -193,7 +194,7 @@ namespace AirTreeV1
                     {
                         continue;
                     }
-                    else
+                    else if(connector.ConnectorType ==ConnectorType.End)
                     {
                         foreach (Connector connect in nextconnectors)
                         {
@@ -377,6 +378,21 @@ namespace AirTreeV1
 
 
 
+                    }
+                    else if (connector.ConnectorType ==ConnectorType.Curve)
+                    {
+                        foreach (Connector nextconnector in connector.AllRefs)
+                        {
+                            if (nextconnector.Owner.Id == connector.Owner.Id)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                TapId = nextconnector.Owner.Id;
+                                DetailType = CustomElement.Detail.DuctTap;
+                            }
+                        }
                     }
                 }
 
