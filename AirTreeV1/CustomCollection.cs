@@ -164,6 +164,19 @@ namespace AirTreeV1
                                     //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
                                 }
                             }
+                            else if (element.DetailType==CustomElement.Detail.DuctTap)
+                            {
+                                try
+                                {
+                                    element.ElementId = element.TapId;
+                                }
+                                catch
+                                {
+                                    ActiveElement = element;
+                                    ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                }
+                               
+                            }
                             else if (element.DetailType == CustomElement.Detail.Tee)
                             {
                                 try
