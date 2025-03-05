@@ -7,84 +7,81 @@ using System.Threading.Tasks;
 
 namespace AirTreeV1
 {
+
     public class TreeNode
     {
-        public string Name { get; set; }
-        public string StrId { get; set; }
-        public ElementId Id { get; set; }
-         public CustomElement CElement { get; set; }
-         public CustomElement NextNode { get; set; }
-        public bool IsStart { get; set;}
+        public CustomElement Element { get; set; }
+        public List<CustomElement> Elements { get; set; }
+        public List<CustomElement> Children { get; set; } = new List<CustomElement>();
+        public int Index { get; set; }
+        public int Level { get; set; }
+        public double Ptot { get; set; }
+        public double PtotLeft { get; set; }
+        public double PtotRight { get; set; }
+        public double NodePtot { get; set; }
+        public bool IsInTree { get; set; }
         public bool IsVisited { get; set; }
-        public bool IsMain { get; set; }
-         public double Pressure { get; set; }
-        public List<CustomElement> Edge { get; set; } = new List<CustomElement>();
-        public TreeNode (CustomElement customElement)
-        {
-            CElement = customElement;
-            Name = CElement.Name;
-            Id = CElement.ElementId;
-            StrId = Id.IntegerValue.ToString();
 
-            if (CElement.DetailType == CustomElement.Detail.AirTerminal)
+        public TreeNode LeftChild { get; set; }
+        public TreeNode RightChild { get; set; }
+
+        public TreeNode Parent { get; set; }
+        public Direction DirectionType { get; set; }
+        public enum Direction
+        {
+            L,
+            R
+        }
+        public bool IsSelected { get; internal set; }
+
+        public TreeNode(CustomElement element, int index, List<CustomElement> elements)
+        {
+            Element = element;
+            Index = index;
+            Elements = elements;
+            Children = GetChildren();
+            Ptot = GetNodePressure();
+
+        }
+
+
+
+        public List<CustomElement> GetChildren()
+        {
+            List<CustomElement> children = new List<CustomElement>();
+
+            int i = Index - 1;
+
+            while (i >= 0)
             {
-                IsStart = true;
-            }
-            
-        }
-
-        public void NodeCalcPressure()
-        {
-            Pressure += CElement.PDyn;
-            foreach(var element in Edge)
-            {
-                Pressure += element.PDyn + element.PStat;
-            }
-            
-        }
-
-        internal void FindElements(CustomElement element, CustomBranch branch)
-        {
-            
-            int index = 0;
-
-            // Assuming CustomBranch contains a collection of CustomElements
-           
-                for (int i = 0; i < branch.Elements.Count; i++)
+                CustomElement previousElement = Elements[i + 1];
+                CustomElement currentElement = Elements[i];
+                /*if (previousElement.DetailType.Contains("TapAdjustable"))
                 {
-                    // Perform your logic to find the element
-                    if (element!=null)
-                    {
-                        if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
-                        {
-                            index = i;
-                            break;
-                        }
-                    }
-                    
-
-                }
-                
-                for (int j = index+1; j < branch.Elements.Count; j++)
+                    i--;
+                }*/
+                if (currentElement.DetailType==CustomElement.Detail.Tee || currentElement.DetailType==CustomElement.Detail.TapAdjustable || currentElement.DetailType==CustomElement.Detail.DuctTap)
                 {
-                    
-                    if (branch.Elements[j].DetailType == CustomElement.Detail.Tee || branch.Elements[j].DetailType == CustomElement.Detail.TapAdjustable)
-                    {
-                        NextNode = branch.Elements[j];
-                        Edge.Add(NextNode);
-                        break;
-                    }
-                    else
-                    {
-                        Edge.Add(branch.Elements[j]);
-
-                    }
+                    break;
                 }
-           
-            
 
+                children.Add(currentElement);
+                i--;
+            }
+            Children = children;
+            return Children;
         }
 
+        public double GetNodePressure()
+        {
+            Ptot = Children.Sum(x => x.PDyn + x.PStat);
+            return Ptot;
+        }
 
+        public override string ToString()
+        {
+            return $"{Element.ElementId};{Element.DetailType};{Ptot}";
+        }
     }
+
 }

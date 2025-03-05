@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.DB;
+﻿/*using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using System;
 using System.Collections.Generic;
@@ -179,7 +179,7 @@ namespace AirTreeV1
 
                     }
                 }
-                /*foreach (var node in TreeNodes)
+                *//*foreach (var node in TreeNodes)
                 {
                     if (node.Id.IntegerValue == 643847)
                     {
@@ -187,7 +187,7 @@ namespace AirTreeV1
                     }
                     node.FindElements(node.CElement, branch);
                     node.NodeCalcPressure();
-                }*/
+                }*//*
             }
 
             
@@ -215,8 +215,8 @@ namespace AirTreeV1
                             break;
                         }
                     }
-                   /* var foundNode = TreeNodes.FirstOrDefault(x => x.Id.IntegerValue == nextnode.ElementId.IntegerValue);
-                    var k = TreeNodes.IndexOf(foundNode);*/
+                   *//* var foundNode = TreeNodes.FirstOrDefault(x => x.Id.IntegerValue == nextnode.ElementId.IntegerValue);
+                    var k = TreeNodes.IndexOf(foundNode);*//*
 
                     AdjacencyMatrix[i, foundedelem] = TreeNodes[i].Pressure;
                     if (size==0)
@@ -237,10 +237,10 @@ namespace AirTreeV1
                             }
                             else
                             {
-                                /*if (TreeNodes[i].Edge.Contains(TreeNodes[j].NextNode))
+                                *//*if (TreeNodes[i].Edge.Contains(TreeNodes[j].NextNode))
                                 {
                                     AdjacencyMatrix[i, j] = TreeNodes[i].Pressure;
-                                }*/
+                                }*//*
 
 
                                 AdjacencyMatrix[i, j] = 0;
@@ -329,3 +329,4 @@ namespace AirTreeV1
         }
     }
 }
+*/

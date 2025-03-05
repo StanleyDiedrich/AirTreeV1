@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Configuration;
 using System.Net.NetworkInformation;
+using System.Reflection.Emit;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
@@ -419,28 +420,43 @@ namespace AirTreeV1
                         CustomElement element = collection.ActiveElement;
                         TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
                     }
+
+
+                    List<List<TreeNode>> treeNodes = new List<List<TreeNode>>();
+
+                    foreach (CustomBranch branch in collection.Collection)
+                    {
+                        NodeBranch nodeBranch = new NodeBranch(branch);
+                        List<TreeNode> treeNodesBranch = new List<TreeNode>();
+                        nodeBranch.GetFirstNode();
+                        nodeBranch.GetNodes();
+                        treeNodesBranch.AddRange(nodeBranch.Nodes);
+                        treeNodes.Add(treeNodesBranch);
+                    }
+
+                    TreeBuilder treeBuilder = new TreeBuilder(doc,treeNodes,collection.Collection,collection.Density);
+                    treeBuilder.TreeCalc();
                     //collection.Calcualate(mainViewModel.Density);
-
-
                     //collection.Calcualate(mainViewModel.Density);
-
                     //collection.ResCalculate();
                     //CustomBranch selectedbranch = collection.SelectMainBranch();
                     /*foreach (var element in selectedbranch.Elements)
                     {
                         selectedelements.Add(element.ElementId);
                     }*/
-
                     //collection.MarkCollection(selectedbranch);
-
                     //collection.MarkCollection();
                     //collection.ResCalculate();
                     //Tree tree = new Tree(collection);
                     //tree.AddNodes(collection);
                     //tree.MatrixCalc();
                     //string matrixcontent = tree.PrintMatrix();
-
                     //tree.SaveFile(matrixcontent);
+
+
+
+
+
                     int nextelement = 0;
                     collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
                     CustomBranch selectedbranch = collection.SelectMainBranch();
