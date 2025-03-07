@@ -17,6 +17,7 @@ using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.ExtensibleStorage;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.DB.Visual;
@@ -413,6 +414,7 @@ namespace AirTreeV1
                     //collection.MarkCollection();
                     try
                     {
+                        
                         collection.Calcualate(mainViewModel.Density);
                     }
                     catch
@@ -421,59 +423,39 @@ namespace AirTreeV1
                         TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
                     }
 
-
-                    List<List<TreeNode>> treeNodes = new List<List<TreeNode>>();
-
-                    foreach (CustomBranch branch in collection.Collection)
+                    List<CustomBranch> secondaryBranches = new List<CustomBranch>();
+                    List<CustomBranch> returnedBranches = collection.Collection;
+                    do
                     {
-                        NodeBranch nodeBranch = new NodeBranch(branch);
-                        List<TreeNode> treeNodesBranch = new List<TreeNode>();
-                        nodeBranch.GetFirstNode();
-                        nodeBranch.GetNodes();
-                        treeNodesBranch.AddRange(nodeBranch.Nodes);
-                        treeNodes.Add(treeNodesBranch);
+                        List<CustomBranch> notSelectedBranch = new List<CustomBranch>();
+                        List<CustomBranch> sortedLists = sortLists(returnedBranches);
+                        List<Tuple<CustomBranch, CustomBranch>> pair = SortPairs(sortedLists);
+                        (returnedBranches, notSelectedBranch) = MaxBranch(doc,pair,collection.Collection, mainViewModel);
+                        secondaryBranches.AddRange(notSelectedBranch);
                     }
-
-                    TreeBuilder treeBuilder = new TreeBuilder(doc,treeNodes,collection.Collection,collection.Density);
-                    treeBuilder.TreeCalc();
-                    //collection.Calcualate(mainViewModel.Density);
-                    //collection.Calcualate(mainViewModel.Density);
-                    //collection.ResCalculate();
-                    //CustomBranch selectedbranch = collection.SelectMainBranch();
-                    /*foreach (var element in selectedbranch.Elements)
-                    {
-                        selectedelements.Add(element.ElementId);
-                    }*/
-                    //collection.MarkCollection(selectedbranch);
-                    //collection.MarkCollection();
-                    //collection.ResCalculate();
-                    //Tree tree = new Tree(collection);
-                    //tree.AddNodes(collection);
-                    //tree.MatrixCalc();
-                    //string matrixcontent = tree.PrintMatrix();
-                    //tree.SaveFile(matrixcontent);
+                    while (returnedBranches.Count > 1);
 
 
 
 
+                    List<CustomBranch> newCollection = new List<CustomBranch>();
 
-                    int nextelement = 0;
-                    collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
-                    CustomBranch selectedbranch = collection.SelectMainBranch();
-                    (selectedbranch, nextelement) = collection.BranchSelector();
-                    //(collection.Collection, selectedbranch) = collection.TeeTapSolver(selectedbranch,nextelement);
+                    newCollection.Add(returnedBranches[0]);
+                    newCollection.AddRange(secondaryBranches);
 
-                    //(collection.Collection, selectedbranch) = collection.TeeSolver();
-                    //collection.SecondaryBranchSolver(selectedbranch);
+                    collection.Collection = newCollection;
+                    collection.MarkCollection();
+                    collection.ReMarkCollection(collection.Collection[0]);
 
-                    //collection.TeeFinder();
-                    //selectedbranch = collection.SelectMainBranch();
-                    //collection.ReMarkCollection(selectedbranch);
+                   
 
                     // ЭТО ВАЖНО!!!!
-                    string content = collection.GetContent();
 
-                    //string content = collection.GetContent(selectedbranch);
+
+                    //string content = collection.GetContent(selectedBranch);
+                    
+
+                    string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try
                     {
@@ -499,17 +481,17 @@ namespace AirTreeV1
                 //selectedelements = collection;
             }
 
-            
-            //uIDocument.Selection.SetElementIds(selectedelements);
 
-            // List<Branch> mainnodes = new List<Branch>();
+            /*uIDocument.Selection.SetElementIds(selectedelements);
+
+            List<Branch> mainnodes = new List<Branch>();
 
 
-            // mainnodes = AlgorithmDuctTraverse(doc, startelements);
+             mainnodes = AlgorithmDuctTraverse(doc, startelements);
 
 
             //SelectAllNodes(uIDocument, mainnodes);
-            /*var selectedMode = mainViewModel.CalculationModes
+            var selectedMode = mainViewModel.CalculationModes
             .FirstOrDefault(x => x.IsMode == true);
 
             if (selectedMode != null)
@@ -526,7 +508,7 @@ namespace AirTreeV1
                         //SaveFile(csvcontent);
                         break;  // Обязательно добавляем break для правильного выполнения
 
-                    
+
 
                     default:  // Обработка случая, если mode не совпадает ни с одним из вышеуказанных
                         throw new InvalidOperationException($"Неизвестный режим расчета: {mode}");
@@ -534,6 +516,286 @@ namespace AirTreeV1
             }*/
 
             return Result.Succeeded;
+        }
+        private static Tuple<int, int> GetFirstSplitter(Autodesk.Revit.DB.Document doc, CustomBranch branch1, CustomBranch branch2, List<CustomBranch> collection, MainViewModel mainViewModel)
+        {
+            CustomElement element1 = null;
+            CustomElement element2 = null;
+
+            for (int i = 0; i < branch1.Elements.Count; i++)
+            {
+                for (int j = 0; j < branch2.Elements.Count; j++)
+                {
+                    if (branch1.Elements[i].DetailType == CustomElement.Detail.Tee)
+                    //if (branch1.Elements[i].ElementId == (branch2.Elements[j].ElementId))
+                    {
+                        if (branch1.Elements[i].IsVisited==false && branch2.Elements[j].IsVisited==false)
+                        {
+                            
+                            CustomElement customElement1 = branch1.Elements[i];
+                            CustomElement customElement2 = branch2.Elements[j];
+                            
+                            CalculateSplitter(doc, customElement1, collection, mainViewModel,customElement1.IsReversed);
+                            CalculateSplitter(doc, customElement2, collection, mainViewModel, customElement1.IsReversed);
+                            branch1.Elements[i].IsVisited = true;
+                            branch2.Elements[j].IsVisited = true;
+                            return Tuple.Create(i + 1, j + 1);
+                        }
+                    }
+                    if (branch1.Elements[i].DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        if (branch1.Elements[i].IsVisited == false)
+                        {
+                             element1 = branch1.Elements[i];
+                        }
+
+                       foreach (var branch in collection)
+                       {
+                            foreach (var el2 in branch.Elements)
+                            {
+                                if (el2.ElementId == element1.NextElementId)
+                                {
+                                    element2 = el2;
+                                    CalculateSplitter(doc, element1, collection, mainViewModel, true);
+                                    CalculateSplitter(doc, element2, collection, mainViewModel, false);
+                                    branch1.Elements[i].IsVisited = true;
+                                    branch2.Elements[j].IsVisited = true;
+                                    return Tuple.Create(i + 1, j + 1);
+                                }
+                            }
+                        }
+                            
+                      
+
+
+                       
+                    }
+                    if (branch1.Elements[i].DetailType == CustomElement.Detail.DuctTap)
+                    {
+                       
+                        if (branch1.Elements[i].IsVisited ==false)
+                        {
+                            if ( branch2.Elements[j].ElementId == branch1.Elements[i].ElementId)
+                            {
+                                CustomElement customElement1 = null;
+                                CustomElement customElement2 = null;
+                                foreach (var br1 in collection)
+                                {
+                                    foreach (var el1 in br1.Elements)
+                                    {
+                                        if (el1.ElementId == branch1.Elements[i].TapId)
+                                        {
+                                            customElement1 = el1;
+                                        }
+                                    }
+                                }
+                                foreach (var br2 in collection)
+                                {
+                                    foreach (var el2 in br2.Elements)
+                                    {
+                                        if (el2.ElementId == branch2.Elements[j].TapId)
+                                        {
+                                            customElement2 = el2;
+                                        }
+                                    }
+                                }
+
+
+                                CalculateSplitter(doc, customElement1, collection, mainViewModel, true);
+                                CalculateSplitter(doc, customElement2, collection, mainViewModel, false);
+                                branch1.Elements[i].IsVisited = true;
+                                branch2.Elements[j].IsVisited = true;
+                                return Tuple.Create(i + 1, j + 1);
+                            }
+                        }
+                    }
+
+                    
+                    
+
+                }
+            }
+            return null; // Если нет общих элементов
+        }
+
+        private static void CalculateSplitter(Autodesk.Revit.DB.Document doc, CustomElement customElement,List<CustomBranch> collection, MainViewModel mainViewModel, bool isReversed)
+        {
+            if (customElement.DetailType == CustomElement.Detail.Tee)
+            {
+                CustomTee2 customTee2 = new CustomTee2(doc, customElement, collection, isReversed);
+                UpdateElementProperties(customElement, customTee2, mainViewModel);
+            }
+            if (customElement.DetailType == CustomElement.Detail.TapAdjustable)
+            {
+                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(doc, customElement, collection, isReversed);
+                UpdateInsertElementProperties(customElement, customDuctInsert2, collection, mainViewModel);
+            }
+            if (customElement.DetailType == CustomElement.Detail.DuctTap)
+            {
+                CustomElement element = null;
+                foreach (var branch in collection)
+                {
+                    foreach (var el in branch.Elements )
+                    {
+                        if (customElement.TapId == el.ElementId)
+                        {
+                            element = el;
+                        }
+                    }
+                }
+
+                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(doc, element, collection, isReversed);
+                UpdateInsertElementProperties(customElement, customDuctInsert2, collection, mainViewModel);
+            }
+        }
+        private static void UpdateElementProperties(CustomElement element, CustomTee2 customTee, MainViewModel mainViewModel)
+        {
+            element.IA = customTee.IA;
+            element.IQ = customTee.IQ;
+            element.IC = customTee.IC;
+            element.O1A = customTee.O1A;
+            element.O1Q = customTee.O1Q;
+            element.O1C = customTee.O1C;
+            element.O2A = customTee.O2A;
+            element.O2Q = customTee.O2Q;
+            element.RA = customTee.RA;
+            element.RQ = customTee.RQ;
+            element.RC = customTee.RC;
+            element.LocRes = customTee.LocRes;
+
+
+            element.PDyn = mainViewModel.Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+        }
+
+        private static void UpdateInsertElementProperties(CustomElement element, CustomDuctInsert2 customTee, List<CustomBranch> collection, MainViewModel mainViewModel)
+        {
+            if (element.DetailType == CustomElement.Detail.DuctTap)
+            {
+                if (element.ElementId.IntegerValue == 10562871)
+                {
+                    var el = element;
+                }
+                foreach (var branch in collection)
+                {
+                    for (int i = 0; i < branch.Elements.Count; i++)
+                    {
+                        if (branch.Elements[i].ElementId == element.TapId)
+                        {
+
+
+                            element.DetailType = customTee.Detail;
+
+                        }
+                    }
+                }
+
+            }
+            else if (element.DetailType == CustomElement.Detail.TapAdjustable)
+            {
+                foreach (var branch in collection)
+                {
+                    for (int i = 0; i < branch.Elements.Count; i++)
+                    {
+                        if (branch.Elements[i].ElementId == element.ElementId)
+                        {
+
+                            element.DetailType = customTee.Detail;
+                            //branch.Elements[i-1].DetailType = customTee.Detail;
+
+                        }
+                    }
+                }
+            }
+
+
+
+            element.IA = customTee.IA;
+            element.IQ = customTee.IQ;
+            element.IC = customTee.IC;
+            element.O1A = customTee.O1A;
+            element.O1Q = customTee.O1Q;
+            element.O1C = customTee.O1C;
+            element.O2A = customTee.O2A;
+            element.O2Q = customTee.O2Q;
+            element.RA = customTee.RA;
+            element.RQ = customTee.RQ;
+            element.RC = customTee.RC;
+            element.LocRes = customTee.LocRes;
+
+
+            element.PDyn = mainViewModel.Density * Math.Pow(customTee.Velocity, 2) / 2 * element.LocRes;
+        }
+        private static double GetPressure(CustomBranch branch1, int index)
+        {
+            double pressure = 0;
+            for (int i = 0; i < index; i++)
+            {
+                //CustomElement prevelement = branch1.Elements[i - 1];
+                CustomElement element = branch1.Elements[i];
+                pressure +=  element.PStat + element.PDyn;
+            }
+            return pressure;
+
+        }
+
+        private (List<CustomBranch>, List<CustomBranch>) MaxBranch(Autodesk.Revit.DB.Document doc, List<Tuple<CustomBranch, CustomBranch>> pair,List<CustomBranch> customBranches,  MainViewModel mainViewModel)
+        {
+            List<CustomBranch> selectedBranches = new List<CustomBranch>();
+            List<CustomBranch> notSelectedBranches = new List<CustomBranch>();
+            foreach (var tuple in pair)
+            {
+                CustomBranch branch1 = tuple.Item1;
+                CustomBranch branch2 = tuple.Item2;
+                int index1 = 0;
+                int index2 = 0;
+
+               
+                (index1, index2) = GetFirstSplitter(doc,branch1, branch2, customBranches, mainViewModel);
+                double pressure1 = GetPressure(branch1, index1);
+                double pressure2 = GetPressure(branch2, index2);
+                if (pressure1 > pressure2)
+                {
+                    selectedBranches.Add(branch1);
+                    notSelectedBranches.Add(branch2);
+                }
+                else
+                {
+                    selectedBranches.Add(branch2);
+                    notSelectedBranches.Add(branch1);
+                }
+
+            }
+            return (selectedBranches, notSelectedBranches);
+        }
+
+        private List<Tuple<CustomBranch, CustomBranch>> SortPairs(List<CustomBranch> sortedLists)
+        {
+            List<Tuple<CustomBranch, CustomBranch>> pairs = new List<Tuple<CustomBranch, CustomBranch>>();
+
+            for (int i = 0; i < sortedLists.Count - 1; i = i + 2)
+            {
+                CustomBranch num1 = sortedLists[i];
+                CustomBranch num2 = sortedLists[i + 1];
+
+                // Создание кортежа из двух значений
+                Tuple<CustomBranch, CustomBranch> tuple = new Tuple<CustomBranch, CustomBranch>(num1, num2);
+                pairs.Add(tuple);
+            }
+
+            return pairs;
+        }
+
+        private List<CustomBranch> sortLists(List<CustomBranch> lists)
+        {
+            return lists
+                .Select(list => new
+                {
+                    OriginalList = list,
+                    TeeIndex = list.Elements.FindIndex(e => e.DetailType == CustomElement.Detail.Tee || e.DetailType == CustomElement.Detail.DuctTap)
+                })
+                .OrderBy(item => item.TeeIndex >= 0 ? item.OriginalList.Elements.Take(item.TeeIndex).Sum(e => e.ElementId.IntegerValue) : 0)
+                .Select(item => item.OriginalList)
+                .ToList();
         }
 
         private CustomCollection GetCollection(Document doc, List<ElementId> selectedterminals)

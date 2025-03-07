@@ -21,6 +21,7 @@ namespace AirTreeV1
         public TreeNode Root { get; set; }
         public List<TreeNode> Leafs { get; set; } = new List<TreeNode>();
         public List<List<TreeNode>> AllNodes { get; set; } = new List<List<TreeNode>>();
+        public List<List<TreeNode>> TreeResult { get; set; } = new List<List<TreeNode>>();
 
         public TreeBuilder(Autodesk.Revit.DB.Document doc, List<List<TreeNode>> treeNodesCollection, List<CustomBranch> collection, double density)
         {
@@ -33,6 +34,7 @@ namespace AirTreeV1
             //AllNodes = BFSGetOtherNodes();
             AllNodes = ProcessNodes();
             Density = density;
+            TreeResult = TreeCalc();
         }
 
         private TreeNode SetRoot()
@@ -55,7 +57,7 @@ namespace AirTreeV1
                     element.Level = i;
                     if (!visitedNodes.Contains(element.Element.ElementId))
                     {
-                        if (element.Element.DetailType==CustomElement.Detail.Tee)
+                        if (element.Element.DetailType==CustomElement.Detail.AirTerminal)
                         {
                             element.LeftChild = null;
                             element.PtotLeft = element.Ptot;
@@ -74,6 +76,7 @@ namespace AirTreeV1
                             visitedNodes.Add(element.Element.ElementId);
 
                         }
+                        
                         else
                         {
                             element.LeftChild = treenodeBranch[i - 1];
@@ -195,6 +198,7 @@ namespace AirTreeV1
 
             foreach (var group in groupedNodes)
             {
+                List<TreeNode> resBranch = new List<TreeNode>();
                 foreach (var node in group)
                 {
                     if (node.IsVisited == false)
@@ -204,9 +208,10 @@ namespace AirTreeV1
                             if (!visitedNodes.Contains(node.Element.ElementId))
                             {
                                 visitedNodes.Add(node.Element.ElementId);
+                                resBranch.Add(node);
                                 continue;
                             }
-
+                            
                         }
                         else
                         {
@@ -226,12 +231,14 @@ namespace AirTreeV1
                                     CustomElement customElement = node.Element;
                                     CustomTee2 customTee2 = new CustomTee2(Document, customElement, Collection, false);
                                     UpdateElementProperties(customElement, customTee2);
+                                    resBranch.Add(node);
                                 }
                                 else if (node.Element.DetailType==CustomElement.Detail.TapAdjustable)
                                 {
                                     CustomElement customElement = node.Element;
                                     CustomDuctInsert2 customTee2 = new CustomDuctInsert2(Document, customElement, Collection, false);
                                     UpdateElementProperties(customElement, customTee2);
+                                    resBranch.Add(node);
                                 }
                                 else if (node.Element.DetailType == CustomElement.Detail.DuctTap)
                                 {
@@ -247,16 +254,21 @@ namespace AirTreeV1
                                                     customElement = el;
                                                     CustomDuctInsert2 customTee2 = new CustomDuctInsert2(Document, customElement, Collection, false);
                                                     UpdateElementProperties(customElement, customTee2);
+                                                    resBranch.Add(node);
                                                 }
                                             }
                                         }
                                     }
 
                                 }
-
-
-
+                                else
+                                {
+                                    resBranch.Add(node);
+                                }
                                 
+
+
+
                             }
 
                         }
@@ -265,12 +277,56 @@ namespace AirTreeV1
                     {
                         continue;
                     }
+
+
+                   
                 }
+                result.Add(resBranch);
             }
 
 
 
             return result;
+        }
+
+
+
+        public string GetContent()
+        {
+
+            var csvcontent = new StringBuilder();
+            //csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;IA;IQ;IC;O1A;O1Q;O1C;O2A;O2Q;O2C;RA;RQ;RC;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            foreach (var branch in TreeResult)
+            {
+
+                foreach (var el in branch)
+                {
+                    CustomElement element = el.Element;
+                    if (element.IsNonPrinted)
+                    {
+                        continue;
+                    }
+                    /*string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                         $"{element.Volume};{element.ModelLength};{element.ModelWidth};{element.ModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.IA};{element.IQ};{element.IC};{element.O1A};{element.O1Q};{element.O1C};{element.O2A};{element.O2Q};{element.O2C};{element.RA};{element.RQ};{element.RC};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
+
+                         $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";*/
+
+                    element.NewModelWidth = Convert.ToString(Convert.ToDouble(element.ModelWidth));
+                    element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
+                    element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
+                    element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
+                    string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                        $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
+
+                        $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
+                    csvcontent.AppendLine(a);
+
+
+                }
+            }
+
+            return csvcontent.ToString();
         }
         public string PrintTree(bool printType)
         {

@@ -137,8 +137,8 @@ namespace AirTreeV1
         public double RQ { get; set; }
         public double RC { get; set; }
         public bool IsNonPrinted { get; set; }
+        public bool IsVisited { get; internal set; }
 
-        
         private string GetValue(string primaryvolume)
         {
             // Используем регулярное выражение, чтобы найти и вернуть только числовую часть

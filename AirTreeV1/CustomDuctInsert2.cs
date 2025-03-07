@@ -57,7 +57,7 @@ namespace AirTreeV1
         public double RA { get; set; }
         public double RQ { get; set; }
         public double RC { get; set; }
-        
+        public CustomElement.Detail Detail { get; set; }
         public CustomDuctInsert2(Autodesk.Revit.DB.Document document, CustomElement element, List<CustomBranch> collection, bool isReversed)
         {
             Document = document;
@@ -849,9 +849,11 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    //element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    //Detail = element.DetailType;
+                                    /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
                                     }
                                    
                                 }
@@ -868,9 +870,11 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
-                                        LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                       // element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                    //Detail = element.DetailType;
+                                    /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
+                                    LocRes = roundTeeData.Interpolation2(relA, relC);
                                     }
                                 }
                             }
@@ -891,9 +895,11 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
-                                        LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                    //element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                    //Detail = element.DetailType;
+                                    /* LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
+                                    LocRes = roundTeeData.Interpolation2(relA, relC);
                                     }
                                    
                                 }
@@ -908,9 +914,11 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                        /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
                                     }
                                 }
                             }
@@ -931,8 +939,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
 
                                     }
                                   
@@ -948,8 +958,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
 
                                 }
@@ -969,8 +981,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                     
                                 }
@@ -985,8 +999,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
 
                                     }
                                 }
@@ -1008,8 +1024,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                  
                                 }
@@ -1024,8 +1042,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                                
@@ -1043,8 +1063,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                     
                                 }
@@ -1060,8 +1082,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1082,8 +1106,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                  /*  element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                   
                                 }
@@ -1098,8 +1124,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1117,8 +1145,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                   
                                 }
@@ -1133,8 +1163,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1155,8 +1187,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                      
                                 }
@@ -1171,8 +1205,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1190,8 +1226,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1206,8 +1244,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1229,8 +1269,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1245,8 +1287,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1266,8 +1310,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1282,8 +1328,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                      /*  element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1300,7 +1348,9 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                /*element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                Detail = element.DetailType;*/
                                 LocRes = roundTeeData.Interpolation2( relA, relQ);
                                
                                 }
@@ -1311,8 +1361,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                               /* element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                                 // Тройник прямой
                                 
@@ -1327,8 +1379,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                /*element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                    
                                 }
 
@@ -1339,8 +1393,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                /*element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                                
                             }
@@ -1364,8 +1420,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1380,8 +1438,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                                 
@@ -1400,8 +1460,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                        
                                 }
@@ -1416,8 +1478,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1441,8 +1505,10 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
                                     }
                                    
                                 }
@@ -1457,8 +1523,10 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                        LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = roundTeeData.Interpolation2(relC, relQ);
                                     }
                                 }
                             }
@@ -1475,8 +1543,10 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, false, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
-                                        LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = roundTeeData.Interpolation2(relC, relQ);
                                     }
                                    
                                 }
@@ -1491,8 +1561,10 @@ namespace AirTreeV1
                                     RectTeeData roundTeeData = new RectTeeData(Element.SystemType, true, relA, relQ, relC, InletConnector);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                   /* element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
                                     }
                                 }
                                
@@ -1514,8 +1586,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1530,8 +1604,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                                
@@ -1549,8 +1625,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);////
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1565,8 +1643,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1590,7 +1670,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                                
@@ -1606,8 +1688,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1625,7 +1709,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                                
@@ -1641,7 +1727,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
@@ -1663,8 +1751,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1679,8 +1769,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                        /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1698,8 +1790,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                   
                                 }
@@ -1714,8 +1808,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1737,7 +1833,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                  /*  element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                                 
@@ -1753,7 +1851,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
@@ -1772,7 +1872,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                                 
@@ -1789,7 +1891,9 @@ namespace AirTreeV1
                                 MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
-                                    element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
@@ -1812,8 +1916,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                       /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1828,8 +1934,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1847,8 +1955,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                    
                                 }
@@ -1863,8 +1973,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                  /*  element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                     
                                 }
@@ -1883,8 +1995,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                /*element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
 
                                   
                                 }
@@ -1895,8 +2009,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                               /* element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                             }
                             else
@@ -1909,8 +2025,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                               /* element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertBranch;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                    
                                 }
                                 else
@@ -1920,8 +2038,10 @@ namespace AirTreeV1
                                     RA = relA;
                                     RQ = relQ;
                                     RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                    element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                    LocRes = roundTeeData.Interpolation2( relA, relQ);
+                                Detail = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                               /* element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
+                                Detail = element.DetailType;*/
+                                LocRes = roundTeeData.Interpolation2( relA, relQ);
                                 }
                             }
 
@@ -1943,8 +2063,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                   
                                 }
@@ -1959,8 +2081,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
                             }
@@ -1978,8 +2102,10 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, false, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
-                                        LocRes = rectTeeData.Interpolation(100000);
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    /*element.DetailType = CustomElement.Detail.RoundInRectDuctInsertBranch;
+                                    Detail = element.DetailType;*/
+                                    LocRes = rectTeeData.Interpolation(100000);
                                     }
                                     
                                 }
@@ -1994,7 +2120,9 @@ namespace AirTreeV1
                                     MixedTeeData rectTeeData = new MixedTeeData(Element.SystemType, true, relA, relQ, relC);
                                     if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                     {
-                                        element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                    Detail = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                   /* element.DetailType = CustomElement.Detail.RoundInRectDuctInsertStraight;
+                                        Detail = element.DetailType;*/
                                         LocRes = rectTeeData.Interpolation(100000);
                                     }
                                 }
