@@ -431,7 +431,10 @@ namespace AirTreeV1
                         List<CustomBranch> sortedLists = sortLists(returnedBranches);
                         List<Tuple<CustomBranch, CustomBranch>> pair = SortPairs(sortedLists);
                         (returnedBranches, notSelectedBranch) = MaxBranch(doc,pair,collection.Collection, mainViewModel);
-                        secondaryBranches.AddRange(notSelectedBranch);
+                       
+                            secondaryBranches.AddRange(notSelectedBranch);
+                        
+                        
                     }
                     while (returnedBranches.Count > 1);
 
@@ -526,94 +529,104 @@ namespace AirTreeV1
             {
                 for (int j = 0; j < branch2.Elements.Count; j++)
                 {
-                    if (branch1.Elements[i].DetailType == CustomElement.Detail.Tee)
-                    //if (branch1.Elements[i].ElementId == (branch2.Elements[j].ElementId))
+                    if (branch1.Elements[i].ElementId == (branch2.Elements[j].ElementId))
                     {
-                        if (branch1.Elements[i].IsVisited==false && branch2.Elements[j].IsVisited==false)
-                        {
-                            
-                            CustomElement customElement1 = branch1.Elements[i];
-                            CustomElement customElement2 = branch2.Elements[j];
-                            
-                            CalculateSplitter(doc, customElement1, collection, mainViewModel,customElement1.IsReversed);
-                            CalculateSplitter(doc, customElement2, collection, mainViewModel, customElement1.IsReversed);
-                            branch1.Elements[i].IsVisited = true;
-                            branch2.Elements[j].IsVisited = true;
-                            return Tuple.Create(i + 1, j + 1);
-                        }
-                    }
-                    if (branch1.Elements[i].DetailType == CustomElement.Detail.TapAdjustable)
-                    {
-                        if (branch1.Elements[i].IsVisited == false)
-                        {
-                             element1 = branch1.Elements[i];
-                        }
+                        if (branch1.Elements[i].DetailType == CustomElement.Detail.Tee)
 
-                       foreach (var branch in collection)
-                       {
-                            foreach (var el2 in branch.Elements)
+                        {
+                            if (branch1.Elements[i].IsVisited == false && branch2.Elements[j].IsVisited == false)
                             {
-                                if (el2.ElementId == element1.NextElementId)
-                                {
-                                    element2 = el2;
-                                    CalculateSplitter(doc, element1, collection, mainViewModel, true);
-                                    CalculateSplitter(doc, element2, collection, mainViewModel, false);
-                                    branch1.Elements[i].IsVisited = true;
-                                    branch2.Elements[j].IsVisited = true;
-                                    return Tuple.Create(i + 1, j + 1);
-                                }
-                            }
-                        }
-                            
-                      
 
+                                CustomElement customElement1 = branch1.Elements[i];
+                                CustomElement customElement2 = branch2.Elements[j];
 
-                       
-                    }
-                    if (branch1.Elements[i].DetailType == CustomElement.Detail.DuctTap)
-                    {
-                       
-                        if (branch1.Elements[i].IsVisited ==false)
-                        {
-                            if ( branch2.Elements[j].ElementId == branch1.Elements[i].ElementId)
-                            {
-                                CustomElement customElement1 = null;
-                                CustomElement customElement2 = null;
-                                foreach (var br1 in collection)
-                                {
-                                    foreach (var el1 in br1.Elements)
-                                    {
-                                        if (el1.ElementId == branch1.Elements[i].TapId)
-                                        {
-                                            customElement1 = el1;
-                                        }
-                                    }
-                                }
-                                foreach (var br2 in collection)
-                                {
-                                    foreach (var el2 in br2.Elements)
-                                    {
-                                        if (el2.ElementId == branch2.Elements[j].TapId)
-                                        {
-                                            customElement2 = el2;
-                                        }
-                                    }
-                                }
-
-
-                                CalculateSplitter(doc, customElement1, collection, mainViewModel, true);
-                                CalculateSplitter(doc, customElement2, collection, mainViewModel, false);
+                                CalculateSplitter(doc, customElement1, collection, mainViewModel, customElement1.IsReversed);
+                                CalculateSplitter(doc, customElement2, collection, mainViewModel, customElement1.IsReversed);
                                 branch1.Elements[i].IsVisited = true;
                                 branch2.Elements[j].IsVisited = true;
                                 return Tuple.Create(i + 1, j + 1);
                             }
                         }
                     }
+                    else
+                    {
+                        if (branch1.Elements[i].DetailType == CustomElement.Detail.TapAdjustable)
+                        {
+                            if (branch1.Elements[i].IsVisited == false)
+                            {
+                                element1 = branch1.Elements[i];
+                                foreach (var branch in collection)
+                                {
+                                    foreach (var el2 in branch.Elements)
+                                    {
+                                        if (el2.ElementId == element1.NextElementId)
+                                        {
+                                            element2 = el2;
+                                            CalculateSplitter(doc, element1, collection, mainViewModel, true);
+                                            CalculateSplitter(doc, element2, collection, mainViewModel, false);
+                                            branch1.Elements[i].IsVisited = true;
+                                            branch2.Elements[j].IsVisited = true;
+                                            return Tuple.Create(i + 1, j + 1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (branch1.Elements[i].DetailType == CustomElement.Detail.DuctTap)
+                        {
+                            if (branch1.Elements[i].ElementId.IntegerValue == 10562834)
+                            {
+                                var el = branch1.Elements[i];
+                            }
+
+                                if (branch1.Elements[i].IsVisited == false)
+                                {
+                                
+                                    CustomElement customElement1 = branch1.Elements[i];
+                                    CustomElement customElement2 = null;
+
+                                    foreach (var br2 in collection)
+                                    {
+                                        foreach (var el2 in br2.Elements)
+                                        {
+                                            if (el2.ElementId == customElement1.TapId) // Тут ищем TapAdjustable 
+                                            {
+                                                if (el2.DetailType == CustomElement.Detail.TapAdjustable)
+                                                {
+                                                    customElement2 = el2;
+                                                    CalculateSplitter(doc, customElement1, collection, mainViewModel, true);
+                                                    CalculateSplitter(doc, customElement2, collection, mainViewModel, false);
+                                                    branch1.Elements[i].IsVisited = true;
+                                                    branch2.Elements[j].IsVisited = true;
+                                                    return Tuple.Create(i + 1, j + 1);
+                                                
+                                                }
+
+                                            }
+                                        }
+                                    }
+
+
+
+
+
+
+
+
+                               
+                                
+                            }
+                        }
+                    }
+                       
+                        
+                 }
+                        
 
                     
                     
 
-                }
+                
             }
             return null; // Если нет общих элементов
         }
@@ -749,20 +762,29 @@ namespace AirTreeV1
                 int index1 = 0;
                 int index2 = 0;
 
-               
-                (index1, index2) = GetFirstSplitter(doc,branch1, branch2, customBranches, mainViewModel);
-                double pressure1 = GetPressure(branch1, index1);
-                double pressure2 = GetPressure(branch2, index2);
-                if (pressure1 > pressure2)
+               try
                 {
-                    selectedBranches.Add(branch1);
-                    notSelectedBranches.Add(branch2);
+                    (index1, index2) = GetFirstSplitter(doc, branch1, branch2, customBranches, mainViewModel);
+                    double pressure1 = GetPressure(branch1, index1);
+                    double pressure2 = GetPressure(branch2, index2);
+                    branch1.BranchCalc_2(index1);
+                    branch2.BranchCalc_2(index2);
+                    if (pressure1 > pressure2)
+                    {
+                        selectedBranches.Add(branch1);
+                        notSelectedBranches.Add(branch2);
+                    }
+                    else
+                    {
+                        selectedBranches.Add(branch2);
+                        notSelectedBranches.Add(branch1);
+                    }
                 }
-                else
+                catch
                 {
-                    selectedBranches.Add(branch2);
-                    notSelectedBranches.Add(branch1);
+                    
                 }
+                
 
             }
             return (selectedBranches, notSelectedBranches);
@@ -787,7 +809,8 @@ namespace AirTreeV1
 
         private List<CustomBranch> sortLists(List<CustomBranch> lists)
         {
-            return lists
+            return lists.OrderByDescending(x => x.PBTot).ToList();
+            /*return lists
                 .Select(list => new
                 {
                     OriginalList = list,
@@ -795,7 +818,7 @@ namespace AirTreeV1
                 })
                 .OrderBy(item => item.TeeIndex >= 0 ? item.OriginalList.Elements.Take(item.TeeIndex).Sum(e => e.ElementId.IntegerValue) : 0)
                 .Select(item => item.OriginalList)
-                .ToList();
+                .ToList();*/
         }
 
         private CustomCollection GetCollection(Document doc, List<ElementId> selectedterminals)
