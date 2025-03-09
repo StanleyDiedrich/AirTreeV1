@@ -26,6 +26,7 @@ namespace AirTreeV1
     public class CustomCollection
     {
         public List<CustomBranch> Collection { get; set; } = new List<CustomBranch>();
+        public List<CustomBranch> CollectionFootPrint { get; set; } = new List<CustomBranch>();
         public Autodesk.Revit.DB.Document Document { get; set; }
         public double Density { get; set; }
         public CustomElement ActiveElement { get; set; }
@@ -772,6 +773,446 @@ namespace AirTreeV1
             Collection[correctBranch].BranchCalc();
         }
 
+        public void ReorderBranches (List<CustomBranch> sortedBranches)
+        {
+            List<ElementId> visitedElements = new List<ElementId>();
+            List<CustomBranch> newCollection = new List<CustomBranch>();
+
+            foreach (var branch in sortedBranches)
+            {
+                int tracknumber = 0;
+                CustomBranch customBranch = new CustomBranch(Document);
+                foreach (var el in branch.Elements)
+                {
+                    if (!visitedElements.Contains(el.ElementId))
+                    {
+                        visitedElements.Add(el.ElementId);
+                        customBranch.Add(el);
+                        el.TrackNumber=tracknumber;
+                    }
+                    else
+                    {
+                        if(el.DetailType == CustomElement.Detail.Tee ||
+                            el.DetailType==CustomElement.Detail.TapAdjustable ||
+                            el.DetailType== CustomElement.Detail.DuctTap)
+                        {
+                            visitedElements.Add(el.ElementId);
+                            customBranch.Add(el);
+                            el.TrackNumber=tracknumber;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        
+                    }
+
+                    tracknumber++;
+                }
+                newCollection.Add(customBranch);
+            }
+            CollectionFootPrint = newCollection;
+        }
+
+        public void CalculateReorderedBranches ()
+        {
+
+            CustomBranch selectedBranch = null;
+            ElementId lastelementId = null;
+            ElementId currentelementId = null;
+            ElementId nextelementId = null;
+            ElementId prevelementId = null;
+            for (int i = CollectionFootPrint.Count - 1; i > -1; i--)
+            {
+                selectedBranch = CollectionFootPrint[i];
+                lastelementId = selectedBranch.Elements.Last().ElementId;
+                ProcessBranch(selectedBranch);
+
+                
+            }
+            //MarkElements();
+            
+        }
+
+        private void MarkElements()
+        {
+            ElementId nextelement= null;
+
+            CustomBranch selectedBranch = Collection.OrderBy(x=>x.Elements.Last().Ptot).First(x=>x.IsMain);
+            do
+            {
+                int branchnumber = selectedBranch.Elements.First().BranchNumber;
+                nextelement = selectedBranch.Elements.Last().NextElementId;
+                CustomElement elem = selectedBranch.Elements.Last();
+
+
+                CustomBranch foundedBranch = SelectTeeBranch(elem);
+                if (foundedBranch!=null)
+                {
+                    int index = GetTee(foundedBranch, elem);
+
+
+                    for (int i = 0; i < index; i++)
+                    {
+                        foundedBranch.Elements[i].MainTrack = false;
+                    }
+                    for (int i = index; i < foundedBranch.Elements.Count - 1; i++)
+                    {
+                        foundedBranch.Elements[i].MainTrack = true;
+                    }
+
+                    if (nextelement != null)
+                    {
+                        foreach (var branch in Collection)
+                        {
+                            int branchnumber2 = branch.Elements.First().BranchNumber;
+                            if (branchnumber != branchnumber2)
+                            {
+                                selectedBranch = branch;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    break;
+                }
+               
+            }
+            while (nextelement != null);
+            
+
+
+        }
+
+        private void ProcessBranch(CustomBranch selectedBranch)
+        {
+            int counter = 0;
+            int pindex1 = 0;
+            int pindex2 = 0;
+            do
+            {
+                int index1 = GetSplitter(selectedBranch);
+                if (index1 != -1)
+                {
+                    CustomElement element1 = selectedBranch.Elements[index1];
+                    CustomBranch foundedBranch = SelectBranch(element1);
+                    if (foundedBranch != null)
+                    {
+                        int index2 = GetSplitterId(foundedBranch, element1);
+                        if (index2 != -1)
+                        {
+                            CustomElement element2 = foundedBranch.Elements[index2];
+                            
+                            if (element1.ElementId.IntegerValue == 10562962)
+                            {
+                                var el = element1;
+                            }
+                            RecalculateElement(element1, element2);
+                            double pressure1 = ElementsPressure(selectedBranch, index1);
+                            double pressure2 = ElementsPressure(foundedBranch, index2);
+                           
+                            
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                    }
+                }
+                counter++;
+            }
+            while (counter<selectedBranch.Elements.Count-1);
+        }
+
+        private void IsMarkedAsMain(CustomBranch selectedBranch, int index)
+        {
+            CustomElement lastElement = selectedBranch.Elements.Last();
+            for (int i = 0; i < index; i++)
+            {
+
+                CustomElement element = selectedBranch.Elements[i];
+                if (element.IsVisited == true)
+                {
+                    element.MainTrack = true;
+                }
+                else
+                {
+                    continue;
+                }
+
+
+            }
+            
+        }
+
+        private int GetTee(CustomBranch foundedBranch, CustomElement element1)
+        {
+            for (int i = 0; i < foundedBranch.Elements.Count; i++)
+            {
+                CustomElement element = foundedBranch.Elements[i];
+
+                // Проверка на тип Tee
+                if (element1.DetailType.ToString().Contains("Tee"))
+                {
+                    if (element.ElementId.IntegerValue == element1.ElementId.IntegerValue)
+                    {
+                        return i; // Возвращаем индекс, если нашли соответствующий элемент
+                    }
+                }
+
+                if (element1.DetailType.ToString().Contains("Insert"))
+                {
+                    if (element.ElementId.IntegerValue == element1.NextElementId.IntegerValue || element.ElementId.IntegerValue == element1.TapId.IntegerValue)
+                    {
+                        return i; // Возвращаем индекс, если нашли соответствующий элемент
+                    }
+                }
+            }
+            return -1;
+        }
+        private int GetSplitterId(CustomBranch foundedBranch, CustomElement element1)
+        {
+            for (int i = 0; i < foundedBranch.Elements.Count; i++)
+            {
+                CustomElement element = foundedBranch.Elements[i];
+
+                // Проверка на тип Tee
+                if (element1.DetailType == CustomElement.Detail.Tee)
+                {
+                    if (element.ElementId.IntegerValue == element1.ElementId.IntegerValue)
+                    {
+                        return i; // Возвращаем индекс, если нашли соответствующий элемент
+                    }
+                }
+
+                // Проверка на TapAdjustable
+                if (element1.DetailType == CustomElement.Detail.TapAdjustable)
+                {
+                    if (element.ElementId.IntegerValue == element1.NextElementId.IntegerValue)
+                    {
+                        return i; // Возвращаем индекс, если нашли соответствующий элемент
+                    }
+                }
+
+                // Проверка на DuctTap
+                if (element1.DetailType == CustomElement.Detail.DuctTap)
+                {
+                    if (element.ElementId.IntegerValue == element1.TapId.IntegerValue)
+                    {
+                        return i; // Возвращаем индекс, если нашли соответствующий элемент
+                    }
+                }
+
+                
+            }
+
+            return -1; // Рекомендуется возвращать -1, если ничего не найдено
+        }
+
+
+        private void RecalculateElement(CustomElement element1, CustomElement element2)
+        {
+            if (element1.DetailType == CustomElement.Detail.Tee && element2.DetailType== CustomElement.Detail.Tee)
+            {
+                CustomTee2 customTee1 = new CustomTee2(Document, element1, Collection, false);
+                CustomTee2 customTee2 = new CustomTee2(Document, element2, Collection, element1.IsReversed);
+                UpdateElementProperties(element1, customTee1);
+                UpdateElementProperties(element2, customTee2);
+            }
+            if (element1.DetailType ==CustomElement.Detail.DuctTap && element2.DetailType == CustomElement.Detail.TapAdjustable)
+            {
+                CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, true);
+                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
+                UpdateInsertElementProperties(element1, customDuctInsert1);
+                UpdateInsertElementProperties(element2, customDuctInsert2);
+            }
+            if (element1.DetailType == CustomElement.Detail.TapAdjustable && element2.DetailType == CustomElement.Detail.DuctTap)
+            {
+                CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element1, Collection, false);
+                CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element1, Collection, element2.IsReversed);
+                UpdateInsertElementProperties(element1, customDuctInsert1);
+                UpdateInsertElementProperties(element2, customDuctInsert2);
+            }
+        }
+
+        private double ElementsPressure(CustomBranch selectedBranch, int index)
+        {
+           int cindex = index + 1;
+            double pressure = 0;
+           for (int i=0; i<cindex;i++)
+           {
+                pressure += selectedBranch.Elements[i].PDyn + selectedBranch.Elements[i].PStat;
+                if (i!=0)
+                {
+                    selectedBranch.Elements[i].Ptot = selectedBranch.Elements[i - 1].Ptot + selectedBranch.Elements[i].PStat + selectedBranch.Elements[i].PDyn;
+                }
+                
+           }
+            return pressure;
+        }
+
+        private CustomBranch SelectBranch(CustomElement element)
+        {
+            if (element.ElementId.IntegerValue == 10562646)
+            {
+                var el = element;
+            }
+            if (element.DetailType == CustomElement.Detail.Tee)
+            {
+                for (int i =0; i<Collection.Count; i++)
+                {
+                    if (Collection[i].Elements.First().BranchNumber!= element.BranchNumber)
+                    {
+                        CustomBranch customBranch = Collection[i];
+                        foreach (var el in customBranch.Elements)
+                        {
+                            if (el.ElementId.IntegerValue == element.ElementId.IntegerValue)
+                            {
+                                return customBranch;
+                            }
+                        }
+
+                    }
+                }
+
+
+               
+            }
+
+            if (element.DetailType== CustomElement.Detail.TapAdjustable)
+            {
+                for (int i = 0; i < Collection.Count; i++)
+                {
+                    if (Collection[i].Elements.First().BranchNumber != element.BranchNumber)
+                    {
+                        CustomBranch customBranch = Collection[i];
+                        foreach (var el in customBranch.Elements)
+                        {
+                            if (el.ElementId.IntegerValue == element.NextElementId.IntegerValue)
+                            {
+                                return customBranch;
+                            }
+                        }
+
+                    }
+                }
+
+
+
+               
+            }
+            if (element.DetailType == CustomElement.Detail.DuctTap)
+            {
+                for (int i = 0; i < Collection.Count; i++)
+                {
+                    if (Collection[i].Elements.First().BranchNumber != element.BranchNumber)
+                    {
+                        CustomBranch customBranch = Collection[i];
+                        foreach (var el in customBranch.Elements)
+                        {
+                            if (el.ElementId.IntegerValue == element.TapId.IntegerValue)
+                            {
+                                return customBranch;
+                            }
+                        }
+
+                    }
+                }
+                
+            }
+            return null;
+        }
+        private CustomBranch SelectTeeBranch(CustomElement element)
+        {
+            if (element.ElementId.IntegerValue == 10562646)
+            {
+                var el = element;
+            }
+            if (element.DetailType.ToString().Contains("Tee"))
+            {
+                for (int i = 0; i < Collection.Count; i++)
+                {
+                    if (Collection[i].Elements.First().BranchNumber != element.BranchNumber)
+                    {
+                        CustomBranch customBranch = Collection[i];
+                        foreach (var el in customBranch.Elements)
+                        {
+                            if (el.ElementId.IntegerValue == element.ElementId.IntegerValue)
+                            {
+                                return customBranch;
+                            }
+                        }
+
+                    }
+                }
+
+
+
+            }
+
+            if (element.DetailType.ToString().Contains("Insert"))
+            {
+                for (int i = 0; i < Collection.Count; i++)
+                {
+                    if (Collection[i].Elements.First().BranchNumber != element.BranchNumber)
+                    {
+                        CustomBranch customBranch = Collection[i];
+                        foreach (var el in customBranch.Elements)
+                        {
+                            if (el.ElementId.IntegerValue == element.NextElementId.IntegerValue|| el.ElementId.IntegerValue == element.TapId.IntegerValue)
+                            {
+                                return customBranch;
+                            }
+                        }
+
+                    }
+                }
+
+
+
+
+            }
+           
+            return null;
+        }
+
+        private int GetSplitter(CustomBranch selectedBranch)
+        {
+            CustomElement lastElement = selectedBranch.Elements.Last();
+           for (int i =0; i<selectedBranch.Elements.Count; i++)
+           {
+                
+                CustomElement element = selectedBranch.Elements[i];
+                if (element.IsVisited==false)
+                {
+                    if (element.ElementId.IntegerValue == lastElement.ElementId.IntegerValue)
+                    {
+                        if (lastElement.DetailType==CustomElement.Detail.DuctTap)
+                        {
+                            lastElement.IsNonPrinted = true;
+                        }
+                        return -1;
+                    }
+                    else if (element.DetailType == CustomElement.Detail.Tee ||
+                    element.DetailType == CustomElement.Detail.TapAdjustable ||
+                    element.DetailType == CustomElement.Detail.DuctTap)
+                    {
+                        return i;
+                    }
+                   
+                    else
+                    {
+                        element.IsVisited = true;
+                    }
+                }
+                
+                  
+           }
+            return -1;
+        }
 
         private void UpdateElementProperties(CustomElement element, CustomTee2 customTee)
         {
@@ -2188,10 +2629,21 @@ namespace AirTreeV1
 
 
             }
-            
 
-
+        internal void ReOrderCollection()
+        {
+            foreach (var branch in Collection)
+            {
+                branch.BranchCalc();
+            }
+            Collection = Collection.OrderByDescending(x => x.PBTot).ToList();
+            var selbranch = Collection.First();
+            foreach (var el in selbranch.Elements)
+            {
+                el.MainTrack = true;
+            }
         }
+    }
 
 
 

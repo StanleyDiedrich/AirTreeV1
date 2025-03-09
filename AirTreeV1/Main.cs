@@ -20,9 +20,11 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
+using Autodesk.Revit.DB.Structure;
 using Autodesk.Revit.DB.Visual;
 using Autodesk.Revit.UI;
 using Microsoft.Win32;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace AirTreeV1
 {
@@ -422,41 +424,36 @@ namespace AirTreeV1
                         CustomElement element = collection.ActiveElement;
                         TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
                     }
-
+                    //List<Tuple<CustomBranch, CustomBranch>> pair = SortPairs(sortedLists);
                     List<CustomBranch> secondaryBranches = new List<CustomBranch>();
-                    List<CustomBranch> returnedBranches = collection.Collection;
-                    do
-                    {
-                        List<CustomBranch> notSelectedBranch = new List<CustomBranch>();
-                        List<CustomBranch> sortedLists = sortLists(returnedBranches);
-                        List<Tuple<CustomBranch, CustomBranch>> pair = SortPairs(sortedLists);
-                        (returnedBranches, notSelectedBranch) = MaxBranch(doc,pair,collection.Collection, mainViewModel);
-                       
-                            secondaryBranches.AddRange(notSelectedBranch);
-                        
-                        
-                    }
-                    while (returnedBranches.Count > 1);
-
-
-
-
                     List<CustomBranch> newCollection = new List<CustomBranch>();
+                    List<CustomBranch> returnedBranches = collection.Collection;
+                    List<CustomBranch> notSelectedBranch = new List<CustomBranch>();
+                    List<CustomBranch> sortedLists = sortLists(returnedBranches);
+                    collection.ReorderBranches(sortedLists);
+                    collection.CalculateReorderedBranches();
+                    collection.ReOrderCollection();
 
-                    newCollection.Add(returnedBranches[0]);
-                    newCollection.AddRange(secondaryBranches);
+                    
 
-                    collection.Collection = newCollection;
-                    collection.MarkCollection();
-                    collection.ReMarkCollection(collection.Collection[0]);
+
+
+
+
 
                    
+
+                    //collection.Collection = newCollection;
+                    /*collection.MarkCollection();
+                    collection.ReMarkCollection(collection.Collection[0]);*/
+
+
 
                     // ЭТО ВАЖНО!!!!
 
 
                     //string content = collection.GetContent(selectedBranch);
-                    
+
 
                     string content = collection.GetContent();
                     string filemname = collection.FirstElement;
@@ -743,7 +740,7 @@ namespace AirTreeV1
             double pressure = 0;
             for (int i = 0; i < index; i++)
             {
-                //CustomElement prevelement = branch1.Elements[i - 1];
+                
                 CustomElement element = branch1.Elements[i];
                 pressure +=  element.PStat + element.PDyn;
             }
@@ -751,74 +748,95 @@ namespace AirTreeV1
 
         }
 
-        private (List<CustomBranch>, List<CustomBranch>) MaxBranch(Autodesk.Revit.DB.Document doc, List<Tuple<CustomBranch, CustomBranch>> pair,List<CustomBranch> customBranches,  MainViewModel mainViewModel)
+        private int  GetSplitter(CustomBranch branch)
         {
-            List<CustomBranch> selectedBranches = new List<CustomBranch>();
-            List<CustomBranch> notSelectedBranches = new List<CustomBranch>();
-            foreach (var tuple in pair)
+            for (int i = 0; i < branch.Elements.Count - 1; i++)
             {
-                CustomBranch branch1 = tuple.Item1;
-                CustomBranch branch2 = tuple.Item2;
-                int index1 = 0;
-                int index2 = 0;
-
-               try
+                CustomElement observableELement = branch.Elements[i];
+                CustomElement selectedElement = null;
+                if (observableELement.IsVisited == false)
                 {
-                    (index1, index2) = GetFirstSplitter(doc, branch1, branch2, customBranches, mainViewModel);
-                    double pressure1 = GetPressure(branch1, index1);
-                    double pressure2 = GetPressure(branch2, index2);
-                    branch1.BranchCalc_2(index1);
-                    branch2.BranchCalc_2(index2);
-                    if (pressure1 > pressure2)
+                    if (observableELement.DetailType == CustomElement.Detail.Tee)  
                     {
-                        selectedBranches.Add(branch1);
-                        notSelectedBranches.Add(branch2);
+                        selectedElement = observableELement;
+                        observableELement.IsVisited = true;
+                        return i;
+                    }
+                    else if (observableELement.DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        selectedElement = observableELement;
+                        observableELement.IsVisited = true;
+                        return i;
+                    }
+                    else if (observableELement.DetailType ==CustomElement.Detail.DuctTap)
+                    {
+                        selectedElement = observableELement;
+                        observableELement.IsVisited = true;
+                        return i;
                     }
                     else
                     {
-                        selectedBranches.Add(branch2);
-                        notSelectedBranches.Add(branch1);
+                        observableELement.IsVisited = true;
                     }
                 }
-                catch
+                else
                 {
-                    
+                    continue;
                 }
-                
 
             }
-            return (selectedBranches, notSelectedBranches);
+            return 0;
         }
 
+        private (CustomBranch, int) GetMinimalIndex(ElementId elementId, List<CustomBranch> customBranches, CustomBranch selectedBranch)
+        {
+            
+            List<CustomBranch> resultBranches = new List<CustomBranch>();
+
+            for (int i = 0; i < customBranches.Count; i++)
+            {
+                if ((customBranches[i].Elements.First().BranchNumber != selectedBranch.Elements.First().BranchNumber) && customBranches[i].IsVisited==false)
+                {
+                    if (customBranches[i].Elements.Select(x=>x).Where(x=>!x.IsVisited).Any(el => el.ElementId == elementId))
+                    {
+                        resultBranches.Add(customBranches[i]);
+                    }
+                }
+                
+            }
+
+            // Если есть найденные ветки, выбираем ту, где минимальный индекс ElementId
+            if (resultBranches.Count > 0)
+            {
+                var minIndexBranch = resultBranches
+                    .Select(branch => new
+                    {
+                        Branch = branch,
+                        MinIndex = branch.Elements.FindIndex(el => el.ElementId == elementId)
+                    })
+                    .OrderBy(x => x.MinIndex)
+                    .FirstOrDefault();
+
+                return (minIndexBranch?.Branch, minIndexBranch.MinIndex);
+            }
+
+            // Если не найдено ни одной ветки
+            return (null,0);
+        }
+        
         private List<Tuple<CustomBranch, CustomBranch>> SortPairs(List<CustomBranch> sortedLists)
         {
             List<Tuple<CustomBranch, CustomBranch>> pairs = new List<Tuple<CustomBranch, CustomBranch>>();
 
-            for (int i = 0; i < sortedLists.Count - 1; i = i + 2)
-            {
-                CustomBranch num1 = sortedLists[i];
-                CustomBranch num2 = sortedLists[i + 1];
-
-                // Создание кортежа из двух значений
-                Tuple<CustomBranch, CustomBranch> tuple = new Tuple<CustomBranch, CustomBranch>(num1, num2);
-                pairs.Add(tuple);
-            }
+            
 
             return pairs;
         }
 
-        private List<CustomBranch> sortLists(List<CustomBranch> lists)
+        private List<CustomBranch> sortLists(List<CustomBranch> lists) // Это оставляем
         {
             return lists.OrderByDescending(x => x.PBTot).ToList();
-            /*return lists
-                .Select(list => new
-                {
-                    OriginalList = list,
-                    TeeIndex = list.Elements.FindIndex(e => e.DetailType == CustomElement.Detail.Tee || e.DetailType == CustomElement.Detail.DuctTap)
-                })
-                .OrderBy(item => item.TeeIndex >= 0 ? item.OriginalList.Elements.Take(item.TeeIndex).Sum(e => e.ElementId.IntegerValue) : 0)
-                .Select(item => item.OriginalList)
-                .ToList();*/
+           
         }
 
         private CustomCollection GetCollection(Document doc, List<ElementId> selectedterminals)

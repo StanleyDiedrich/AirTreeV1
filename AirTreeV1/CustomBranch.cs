@@ -20,6 +20,7 @@ namespace AirTreeV1
         public bool IsVisited { get; set; }
         public bool IsMain { get; set; }
         public List<CustomElement> Elements { get; set; } = new List<CustomElement>();
+        public int FoundedIndex { get; set; }
         public CustomBranch (Autodesk.Revit.DB.Document document, ElementId elementId)
         {
             Document = document;
