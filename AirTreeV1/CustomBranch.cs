@@ -149,7 +149,16 @@ namespace AirTreeV1
             {
 
                 Elements[i].Ptot = Elements[i].PDyn + Elements[i].PStat + Elements[i - 1].Ptot;
-                
+
+                if (Elements[i].DetailType.ToString().Contains("Insert"))
+                {
+                    if (Elements[i - 1].DetailType.ToString().Contains("Insert"))
+                    {
+                        Elements[i ].Ptot = Elements[i - 1].Ptot;
+                    }
+
+                }
+
             }
             PBTot = Elements.Last().Ptot;
         }

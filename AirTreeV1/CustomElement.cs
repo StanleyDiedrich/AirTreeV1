@@ -398,6 +398,10 @@ namespace AirTreeV1
                             {
                                 TapId = nextconnector.Owner.Id;
                                 DetailType = CustomElement.Detail.DuctTap;
+                                if(NextElementId==null)
+                                {
+                                    NextElementId = TapId;
+                                }
                             }
                         }
                     }

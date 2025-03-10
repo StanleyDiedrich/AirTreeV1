@@ -137,8 +137,9 @@ namespace AirTreeV1
             }
             else if (IsDiameter1 == true && IsDiameter2 == true)
             {
-                length = Convert.ToDouble(Element.Element.LookupParameter("L").AsValueString());
-                 diameter1 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 1").AsValueString());
+                //length = Convert.ToDouble(Element.Element.LookupParameter("L").AsValueString());
+                length = Convert.ToDouble(Element.Element.LookupParameter("Длина воздуховода 1").AsValueString());
+                diameter1 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 1").AsValueString());
                  diameter2 = Convert.ToDouble(Element.Element.LookupParameter("Диаметр воздуховода 2").AsValueString());
 
                 if (diameter1 == diameter2)
@@ -248,7 +249,7 @@ namespace AirTreeV1
             {
                 Angle = 10;
             }
-
+            
             if (document.GetElement(ElementId) is FamilyInstance)
             {
                 foreach (Connector connector in Element.OwnConnectors)
@@ -505,6 +506,10 @@ namespace AirTreeV1
                     if (SystemType == DuctSystemType.ExhaustAir)
                     {
                         RelA = OutletConnector.AOutlet / InletConnector.AInlet;
+                        if (RelA<2)
+                        {
+                            RelA = 2;
+                        }
                         if (RelA > 1)
                         {
                             element.DetailType = CustomElement.Detail.RoundExpansion;
@@ -515,7 +520,7 @@ namespace AirTreeV1
                         }
                         
                         RoundTransitionData elbowdata = new RoundTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
 
@@ -532,7 +537,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RoundContraction;
                         }
                         RoundTransitionData elbowdata = new RoundTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
                     }
