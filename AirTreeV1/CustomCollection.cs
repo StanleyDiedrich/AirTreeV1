@@ -827,6 +827,15 @@ namespace AirTreeV1
             {
                 selectedBranch = CollectionFootPrint[i];
                 lastelementId = selectedBranch.Elements.Last().ElementId;
+
+                foreach (var el in selectedBranch.Elements)
+                {
+                    if (el.ElementId.IntegerValue == 10520945)
+                    {
+                        var elem = el;
+                    }
+                }
+               
                 ProcessBranch(selectedBranch);
 
                 
@@ -898,6 +907,18 @@ namespace AirTreeV1
                 if (index1 != -1)
                 {
                     CustomElement element1 = selectedBranch.Elements[index1];
+                    /*if (selectedBranch.Number == 25)
+                    {
+                        var br = selectedBranch;
+                    }*/
+                    if (element1.ElementId.IntegerValue == 10520898)
+                    {
+                        var el = element1;
+                    }
+                    if (element1.BranchNumber == 25)
+                    {
+                        var el = element1;
+                    }
                     CustomBranch foundedBranch = SelectBranch(element1);
                     if (foundedBranch != null)
                     {
@@ -905,14 +926,24 @@ namespace AirTreeV1
                         if (index2 != -1)
                         {
                             CustomElement element2 = foundedBranch.Elements[index2];
-                            
-                            if (element1.ElementId.IntegerValue == 10556414)
+                            if (selectedBranch.Elements[index1].DetailType.ToString().Contains("TapAdjustable")&& selectedBranch.Elements[index1-1].DetailType.ToString().Contains("Insert") )
                             {
-                                var el = element1;
+                                if (selectedBranch.Elements[index1 - 1].TapId!=null)
+                                {
+                                    selectedBranch.Elements[index1 - 1].DetailType = CustomElement.Detail.DuctTap;
+                                    selectedBranch.Elements[index1 - 1].IsReversed = true;
+                                    RecalculateElement(selectedBranch.Elements[index1 - 1], element1);
+                                    double pressure1 = ElementsPressure(selectedBranch, index1-1);
+                                    double pressure2 = ElementsPressure(selectedBranch, index1);
+                                }
                             }
-                            RecalculateElement(element1, element2);
-                            double pressure1 = ElementsPressure(selectedBranch, index1);
-                            double pressure2 = ElementsPressure(foundedBranch, index2);
+                            else
+                            {
+                                RecalculateElement(element1, element2);
+                                double pressure1 = ElementsPressure(selectedBranch, index1);
+                                double pressure2 = ElementsPressure(foundedBranch, index2);
+                            }
+                           
                            
                             
                         }
@@ -1025,7 +1056,34 @@ namespace AirTreeV1
             }
             if ((element1.DetailType ==CustomElement.Detail.DuctTap) && (element2.DetailType == CustomElement.Detail.TapAdjustable))
             {
-                int element1BranchNumber = element1.BranchNumber;
+                try
+                {
+                    bool IsSecondPart = GetSecondPart(element1,element2);
+                    /*if (IsSecondPart == true)
+                    {
+                        CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, true);
+                        CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
+                        UpdateInsertElementProperties(element1, customDuctInsert1);
+                        UpdateInsertElementProperties(element2, customDuctInsert2);
+                    }
+                    else
+                    {*/
+                        CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, true);
+                        CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
+                        UpdateInsertElementProperties(element1, customDuctInsert1);
+                        UpdateInsertElementProperties(element2, customDuctInsert2);
+                    var filteredElements =
+                Collection.Select(x => x)
+               .Where(x => x.Elements.First().BranchNumber == element2.BranchNumber)
+               .SelectMany(x => x.Elements)
+               .Where(x => x.ElementId.IntegerValue == element1.ElementId.IntegerValue);
+                }
+                catch
+                {
+
+                }
+               
+                /*int element1BranchNumber = element1.BranchNumber;
                 int res = 0;
                 foreach (var branch in Collection)
                 {
@@ -1035,7 +1093,7 @@ namespace AirTreeV1
                         {
                             if (el.DetailType.ToString().Contains("Insert"))
                             {
-                                res = 1;
+                                res = -1;
                                 break;
                             }
                             else
@@ -1050,21 +1108,31 @@ namespace AirTreeV1
                     {
                         break;
                     }
-                }
+                }*/
 
 
-                if (res==0)
-                {
-                    //do nothing
-                }
 
-                else
-                {
-                    CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, true);
-                    CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
-                    UpdateInsertElementProperties(element1, customDuctInsert1);
-                    UpdateInsertElementProperties(element2, customDuctInsert2);
-                }
+                /*  if (res == 0)
+                  {
+                      CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, false);
+                      CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
+                      UpdateInsertElementProperties(element1, customDuctInsert1);
+                      UpdateInsertElementProperties(element2, customDuctInsert2);
+                  }
+                  else if (res==-1)
+                  {
+                      CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, true);
+                      CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
+                      UpdateInsertElementProperties(element1, customDuctInsert1);
+                      UpdateInsertElementProperties(element2, customDuctInsert2);
+                  }
+                  else
+                  {
+                      CustomDuctInsert2 customDuctInsert1 = new CustomDuctInsert2(Document, element2, Collection, true);
+                      CustomDuctInsert2 customDuctInsert2 = new CustomDuctInsert2(Document, element2, Collection, element2.IsReversed);
+                      UpdateInsertElementProperties(element1, customDuctInsert1);
+                      UpdateInsertElementProperties(element2, customDuctInsert2);
+                  }*/
 
 
 
@@ -1079,6 +1147,36 @@ namespace AirTreeV1
                 UpdateInsertElementProperties(element1, customDuctInsert1);
                 UpdateInsertElementProperties(element2, customDuctInsert2);
             }
+        }
+
+        private bool GetSecondPart(CustomElement element1, CustomElement element2)
+        {
+            bool secondPart = false;
+            int branchnumber = element1.BranchNumber;
+            int sectionNumber = 0;
+            CustomBranch selectedBranch = null;
+            foreach (var branch in Collection)
+            {
+                if (element1.BranchNumber == branch.Elements.First().BranchNumber)
+                {
+                    for (int i =0; i<branch.Elements.Count;i++)
+                    {
+                        sectionNumber = i;
+                        selectedBranch = branch;
+                    }
+                }
+                
+            }
+            
+
+            if (selectedBranch.Elements[sectionNumber-1].DetailType.ToString().Contains("Insert"))
+            {
+                secondPart = true;
+                return secondPart;
+            }
+            return secondPart;
+
+
         }
 
         private double ElementsPressure(CustomBranch selectedBranch, int index)
@@ -1117,7 +1215,7 @@ namespace AirTreeV1
 
         private CustomBranch SelectBranch(CustomElement element)
         {
-            if (element.ElementId.IntegerValue == 10562646)
+            if (element.ElementId.IntegerValue == 10520886)
             {
                 var el = element;
             }
@@ -1157,9 +1255,20 @@ namespace AirTreeV1
 
             if (element.DetailType== CustomElement.Detail.TapAdjustable)
             {
+                int elementBranchNumber = GetElementBranchNumber(element);
+                int selectedBranchNumber = element.BranchNumber;
+
+
+
+
+
+
+
+
                 for (int i = 0; i < Collection.Count; i++)
                 {
-                    if (Collection[i].Elements.First().BranchNumber != element.BranchNumber)
+
+                    if (Collection[i].Elements.First().BranchNumber == elementBranchNumber)
                     {
                         CustomBranch customBranch = Collection[i];
                         foreach (var el in customBranch.Elements)
@@ -1171,7 +1280,7 @@ namespace AirTreeV1
                         }
 
                     }
-                    if (Collection[i].Elements.First().BranchNumber == element.BranchNumber)
+                    else if (Collection[i].Elements.First().BranchNumber != elementBranchNumber)
                     {
                         CustomBranch customBranch = Collection[i];
                         foreach (var el in customBranch.Elements)
@@ -1183,17 +1292,30 @@ namespace AirTreeV1
                         }
 
                     }
+
                 }
 
 
 
-               
+
             }
             if (element.DetailType == CustomElement.Detail.DuctTap)
             {
+
+                int elementBranchNumber = GetElementBranchNumber(element) ;
+                int selectedBranchNumber = element.BranchNumber;
+
+                
+
+                
+
+                
+
+
                 for (int i = 0; i < Collection.Count; i++)
                 {
-                    if (Collection[i].Elements.First().BranchNumber != element.BranchNumber)
+                    
+                    if (Collection[i].Elements.First().BranchNumber == elementBranchNumber)
                     {
                         CustomBranch customBranch = Collection[i];
                         foreach (var el in customBranch.Elements)
@@ -1205,11 +1327,62 @@ namespace AirTreeV1
                         }
 
                     }
+                    else if (Collection[i].Elements.First().BranchNumber != elementBranchNumber)
+                    {
+                        CustomBranch customBranch = Collection[i];
+                        foreach (var el in customBranch.Elements)
+                        {
+                            if (el.ElementId.IntegerValue == element.TapId.IntegerValue)
+                            {
+                                return customBranch;
+                            }
+                        }
+
+                    }
+                    
                 }
+               
+                   
+                
+               
+                
                 
             }
             return null;
         }
+
+        private int GetElementBranchNumber(CustomElement element)
+        {
+            int selectedBranchNumber = -1;
+            foreach (var branch in Collection)
+            {
+                if (branch.Elements.First().BranchNumber == selectedBranchNumber)
+                {
+                    foreach (var el in branch.Elements)
+                    {
+                        if (el.ElementId.IntegerValue == element.NextElementId.IntegerValue)
+                        {
+                            selectedBranchNumber = el.BranchNumber;
+                            return selectedBranchNumber;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var el in branch.Elements)
+                    {
+                        if (el.ElementId.IntegerValue == element.NextElementId.IntegerValue)
+                        {
+                            selectedBranchNumber = el.BranchNumber;
+                            return selectedBranchNumber;
+                        }
+                    }
+                }
+
+            }
+            return selectedBranchNumber;
+        }
+
         private CustomBranch SelectTeeBranch(CustomElement element)
         {
             if (element.ElementId.IntegerValue == 10562646)
@@ -2369,7 +2542,7 @@ namespace AirTreeV1
 
             var csvcontent = new StringBuilder();
             //csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;IA;IQ;IC;O1A;O1Q;O1C;O2A;O2Q;O2C;RA;RQ;RC;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
-            csvcontent.AppendLine("PluginId;ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
+            csvcontent.AppendLine("PluginId;BranchNum;ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
             foreach (var branch in Collection)
             {
 
@@ -2388,7 +2561,7 @@ namespace AirTreeV1
                         element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
                         element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
                         element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
-                        string a = $"{element.PluginId};{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                        string a = $"{element.PluginId};{branch.Number};{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
                             $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
 
                             $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";

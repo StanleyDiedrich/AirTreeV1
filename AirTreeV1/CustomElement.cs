@@ -371,6 +371,10 @@ namespace AirTreeV1
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
                                                 custom.NextOwnerId = custom.NextOwnerId;
                                                 NextElementId = custom.NextOwnerId;
+                                                /*if (custom.Flow ==0)
+                                                {
+                                                    NextElementId == null;
+                                                }*/
                                                 EquiDiameter = custom.EquiDiameter * 304.8;
                                                 //SecondaryConnectors.Add(custom);
                                             }
