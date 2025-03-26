@@ -444,6 +444,10 @@ namespace AirTreeV1
                         if (RelA > 1)
                         {
                             element.DetailType = CustomElement.Detail.RectExpansion;
+                            if (RelA<2)
+                            {
+                                RelA = 2;
+                            }
                         }
                         else if (RelA==1)
                         {
@@ -461,10 +465,14 @@ namespace AirTreeV1
                         }
                         else
                         {
+                            if (RelA>0.5)
+                            {
+                                RelA = 0.5;
+                            }
                             element.DetailType = CustomElement.Detail.RectContraction;
                         }
                         RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
 
@@ -496,7 +504,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RectContraction;
                         }
                         RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
                     }
