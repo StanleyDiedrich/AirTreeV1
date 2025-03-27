@@ -237,7 +237,7 @@ namespace AirTreeV1
 
                 double Ptot1 = 0;
                 double Ptot2 = 0;
-               
+
                 OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
                 OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
                 try
@@ -275,9 +275,9 @@ namespace AirTreeV1
                 {
                     if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
                     {
-                        if (isStraight ==true)
+                        if (isStraight == true)
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.Area / InletConnector.Area;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -310,7 +310,7 @@ namespace AirTreeV1
                                     LocRes = roundTeeData.Interpolation2(relA, relC);
                                 }
                             }
-                            
+
 
                         }
                         else
@@ -355,7 +355,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -386,11 +386,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -422,7 +422,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                     }
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
@@ -430,7 +430,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -461,11 +461,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                           
+
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -504,7 +504,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -535,11 +535,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
-                            if(isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -610,11 +610,11 @@ namespace AirTreeV1
                                 }
                             }
 
-                            
+
                         }
                         else
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -646,7 +646,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
 
                     }
@@ -655,7 +655,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -687,7 +687,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
@@ -730,7 +730,7 @@ namespace AirTreeV1
                         // Все коннекторы круглые
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник прямой
                                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
@@ -739,7 +739,7 @@ namespace AirTreeV1
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundTeeStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
                             else
@@ -750,13 +750,13 @@ namespace AirTreeV1
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundTeeBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
-                           
+
                         }
                         else
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
@@ -765,7 +765,7 @@ namespace AirTreeV1
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundTeeBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
                             else
@@ -776,9 +776,9 @@ namespace AirTreeV1
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundTeeStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
-                            
+
                         }
 
 
@@ -788,7 +788,7 @@ namespace AirTreeV1
                         // Все коннекторы по одному случаю смешанные (прямоугольный — круглый — круглый)
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -819,11 +819,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                           
+
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -855,7 +855,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                           
+
                         }
                     }
                 }
@@ -866,7 +866,7 @@ namespace AirTreeV1
                     {
                         if (isStraight == true)
                         {
-                            if (isReversed==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.Area / InletConnector.Area;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -885,8 +885,9 @@ namespace AirTreeV1
                             else
                             {
                                 relA = selectedConnector.Area / InletConnector.Area;
-                                relQ = selectedConnector.Flow / InletConnector.Flow;
-                                relC = selectedConnector.Velocity / InletConnector.Velocity;
+                                relQ = (InletConnector.Flow - selectedConnector.Flow) / InletConnector.Flow; // На реверсивных 
+                                relC = (InletConnector.Flow - selectedConnector.Flow) / InletConnector.Flow;
+                                //relC = selectedConnector.Velocity / InletConnector.Velocity;
                                 RA = relA;
                                 RQ = relQ;
                                 RC = relC;
@@ -897,11 +898,11 @@ namespace AirTreeV1
                                     LocRes = roundTeeData.Interpolation2(relA, relC);
                                 }
                             }
-                           
+
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.Area / InletConnector.Area;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -932,7 +933,7 @@ namespace AirTreeV1
                                     LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 }
                             }
-                            
+
                         }
                     }
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
@@ -940,7 +941,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -972,11 +973,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1008,7 +1009,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                     }
                     else if (InletConnector.Shape == ConnectorProfileType.Rectangular && OutletConnector1.Shape == ConnectorProfileType.Rectangular && OutletConnector2.Shape == ConnectorProfileType.Round)
@@ -1016,7 +1017,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -1047,11 +1048,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1090,7 +1091,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -1122,7 +1123,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
@@ -1157,7 +1158,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                     }
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Rectangular)
@@ -1165,7 +1166,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -1197,11 +1198,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                            
+
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1233,7 +1234,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                          
+
                         }
 
                     }
@@ -1242,7 +1243,7 @@ namespace AirTreeV1
                         // Смешанный случай
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
                                 relQ = selectedConnector.Flow / InletConnector.Flow;
@@ -1273,11 +1274,11 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                           
+
                         }
                         else
                         {
-                            if (isReversed ==true)
+                            if (isReversed == true)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1309,7 +1310,7 @@ namespace AirTreeV1
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
                             }
-                           
+
                         }
                     }
                     else if (InletConnector.Shape == ConnectorProfileType.Round && OutletConnector1.Shape == ConnectorProfileType.Round && OutletConnector2.Shape == ConnectorProfileType.Round)
@@ -1317,7 +1318,7 @@ namespace AirTreeV1
                         // Все коннекторы круглые
                         if (isStraight == true)
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник прямой
                                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
@@ -1325,8 +1326,8 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
                             else
@@ -1336,15 +1337,15 @@ namespace AirTreeV1
                                 relQ = OutletConnector1.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
-                            
+
                         }
                         else
                         {
-                            if (isReversed ==true)
+                            if (isReversed == true)
                             {
                                 // Тройник на ответвление
                                 relA = OutletConnector1.AOutlet / InletConnector.AInlet;
@@ -1352,8 +1353,8 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight; //
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
                             else
@@ -1362,11 +1363,11 @@ namespace AirTreeV1
                                 relQ = OutletConnector1.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RoundInRoundDuctInsertStraight;
-                                LocRes = roundTeeData.Interpolation(100000, relA, relQ);
+                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
+                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch; //
+                                LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
-                            
+
                         }
 
 
@@ -1410,7 +1411,7 @@ namespace AirTreeV1
                         }
                         else
                         {
-                            if (isReversed ==false)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
                                 relA = selectedConnector.AOutlet / InletConnector.AInlet;
@@ -1441,8 +1442,8 @@ namespace AirTreeV1
                                     element.DetailType = CustomElement.Detail.RectTeeStraight;
                                     LocRes = rectTeeData.Interpolation(100000);
                                 }
-                            }    
-                           
+                            }
+
                         }
                     }
                 }
@@ -1462,8 +1463,8 @@ namespace AirTreeV1
                 O2Q = OutletConnector2.Flow * 102;
                 O2C = OutletConnector2.Velocity;
                 //Допиши сюда что может быть на отвод
-                
-                
+
+
 
                 Velocity = InletConnector.Velocity;
 
@@ -1504,7 +1505,7 @@ namespace AirTreeV1
 
             double radian = scalar / (vectorA * vectorB);
             double angle = Math.Round(Math.Acos(radian) * 57.3, 0);
-            if (angle == 180 || angle ==0)
+            if (angle == 180 || angle == 0)
             {
 
                 isStraight = true;
@@ -1515,7 +1516,7 @@ namespace AirTreeV1
                 isStraight = false;
                 return isStraight;
             }
-            
+
         }
 
         private CustomElement GetNeighbour(ElementId neighbourg, List<CustomBranch> collection)

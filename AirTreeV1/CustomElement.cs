@@ -129,8 +129,9 @@ namespace AirTreeV1
         public double RA { get; set; }
         public double RQ { get; set; }
         public double RC { get; set; }
+        public bool IsStartPart { get; internal set; }
+        public bool IsPart { get; internal set; }
 
-        
         private string GetValue(string primaryvolume)
         {
             // Используем регулярное выражение, чтобы найти и вернуть только числовую часть
