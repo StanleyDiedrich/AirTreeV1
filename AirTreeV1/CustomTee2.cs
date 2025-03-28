@@ -1326,7 +1326,7 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight;
+                                element.DetailType = CustomElement.Detail.RoundTeeStraight;
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
@@ -1338,7 +1338,7 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch;
+                                element.DetailType = CustomElement.Detail.RoundTeeBranch;
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
 
@@ -1353,7 +1353,7 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RectRoundTeeStraight; //
+                                element.DetailType = CustomElement.Detail.RoundTeeBranch; //
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
@@ -1364,7 +1364,7 @@ namespace AirTreeV1
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
-                                element.DetailType = CustomElement.Detail.RectRoundTeeBranch; //
+                                element.DetailType = CustomElement.Detail.RoundTeeStraight; //
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }
 

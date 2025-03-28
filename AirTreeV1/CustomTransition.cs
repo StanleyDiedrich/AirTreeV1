@@ -463,7 +463,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RectContraction;
                         }
                         RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
 
@@ -495,7 +495,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RectContraction;
                         }
                         RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
                     }
@@ -515,7 +515,7 @@ namespace AirTreeV1
                         }
                         
                         RoundTransitionData elbowdata = new RoundTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
 
@@ -532,7 +532,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RoundContraction;
                         }
                         RoundTransitionData elbowdata = new RoundTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
                         
                     }
@@ -572,7 +572,7 @@ namespace AirTreeV1
                         }*/
 
                         MixedTransitionData elbowdata = new MixedTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
 
 
@@ -610,7 +610,7 @@ namespace AirTreeV1
                         MixedTransitionData elbowdata = new MixedTransitionData(SystemType, RelA, Angle);
                         try
                         {
-                            elbowdata.Interpolation(100000, RelA, Angle);
+                            elbowdata.Interpolation2( RelA, Angle);
                             LocRes = elbowdata.LocRes;
 
                         }

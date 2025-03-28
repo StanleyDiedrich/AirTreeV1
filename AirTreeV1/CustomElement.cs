@@ -112,7 +112,8 @@ namespace AirTreeV1
 
             
         }
-
+        static int _id = 0;
+        public int PluginId { get; set; }
         public Detail DetailType { get;  set; }
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
@@ -140,6 +141,8 @@ namespace AirTreeV1
         }
         public CustomElement(Autodesk.Revit.DB.Document doc, ElementId elementId)
         {
+            PluginId = _id;
+            _id++;
             if (elementId == null)
             {
                 return;

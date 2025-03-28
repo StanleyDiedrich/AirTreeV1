@@ -381,7 +381,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RectContraction;
                         }
                         RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2( RelA, Angle);
                         LocRes = elbowdata.LocRes;
 
 
@@ -412,7 +412,7 @@ namespace AirTreeV1
                             element.DetailType = CustomElement.Detail.RectContraction;
                         }
                         RectTransitionData elbowdata = new RectTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation(100000, RelA, Angle);
+                        elbowdata.Interpolation2(RelA, Angle);
                         LocRes = elbowdata.LocRes;
 
                     }

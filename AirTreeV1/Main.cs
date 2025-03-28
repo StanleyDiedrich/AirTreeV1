@@ -373,7 +373,7 @@ namespace AirTreeV1
             }
             var sortedSysNums = new ObservableCollection<SystemNumber>(sysNums.OrderBy(x => x.SystemName));
 
-            // Присвоение отсортированной коллекции обратно (если необходимо)
+          
             sysNums = sortedSysNums;
 
 
@@ -383,14 +383,13 @@ namespace AirTreeV1
             window.DataContext = mainViewModel;
             window.ShowDialog();
 
-            //var selected_workset = mainViewModel.SelectedWorkSet.Name;
 
 
 
 
             List<ElementId> elIds = new List<ElementId>();
             var systemnames = mainViewModel.SystemNumbersList.Select(x => x).Where(x => x.IsSelected == true);
-            //var systemelements = mainViewModel.SystemElements;
+          
 
             List<ElementId> startelements = new List<ElementId>();
             List<ElementId> selectedterminals = new List<ElementId>();
@@ -408,8 +407,7 @@ namespace AirTreeV1
                 {
                     CustomCollection collection = GetCollection(doc, selectedterminals);
 
-                    //selectedelements = collection.ShowElements(0);
-                    //collection.MarkCollection();
+                  
                     try
                     {
                         collection.Calcualate(mainViewModel.Density);
@@ -419,19 +417,12 @@ namespace AirTreeV1
                         CustomElement element = collection.ActiveElement;
                         TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
                     }
-                    //collection.Calcualate(mainViewModel.Density);
-
-
-                    collection.Calcualate(mainViewModel.Density);
-                    
+                  
                     collection.ResCalculate();
                     CustomBranch selectedbranch = collection.SelectMainBranch();
-                    /*foreach (var element in selectedbranch.Elements)
-                    {
-                        selectedelements.Add(element.ElementId);
-                    }*/
+                    collection.ReverseBranches();
 
-                    collection.MarkCollection(selectedbranch);
+                    //collection.MarkCollection(selectedbranch);
                     string content = collection.GetContent();
                     string filemname = collection.FirstElement;
                     try
@@ -449,45 +440,11 @@ namespace AirTreeV1
                     TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей"); 
                 }
                 
-                //selectedelements=  collection.ShowElements();
-                
-                //selectedelements = collection.ShowControlElements();
-                //selectedelements = collection;
+               
             }
 
             
-            //uIDocument.Selection.SetElementIds(selectedelements);
-
-            // List<Branch> mainnodes = new List<Branch>();
-
-
-            // mainnodes = AlgorithmDuctTraverse(doc, startelements);
-
-
-            //SelectAllNodes(uIDocument, mainnodes);
-            /*var selectedMode = mainViewModel.CalculationModes
-            .FirstOrDefault(x => x.IsMode == true);
-
-            if (selectedMode != null)
-            {
-                int mode = selectedMode.CalculationId;  // Получаем Id расчета
-                                                        // Инициализируем список для главных узлов
-
-                switch (mode)
-                {
-                    case 0:
-                        mainnodes = AlgorithmDuctTraverse(doc, startelements);
-                        SelectAllNodes(uIDocument, mainnodes);
-                        //string csvcontent = GetContent(doc, mainnodes);
-                        //SaveFile(csvcontent);
-                        break;  // Обязательно добавляем break для правильного выполнения
-
-                    
-
-                    default:  // Обработка случая, если mode не совпадает ни с одним из вышеуказанных
-                        throw new InvalidOperationException($"Неизвестный режим расчета: {mode}");
-                }
-            }*/
+          
 
             return Result.Succeeded;
         }
