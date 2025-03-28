@@ -1321,8 +1321,8 @@ namespace AirTreeV1
                             if (isReversed == false)
                             {
                                 // Тройник прямой
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                relQ = selectedConnector.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
@@ -1333,8 +1333,8 @@ namespace AirTreeV1
                             else
                             {
                                 // Тройник на ответвление
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                relQ = selectedConnector.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
                                 RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
@@ -1345,25 +1345,25 @@ namespace AirTreeV1
                         }
                         else
                         {
-                            if (isReversed == true)
+                            if (isReversed == false)
                             {
                                 // Тройник на ответвление
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                relQ = selectedConnector.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
+                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundTeeBranch; //
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                                 element.IsReversed = true;
                             }
                             else
                             {
-                                relA = OutletConnector1.AOutlet / InletConnector.AInlet;
-                                relQ = OutletConnector1.Flow / InletConnector.Flow;
+                                relA = selectedConnector.AOutlet / InletConnector.AInlet;
+                                relQ = selectedConnector.Flow / InletConnector.Flow;
                                 RA = relA;
                                 RQ = relQ;
-                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, false, relA, relQ);
+                                RoundTeeData roundTeeData = new RoundTeeData(Element.SystemType, true, relA, relQ);
                                 element.DetailType = CustomElement.Detail.RoundTeeStraight; //
                                 LocRes = roundTeeData.Interpolation2(relA, relQ);
                             }

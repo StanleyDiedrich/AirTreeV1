@@ -417,10 +417,13 @@ namespace AirTreeV1
                         CustomElement element = collection.ActiveElement;
                         TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
                     }
-                  
+                    
                     collection.ResCalculate();
+                    collection.MarkBranches();
+                  
                     CustomBranch selectedbranch = collection.SelectMainBranch();
-                    collection.ReverseBranches();
+                    collection.TeeReCalc();
+
 
                     //collection.MarkCollection(selectedbranch);
                     string content = collection.GetContent();
