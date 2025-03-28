@@ -246,7 +246,7 @@ namespace AirTreeV1
                             }*/
                             else if (element.DetailType == CustomElement.Detail.Transition)
                             {
-                                if (element.ElementId.IntegerValue == 8976273)
+                                if (element.ElementId.IntegerValue == 7353422)
                                 {
                                     var element2 = element;
                                 }
@@ -350,32 +350,8 @@ namespace AirTreeV1
 
             }
 
-           /* List<CustomBranch> newCollection = new List<CustomBranch>();
-
-            foreach (var branch in Collection)
-            {
-                CustomBranch customBranch = new CustomBranch(Document);
-                foreach (var element in branch.Elements)
-                {
-                    if (element.DetailType == CustomElement.Detail.TapAdjustable)
-                    {
-                        customBranch.AddSpecial(element);
-                        customBranch.AddSpecial(element);
-                    }
-                    else if (element.DetailType == CustomElement.Detail.Tee)
-                    {
-                        customBranch.AddSpecial(element);
-                        customBranch.AddSpecial(element);
-                    }
-                    else
-                    {
-                        customBranch.Add(element);
-                    }
-                   
-                }
-                newCollection.Add(customBranch);
-            }
-            Collection = newCollection;*/
+         
+            
 
 
             foreach (var branch in Collection)
@@ -645,7 +621,7 @@ namespace AirTreeV1
                         {
                             element.TrackNumber = trackCounter;
                             element.BranchNumber = branch.Number;
-                            newCustomBranch.AddSpecial(element);
+                            //newCustomBranch.AddSpecial(element);
                             //checkedElements.Add(element.ElementId);
                             trackCounter++;  // Увеличиваем trackCounter только после успешного добавления элемента
                         }

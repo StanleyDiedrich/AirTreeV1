@@ -37,6 +37,8 @@
                 <TextBlock Text="Температура воздуха в системе, C" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" TextAlignment="Center"/>
                 <TextBox x:Name="TempTextBox" Width="400" Margin="5" 
                     Text="{Binding Temperature}"/>
+
+                <TextBlock TextAlignment="Center">Проблемы с плагином? Пиши @StanleyDiedrich или  @skyberd в telegram!</TextBlock>
             </StackPanel>
 
 
