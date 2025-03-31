@@ -67,7 +67,8 @@ namespace AirTreeV1
             ElementId = element.ElementId;
 
             NextElementId = element.NextElementId;
-            Element NextElement = document.GetElement(element.NextElementId);
+            CustomElement NextElement = GetNextElement(Element, collection);
+            //Element NextElement = document.GetElement(element.NextElementId);
 
             foreach (var branch in collection)
             {
@@ -79,12 +80,16 @@ namespace AirTreeV1
                     }
                 }
             }
-
-            if (NextElement is Duct)
+            if (NextElement.DetailType.ToString().Contains("Duct") ||  NextElement.DetailType==CustomElement.Detail.Union)
+            {
+                NextElement = Element;
+            }
+            if (NextElement.DetailType == CustomElement.Detail.DuctTap)
+            //if (NextElement is Duct)
             {
 
                 //ModelVelocity = GetValue(primaryvelocity);
-                foreach (Connector connector in (NextElement as MEPCurve).ConnectorManager.Connectors)
+                foreach (Connector connector in (NextElement.Element as MEPCurve).ConnectorManager.Connectors)
                 {
                     CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
                     SystemType = connector.DuctSystemType;
@@ -150,26 +155,7 @@ namespace AirTreeV1
 
 
 
-                                            /* custom.Shape = connector.Shape;
-                                             if (custom.Shape == ConnectorProfileType.Round)
-                                             {
-                                                 ProfileType = ConnectorProfileType.Round;
-                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                 custom.EquiDiameter = custom.Diameter;
-                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                             }
-                                             else
-                                             {
-                                                 ProfileType = ConnectorProfileType.Rectangular;
-                                                 custom.Width = connect.Width * 304.8 / 1000;
-                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                 *//*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
-                                                 custom.Area = custom.Width * custom.Height;
-                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                             }*/
+                                           
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -210,26 +196,7 @@ namespace AirTreeV1
 
 
 
-                                            /*custom.Shape = connect.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                *//* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
-                                                custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }*/
+                                           
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -277,7 +244,7 @@ namespace AirTreeV1
                                     if (SystemType == DuctSystemType.ExhaustAir)
                                     {
 
-                                        if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.Bidirectional)
+                                        if (connect.Direction == FlowDirectionType.Out /*|| connect.Direction == FlowDirectionType.Bidirectional*/)
                                         {
 
                                             //custom.DirectionType = FlowDirectionType.Out;
@@ -310,25 +277,7 @@ namespace AirTreeV1
 
 
 
-                                            /* if (custom.Shape == ConnectorProfileType.Round)
-                                             {
-                                                 ProfileType = ConnectorProfileType.Round;
-                                                 custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                 custom.EquiDiameter = custom.Diameter;
-                                                 custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                             }
-                                             else
-                                             {
-                                                 ProfileType = ConnectorProfileType.Rectangular;
-                                                 custom.Width = connect.Width * 304.8 / 1000;
-                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                 *//* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                  custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
-                                                 custom.Area = custom.Width * custom.Height;
-                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                             }*/
+                                        
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
@@ -348,8 +297,7 @@ namespace AirTreeV1
                                                 custom.Height = connect.Height * 304.8 / 1000;
                                                 custom.Width = connect.Width * 304.8 / 1000;
                                                 custom.Height = connect.Height * 304.8 / 1000;
-                                                /* custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                 custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*/
+                                              
                                                 custom.Area = custom.Width * custom.Height;
                                                 custom.Velocity = custom.Flow / (3600 * custom.Area);
                                                 custom.Shape = ConnectorProfileType.Rectangular;
@@ -363,31 +311,12 @@ namespace AirTreeV1
                                                 custom.Shape = ConnectorProfileType.Round;
                                             }
 
-                                            /*custom.Shape = connector.Shape;
-                                            if (custom.Shape == ConnectorProfileType.Round)
-                                            {
-                                                ProfileType = ConnectorProfileType.Round;
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-
-                                            }
-                                            else
-                                            {
-                                                ProfileType = ConnectorProfileType.Rectangular;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                *//*custom.EquiDiameter = 2 * custom.Width * custom.Height / (custom.Width + custom.Height);
-                                                custom.Area = Math.PI * Math.Pow(custom.EquiDiameter, 2) / 4;*//*
-                                                custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                            }*/
                                             custom.Coefficient = connect.Coefficient;
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
                                             InletConnector = custom;
                                             InletConnector.AInlet = custom.Area;
+                                           
                                         }
 
                                     }
@@ -465,7 +394,7 @@ namespace AirTreeV1
                                             if (SystemType == DuctSystemType.SupplyAir)
                                             {
 
-                                                if (connect.Direction == FlowDirectionType.In || connect.Direction == FlowDirectionType.Bidirectional)
+                                                if (connect.Direction == FlowDirectionType.In /*|| connect.Direction == FlowDirectionType.Bidirectional*/)
                                                 {
 
                                                     //custom.DirectionType = FlowDirectionType.Out;
@@ -519,7 +448,7 @@ namespace AirTreeV1
                                                     custom.PressureDrop = connect.PressureDrop;
                                                     OutletConnector = custom;
                                                     OutletConnector.AOutlet = custom.Area;
-                                                    OutletConnectors.Add(OutletConnector);
+                                                    
 
                                                 }
                                                 if (connect.Direction == FlowDirectionType.Out)
@@ -621,7 +550,7 @@ namespace AirTreeV1
                                             if (SystemType == DuctSystemType.ExhaustAir)
                                             {
 
-                                                if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.Bidirectional)
+                                                if (connect.Direction == FlowDirectionType.Out /*|| connect.Direction == FlowDirectionType.Bidirectional*/)
                                                 {
 
                                                     //custom.DirectionType = FlowDirectionType.Out;
@@ -678,7 +607,7 @@ namespace AirTreeV1
                                                     custom.PressureDrop = connect.PressureDrop;
                                                     OutletConnector = custom;
                                                     OutletConnector.AOutlet = custom.Area;
-                                                    OutletConnectors.Add(OutletConnector);
+                                                   // OutletConnectors.Add(OutletConnector);
 
                                                 }
                                                 if (connect.Direction == FlowDirectionType.In)
@@ -760,8 +689,8 @@ namespace AirTreeV1
                     }*/
 
 
-                    InletConnector = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
-                    OutletConnector1 = OutletConnectors.Skip(1).OrderByDescending(x => x.Flow).FirstOrDefault();
+                    InletConnector = InletConnector;
+                    OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
                     OutletConnector2 = OutletConnectors.Skip(1).OrderByDescending(x => x.Flow).LastOrDefault();
                 }
 
@@ -2145,6 +2074,25 @@ namespace AirTreeV1
 
             }
         }
+
+        private CustomElement GetNextElement(CustomElement element, List<CustomBranch> collection)
+        {
+           foreach (var branch in collection)
+           {
+                if (branch.Elements.First().BranchNumber == element.BranchNumber)
+                {
+                    for (int i=0; i< branch.Elements.Count; i++)
+                    {
+                        if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
+                        {
+                            return branch.Elements[i + 1];
+                        }
+                    }
+                }
+           }
+            return null;
+        }
+
         private CustomElement GetPrevious(ElementId elementId, List<CustomBranch> collection)
         {
             foreach (var branch in collection)

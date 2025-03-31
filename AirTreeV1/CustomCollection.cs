@@ -378,7 +378,15 @@ namespace AirTreeV1
 
 
 
+        public  CustomCollection OrderCollection()
+        {
+            CustomCollection newCollection = new CustomCollection(Document);
+            Collection = Collection.OrderByDescending(x => x.Pressure).ToList();
+            newCollection.Collection = Collection;
 
+            return newCollection;
+
+        }
 
 
 
@@ -392,13 +400,25 @@ namespace AirTreeV1
 
         public CustomBranch SelectMainBranch()
         {
-            List<CustomBranch> branches = new List<CustomBranch>();
+            /*List<CustomBranch> branches = new List<CustomBranch>();
             foreach (var branch in Collection)
             {
                 branches.Add(branch);
             }
             var maxbranch = branches.OrderByDescending(x => x.Pressure).FirstOrDefault();
-            return maxbranch;
+            return maxbranch;*/
+            CustomBranch selectedBranch = null;
+            double maxPressure = -1000000000;
+            foreach (var branch in Collection)
+            {
+                if (branch.Elements.Last().Ptot>maxPressure)
+                {
+                    selectedBranch = branch;
+                    maxPressure = branch.Elements.Last().Ptot;
+                }
+            }
+
+            return selectedBranch;
         }
 
         public void MarkCollection(CustomBranch customBranch)
@@ -866,6 +886,176 @@ namespace AirTreeV1
                             }
                         }
                     }
+                    if (element.DetailType == CustomElement.Detail.TapAdjustable)
+                    {
+                        List<CustomElement> elements = TryGetAllTeeElements(element);
+
+                        CustomElement mainTee = elements.OrderByDescending(x => x.Ptot).FirstOrDefault();
+                        CustomElement previous = GetPrevious(mainTee);
+                        try
+                        {
+                            if (element.ElementId.IntegerValue == 7523970)
+                            {
+                                var element2 = element;
+                            }
+
+                            CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, mainTee, Collection, true);
+                            mainTee.DetailType = customDuctInsert.Detail;
+                            mainTee.IA = customDuctInsert.IA;
+                            mainTee.IQ = customDuctInsert.IQ;
+                            mainTee.IC = customDuctInsert.IC;
+                            mainTee.O1A = customDuctInsert.O1A;
+                            mainTee.O1Q = customDuctInsert.O1Q;
+                            mainTee.O1C = customDuctInsert.O1C;
+                            mainTee.O2A = customDuctInsert.O2A;
+                            mainTee.O2Q = customDuctInsert.O2Q;
+                            mainTee.RA = customDuctInsert.RA;
+                            mainTee.RQ = customDuctInsert.RQ;
+                            mainTee.RC = customDuctInsert.RC;
+                            mainTee.LocRes = customDuctInsert.LocRes;
+                            mainTee.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * mainTee.LocRes;
+
+
+
+                        }
+                        catch
+                        {
+                            ActiveElement = element;
+                            ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
+
+                        foreach (var el in elements)
+                        {
+                            CustomElement prev = GetPrevious(el);
+
+                            if (el.PluginId == mainTee.PluginId)
+                            {
+                                continue;
+                            }
+
+                            try
+                            {
+                                if (el.ElementId.IntegerValue == 7331419)
+                                {
+                                    var element2 = el;
+                                }
+                                if (prev.ElementId == previous.ElementId)
+                                {
+                                    CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, el, Collection, true);
+                                    el.DetailType = customDuctInsert.Detail;
+                                    el.IA = customDuctInsert.IA;
+                                    el.IQ = customDuctInsert.IQ;
+                                    el.IC = customDuctInsert.IC;
+                                    el.O1A = customDuctInsert.O1A;
+                                    el.O1Q = customDuctInsert.O1Q;
+                                    el.O1C = customDuctInsert.O1C;
+                                    el.O2A = customDuctInsert.O2A;
+                                    el.O2Q = customDuctInsert.O2Q;
+                                    el.RA = customDuctInsert.RA;
+                                    el.RQ = customDuctInsert.RQ;
+                                    el.RC = customDuctInsert.RC;
+                                    el.LocRes = customDuctInsert.LocRes;
+                                    el.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * el.LocRes;
+                                }
+                                
+                            }
+                            catch
+                            {
+                                ActiveElement = element;
+                                ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                                //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                            }
+                        }
+                    }
+                    if (element.DetailType == CustomElement.Detail.DuctTap)
+                    {
+                        List<CustomElement> elements = TryGetAllTeeElements(element);
+
+                        CustomElement mainTee = elements.OrderByDescending(x => x.Ptot).FirstOrDefault();
+                        CustomElement previous = GetPrevious(mainTee);
+                        try
+                        {
+                            if (element.ElementId.IntegerValue == 7780137)
+                            {
+                                var element2 = element;
+                            }
+
+                            CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, mainTee, Collection, false);
+                            mainTee.DetailType = customDuctInsert.Detail;
+                            mainTee.IA = customDuctInsert.IA;
+                            mainTee.IQ = customDuctInsert.IQ;
+                            mainTee.IC = customDuctInsert.IC;
+                            mainTee.O1A = customDuctInsert.O1A;
+                            mainTee.O1Q = customDuctInsert.O1Q;
+                            mainTee.O1C = customDuctInsert.O1C;
+                            mainTee.O2A = customDuctInsert.O2A;
+                            mainTee.O2Q = customDuctInsert.O2Q;
+                            mainTee.RA = customDuctInsert.RA;
+                            mainTee.RQ = customDuctInsert.RQ;
+                            mainTee.RC = customDuctInsert.RC;
+                            mainTee.LocRes = customDuctInsert.LocRes;
+                            mainTee.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * mainTee.LocRes;
+
+
+
+                        }
+                        catch
+                        {
+                            ActiveElement = element;
+                            ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
+                            //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
+                        }
+
+                        foreach (var el in elements)
+                        {
+                            CustomElement prev = GetPrevious(el);
+                            if (el.PluginId ==2376)
+                            {
+                                CustomElement el2 = el;
+                            }
+                            if (prev.DetailType !=CustomElement.Detail.TapAdjustable)
+                            {
+                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, el, Collection, false);
+                                el.DetailType = customDuctInsert.Detail;
+                                el.IA = customDuctInsert.IA;
+                                el.IQ = customDuctInsert.IQ;
+                                el.IC = customDuctInsert.IC;
+                                el.O1A = customDuctInsert.O1A;
+                                el.O1Q = customDuctInsert.O1Q;
+                                el.O1C = customDuctInsert.O1C;
+                                el.O2A = customDuctInsert.O2A;
+                                el.O2Q = customDuctInsert.O2Q;
+                                el.RA = customDuctInsert.RA;
+                                el.RQ = customDuctInsert.RQ;
+                                el.RC = customDuctInsert.RC;
+                                el.LocRes = customDuctInsert.LocRes;
+                                el.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * el.LocRes;
+                            }
+                            else
+                            {
+                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, el, Collection, true);
+                                el.DetailType = customDuctInsert.Detail;
+                                el.IA = customDuctInsert.IA;
+                                el.IQ = customDuctInsert.IQ;
+                                el.IC = customDuctInsert.IC;
+                                el.O1A = customDuctInsert.O1A;
+                                el.O1Q = customDuctInsert.O1Q;
+                                el.O1C = customDuctInsert.O1C;
+                                el.O2A = customDuctInsert.O2A;
+                                el.O2Q = customDuctInsert.O2Q;
+                                el.RA = customDuctInsert.RA;
+                                el.RQ = customDuctInsert.RQ;
+                                el.RC = customDuctInsert.RC;
+                                el.LocRes = customDuctInsert.LocRes;
+                                el.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * el.LocRes;
+                            }
+
+                            
+
+                           
+                        }
+                    }
                 }
                 ResCalculate();
             }
@@ -909,75 +1099,70 @@ namespace AirTreeV1
             }
             return elements;
         }
+
+        public  CustomCollection GetUniqueElements(CustomBranch selectedBranch)
+        {
+            // если айдишник уже есть, то проверяем на то какой элемент. 
+            // если это тройник или врезка, то надо получить максимальное давление на проход и на брэнч
+            List<ElementId> elementIds = new List<ElementId>();
+            List<int> pluginIds = new List<int>();
+            CustomCollection newCollection = new CustomCollection(Document);
+
+            CustomBranch customBranch = new CustomBranch(Document);
+            foreach (var element in selectedBranch.Elements)
+            {
+                elementIds.Add(element.ElementId);
+                pluginIds.Add(element.PluginId);
+                element.MainTrack = true;
+                customBranch.Elements.Add(element);
+            }
+
+            newCollection.Add(customBranch);
+
+            foreach(var branch in Collection)
+            {
+                CustomBranch customBranch1 = new CustomBranch(Document);
+                if (branch.Elements.First().BranchNumber!=selectedBranch.Elements.First().BranchNumber)
+                {
+                    foreach(var element in branch.Elements)
+                    {
+                        if (elementIds.Contains(element.ElementId))
+                        {
+                            if (element.DetailType == CustomElement.Detail.RectRoundTeeStraight ||
+                                 element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
+                                 element.DetailType == CustomElement.Detail.RoundTeeStraight ||
+                                 element.DetailType==CustomElement.Detail.RoundTeeBranch||
+                                 element.DetailType == CustomElement.Detail.RectTeeStraight||
+                                 element.DetailType == CustomElement.Detail.RectTeeBranch
+                                 )
+                            {
+                               List<CustomElement> selectedTees = TryGetAllTeeElements(element);
+                                var detailType = element.DetailType;
+
+                                CustomElement selectedTee = selectedTees.OrderByDescending(x => x.Ptot).FirstOrDefault(x => x.DetailType != detailType);
+                                customBranch1.Elements.Add(selectedTee);
+                                
+
+                            }
+                        }
+                        else
+                        {
+                            customBranch1.Elements.Add(element);
+                        }
+                    }
+                }
+                newCollection.Add(customBranch1);
+            }
+           
+
+
+            return newCollection;
+        }
+
+       
     }
 }
 
 
 
 
-//Пока не понятно что делать с тройниками 
-
-/* else if (element.DetailType == CustomElement.Detail.Tee)
-{
-    try
-    {
-        if (element.ElementId.IntegerValue == 7331419)
-        {
-            var element2 = element;
-        }
-
-
-
-
-        CustomTee2 customDuctInsert = new CustomTee2(Document, element, Collection, false);
-        element.IA = customDuctInsert.IA;
-        element.IQ = customDuctInsert.IQ;
-        element.IC = customDuctInsert.IC;
-        element.O1A = customDuctInsert.O1A;
-        element.O1Q = customDuctInsert.O1Q;
-        element.O1C = customDuctInsert.O1C;
-        element.O2A = customDuctInsert.O2A;
-        element.O2Q = customDuctInsert.O2Q;
-        element.RA = customDuctInsert.RA;
-        element.RQ = customDuctInsert.RQ;
-        element.RC = customDuctInsert.RC;
-        element.LocRes = customDuctInsert.LocRes;
-        element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
-
-
-        branch.Pressure += element.PDyn;
-    }
-    catch
-    {
-        ActiveElement = element;
-        ErrorString = "Ошибка в элементе" + $"{element.ElementId}" + "\n";
-        //TaskDialog.Show("Ошибка", $"Ошибка в элементе {element.ElementId}");
-    }
-
-}*/
-
-
-/*else if (element.DetailType == CustomElement.Detail.TapAdjustable)
-                            {
-
-
-                                {
-                                    var element2 = element;
-                                }
-
-                               
-                                CustomDuctInsert2 customDuctInsert = new CustomDuctInsert2(Document, element, Collection, false);
-                                element.IA = customDuctInsert.IA;
-                                element.IQ = customDuctInsert.IQ;
-                                element.IC = customDuctInsert.IC;
-                                element.O1A = customDuctInsert.O1A;
-                                element.O1Q = customDuctInsert.O1Q;
-                                element.O1C = customDuctInsert.O1C;
-                                element.O2A = customDuctInsert.O2A;
-                                element.O2Q = customDuctInsert.O2Q;
-                                element.RA = customDuctInsert.RA;
-                                element.RQ = customDuctInsert.RQ;
-                                element.RC = customDuctInsert.RC;
-                                element.LocRes = customDuctInsert.LocRes;
-                                element.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * element.LocRes;
-                            }*/
