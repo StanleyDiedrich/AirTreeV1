@@ -201,7 +201,7 @@ namespace AirTreeV1
                         continue;
                     }
 
-                    else if (connector.ConnectorType == ConnectorType.End)
+                     if (connector.ConnectorType == ConnectorType.End)
                     {
                         foreach (Connector connect in nextconnectors)
                         {
@@ -390,7 +390,7 @@ namespace AirTreeV1
 
 
                     }
-                    else if (connector.ConnectorType == ConnectorType.Curve)
+                     if (connector.ConnectorType == ConnectorType.Curve)
                     {
                         foreach (Connector nextconnector in connector.AllRefs)
                         {

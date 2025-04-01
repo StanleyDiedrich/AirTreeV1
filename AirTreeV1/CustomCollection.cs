@@ -378,13 +378,13 @@ namespace AirTreeV1
 
 
 
-        public  CustomCollection OrderCollection()
+        public  void OrderCollection()
         {
-            CustomCollection newCollection = new CustomCollection(Document);
+           
             Collection = Collection.OrderByDescending(x => x.Pressure).ToList();
-            newCollection.Collection = Collection;
+            
 
-            return newCollection;
+           
 
         }
 
@@ -894,7 +894,7 @@ namespace AirTreeV1
                         CustomElement previous = GetPrevious(mainTee);
                         try
                         {
-                            if (element.ElementId.IntegerValue == 7523970)
+                            if (element.ElementId.IntegerValue == 7523912)
                             {
                                 var element2 = element;
                             }
@@ -976,8 +976,9 @@ namespace AirTreeV1
                         CustomElement previous = GetPrevious(mainTee);
                         try
                         {
-                            if (element.ElementId.IntegerValue == 7780137)
+                            if (element.ElementId.IntegerValue == 7782571)
                             {
+                                var detailType = element.DetailType;
                                 var element2 = element;
                             }
 
@@ -1010,9 +1011,10 @@ namespace AirTreeV1
                         foreach (var el in elements)
                         {
                             CustomElement prev = GetPrevious(el);
-                            if (el.PluginId ==2376)
+                            if (element.ElementId.IntegerValue == 7782571)
                             {
-                                CustomElement el2 = el;
+                                var detailType = element.DetailType;
+                                var element2 = element;
                             }
                             if (prev.DetailType !=CustomElement.Detail.TapAdjustable)
                             {
@@ -1100,13 +1102,13 @@ namespace AirTreeV1
             return elements;
         }
 
-        public  CustomCollection GetUniqueElements(CustomBranch selectedBranch)
+        public  void GetUniqueElements(CustomBranch selectedBranch)
         {
             // если айдишник уже есть, то проверяем на то какой элемент. 
             // если это тройник или врезка, то надо получить максимальное давление на проход и на брэнч
             List<ElementId> elementIds = new List<ElementId>();
             List<int> pluginIds = new List<int>();
-            CustomCollection newCollection = new CustomCollection(Document);
+            List<CustomBranch> customBranches = new List<CustomBranch>();
 
             CustomBranch customBranch = new CustomBranch(Document);
             foreach (var element in selectedBranch.Elements)
@@ -1116,47 +1118,65 @@ namespace AirTreeV1
                 element.MainTrack = true;
                 customBranch.Elements.Add(element);
             }
+            customBranches.Add(customBranch);
 
-            newCollection.Add(customBranch);
 
-            foreach(var branch in Collection)
+            foreach (var branch in Collection)
             {
+
                 CustomBranch customBranch1 = new CustomBranch(Document);
-                if (branch.Elements.First().BranchNumber!=selectedBranch.Elements.First().BranchNumber)
+                if (branch.Elements.First().BranchNumber != selectedBranch.Elements.First().BranchNumber)
                 {
-                    foreach(var element in branch.Elements)
+                    foreach (var element in branch.Elements)
                     {
-                        if (elementIds.Contains(element.ElementId))
+                        if (element.ElementId.IntegerValue == 7331477)
                         {
-                            if (element.DetailType == CustomElement.Detail.RectRoundTeeStraight ||
-                                 element.DetailType == CustomElement.Detail.RectRoundTeeBranch ||
-                                 element.DetailType == CustomElement.Detail.RoundTeeStraight ||
-                                 element.DetailType==CustomElement.Detail.RoundTeeBranch||
-                                 element.DetailType == CustomElement.Detail.RectTeeStraight||
-                                 element.DetailType == CustomElement.Detail.RectTeeBranch
-                                 )
+                            var el2 = element;
+                        }
+                        if (!elementIds.Contains(element.ElementId))
+                        {
+                            if (!pluginIds.Contains(element.PluginId))
                             {
-                               List<CustomElement> selectedTees = TryGetAllTeeElements(element);
-                                var detailType = element.DetailType;
-
-                                CustomElement selectedTee = selectedTees.OrderByDescending(x => x.Ptot).FirstOrDefault(x => x.DetailType != detailType);
-                                customBranch1.Elements.Add(selectedTee);
-                                
-
+                                elementIds.Add(element.ElementId);
+                                pluginIds.Add(element.PluginId);
+                                customBranch.Elements.Add(element);
+                            }
+                           
+                            else
+                            {
+                                continue;
                             }
                         }
-                        else
+                        if (elementIds.Contains(element.ElementId))
                         {
-                            customBranch1.Elements.Add(element);
+                            if (element.DetailType == CustomElement.Detail.RectTeeBranch||
+                                element.DetailType == CustomElement.Detail.RectTeeStraight||
+                                element.DetailType == CustomElement.Detail.RoundTeeBranch||
+                                element.DetailType==CustomElement.Detail.RoundTeeStraight)
+                                {
+                                    if (!pluginIds.Contains(element.PluginId))
+                                    {
+                                        pluginIds.Add(element.PluginId);
+                                        customBranch.Elements.Add(element);
+                                        break;
+                                   
+                                    }
+                                    else
+                                    {
+                                        continue;
+
+                                    }
+                                }
                         }
+
                     }
                 }
-                newCollection.Add(customBranch1);
+                customBranches.Add(customBranch1);
             }
-           
 
 
-            return newCollection;
+
+            Collection = customBranches;
         }
 
        

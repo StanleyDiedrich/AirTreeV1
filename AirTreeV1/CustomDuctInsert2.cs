@@ -70,21 +70,14 @@ namespace AirTreeV1
             CustomElement NextElement = GetNextElement(Element, collection);
             //Element NextElement = document.GetElement(element.NextElementId);
 
-            foreach (var branch in collection)
-            {
-                foreach (var el in branch.Elements)
-                {
-                    if (el.ElementId == NextElementId)
-                    {
-                        el.IsPart = true;
-                    }
-                }
-            }
-            if (NextElement.DetailType.ToString().Contains("Duct") ||  NextElement.DetailType==CustomElement.Detail.Union)
-            {
-                NextElement = Element;
-            }
-            if (NextElement.DetailType == CustomElement.Detail.DuctTap)
+            
+
+
+            NextElement = TryGetNextElement(Element,collection);
+                
+            
+            
+            if (NextElement.DetailType == CustomElement.Detail.DuctTap || NextElement.DetailType.ToString().Contains("Insert"))
             //if (NextElement is Duct)
             {
 
@@ -690,8 +683,11 @@ namespace AirTreeV1
 
 
                     InletConnector = InletConnector;
+                    OutletConnectors = OutletConnectors.GroupBy(connector => connector.NextOwnerId)
+                                     .Select(group => group.First())
+                                     .ToList();
                     OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
-                    OutletConnector2 = OutletConnectors.Skip(1).OrderByDescending(x => x.Flow).LastOrDefault();
+                    OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
                 }
 
 
@@ -2073,6 +2069,27 @@ namespace AirTreeV1
 
 
             }
+        }
+
+        private CustomElement TryGetNextElement(CustomElement element, List<CustomBranch> collection)
+        {
+            CustomElement nextElement = null;
+            if (element.DetailType.ToString().Contains("Insert"))
+            {
+                //nextElement = GetNextElement(element, collection);
+               
+                return element;
+            }
+            if (element.DetailType==CustomElement.Detail.TapAdjustable)
+            {
+                nextElement = GetNextElement(element,collection );
+                return nextElement;
+            }
+            if (element.DetailType.ToString().Contains("Duct") || element.DetailType == CustomElement.Detail.Union)
+            {
+                return element;
+            }
+            return nextElement;
         }
 
         private CustomElement GetNextElement(CustomElement element, List<CustomBranch> collection)
