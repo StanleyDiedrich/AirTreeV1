@@ -80,10 +80,11 @@ namespace AirTreeV1
             if (NextElement.DetailType == CustomElement.Detail.DuctTap || NextElement.DetailType.ToString().Contains("Insert"))
             //if (NextElement is Duct)
             {
-
+                
                 //ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in (NextElement.Element as MEPCurve).ConnectorManager.Connectors)
                 {
+                   
                     CustomConnector custom = new CustomConnector(Document, ElementId, SystemType);
                     SystemType = connector.DuctSystemType;
                     if (SystemType == DuctSystemType.SupplyAir)
@@ -110,10 +111,10 @@ namespace AirTreeV1
                                 {
                                     continue;
                                 }
-                                else if (connect.Owner.Id == NextElementId)
+                                /*else if (connect.Owner.Id == NextElementId)
                                 {
                                     continue;
-                                }
+                                }*/
                                 if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
                                 {
                                     if (SystemType == DuctSystemType.SupplyAir)
@@ -153,6 +154,7 @@ namespace AirTreeV1
                                             custom.Origin = connect.Origin;
                                             custom.PressureDrop = connect.PressureDrop;
                                             OutletConnector = custom;
+                                           
                                             OutletConnector.AOutlet = custom.Area;
                                             OutletConnectors.Add(OutletConnector);
 
@@ -228,10 +230,10 @@ namespace AirTreeV1
                                 {
                                     continue;
                                 }
-                                else if (connect.Owner.Id == NextElementId)
+                               /* else if (connect.Owner.Id == NextElementId)
                                 {
                                     continue;
-                                }
+                                }*/
                                 if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
                                 {
                                     if (SystemType == DuctSystemType.ExhaustAir)
@@ -387,7 +389,7 @@ namespace AirTreeV1
                                             if (SystemType == DuctSystemType.SupplyAir)
                                             {
 
-                                                if (connect.Direction == FlowDirectionType.In /*|| connect.Direction == FlowDirectionType.Bidirectional*/)
+                                                if (connect.Direction == FlowDirectionType.In || connect.Direction == FlowDirectionType.Bidirectional)
                                                 {
 
                                                     //custom.DirectionType = FlowDirectionType.Out;
@@ -543,7 +545,7 @@ namespace AirTreeV1
                                             if (SystemType == DuctSystemType.ExhaustAir)
                                             {
 
-                                                if (connect.Direction == FlowDirectionType.Out /*|| connect.Direction == FlowDirectionType.Bidirectional*/)
+                                                if (connect.Direction == FlowDirectionType.Out || connect.Direction == FlowDirectionType.Bidirectional)
                                                 {
 
                                                     //custom.DirectionType = FlowDirectionType.Out;
@@ -693,6 +695,7 @@ namespace AirTreeV1
 
                 else
                 {
+                    InletConnector = InletConnector;
                     OutletConnector1 = OutletConnectors.OrderByDescending(x => x.Flow).FirstOrDefault();
                     OutletConnector2 = OutletConnectors.OrderByDescending(x => x.Flow).LastOrDefault();
                 }

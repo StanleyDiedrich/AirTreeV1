@@ -53,6 +53,7 @@ namespace AirTreeV1
         public double PDyn { get; set; }
         public double PStat { get; set; }
         public double Ptot { get; set; }
+        public double PtotControl { get; set; }
         public double AirTree_Area { get; set; }
         public bool IsReversed { get; set; }
         public bool IsStartPart { get; set; }
@@ -623,6 +624,7 @@ namespace AirTreeV1
                     }
                     else if ((Model as MechanicalFitting).PartType == PartType.TapAdjustable)
                     {
+                       
                         DetailType = Detail.TapAdjustable;
                     }
                     else if ((Model as MechanicalFitting).PartType == PartType.Transition)
@@ -819,6 +821,6 @@ namespace AirTreeV1
 
         }
 
-
+       
     }
 }

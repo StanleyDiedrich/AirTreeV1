@@ -441,10 +441,15 @@ namespace AirTreeV1
                     collection.ResCalculate();
                     collection.MarkBranches();
 
-                    CustomBranch selectedbranch = collection.SelectMainBranch();
-                    collection.TeeReCalc();
+                    collection.SelectMainBranch();
+                    collection.TeeReCalc(collection);
+
+                    collection.ResCalculate();
                     collection.OrderCollection();
-                    collection.GetUniqueElements(selectedbranch);
+                    collection.GetUniqueElements();
+                    collection.MarkFirstBranch();
+                   
+                   
 
 
 

@@ -82,6 +82,10 @@ namespace AirTreeV1
             CustomElement customElement = new CustomElement(document, airterminal);
             do
             {
+               if (customElement.DetailType==CustomElement.Detail.TapAdjustable)
+                {
+                    customElement.IsNonPrinted = true;
+                }
                 
                 Elements.Add(customElement);
                 nextElement = customElement.NextElementId;
