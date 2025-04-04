@@ -93,9 +93,20 @@ namespace AirTreeV1
                 double relA;
                 double relQ;
                 double relC;
-
-                CustomElement neighbour1 = GetNeighbourInBranch(Element, OutletStraight.NextOwnerId, collection);
-                CustomElement neighbour2 = GetNeighbourInBranch(Element, OutletBranch.NextOwnerId, collection);
+                CustomElement neighbour1 = null;
+                CustomElement neighbour2 = null;
+                try
+                {
+                     neighbour1= GetNeighbourInBranch(Element, OutletStraight.NextOwnerId, collection);
+                     neighbour2 = GetNeighbourInBranch(Element, OutletBranch.NextOwnerId, collection);
+                }
+                catch
+                {
+                    OutletStraight = OutletConnectors.OrderByDescending(x => x.Flow).First();
+                    OutletBranch = OutletConnectors.OrderByDescending(x => x.Flow).Last();
+                     neighbour1 = GetNeighbourInBranch(Element, OutletStraight.NextOwnerId, collection);
+                     neighbour2 = GetNeighbourInBranch(Element, OutletBranch.NextOwnerId, collection);
+                }
                 try
                 {
 
