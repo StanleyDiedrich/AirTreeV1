@@ -572,8 +572,16 @@ namespace AirTreeV1
                         }*/
 
                         MixedTransitionData elbowdata = new MixedTransitionData(SystemType, RelA, Angle);
-                        elbowdata.Interpolation2( RelA, Angle);
-                        LocRes = elbowdata.LocRes;
+                        try
+                        {
+                            elbowdata.Interpolation2(RelA, Angle);
+                            LocRes = elbowdata.LocRes;
+
+                        }
+                        catch
+                        {
+                            LocRes = 0.27;
+                        }
 
 
                     }
