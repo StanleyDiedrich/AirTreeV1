@@ -160,22 +160,34 @@ namespace AirTreeV1
                 var el = Element;
             }
             Element = doc.GetElement(ElementId);
+           
             SystemName = Element.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
-
-            if (Element.LookupParameter("Базовый уровень") != null)
+            try
             {
-                Lvl = Element.LookupParameter("Базовый уровень").AsValueString();
-            }
+                if (Element.LookupParameter("Базовый уровень") != null)
+                {
+                    Lvl = Element.LookupParameter("Базовый уровень").AsValueString();
+                }
 
-            else
+                else
+                {
+                    Lvl = Element.LookupParameter("Уровень").AsValueString();
+                }
+            }
+            catch
+            { }
+           
+
+
+
+            if (Element is MechanicalSystem)
             {
-                Lvl = Element.LookupParameter("Уровень").AsValueString();
+
             }
+            if(Element is DuctInsulation)
+            {
 
-
-
-
-
+            }
             if (Element is Duct)
             {
                 MSystem = (Element as MEPCurve).MEPSystem;
@@ -201,7 +213,14 @@ namespace AirTreeV1
                     {
                         continue;
                     }
-
+                    if (Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                    {
+                        continue;
+                    }
+                    if (doc.GetElement(connector.Owner.Id).Category.Id.IntegerValue== -2008015) // Механическая система
+                    {
+                        continue;
+                    }    
                      if (connector.ConnectorType == ConnectorType.End)
                     {
                         foreach (Connector connect in nextconnectors)
@@ -247,7 +266,14 @@ namespace AirTreeV1
 
                                         if (SystemType == DuctSystemType.SupplyAir)
                                         {
-
+                                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                                            {
+                                                continue;
+                                            }
+                                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
+                                            {
+                                                continue;
+                                            }
                                             if (connect.Direction == FlowDirectionType.Out)
                                             {
                                                 custom.Flow = connect.Flow;
@@ -460,6 +486,14 @@ namespace AirTreeV1
                             {
                                 continue;
                             }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                            {
+                                continue;
+                            }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
+                            {
+                                continue;
+                            }
                             else
                             {
                                 CustomConnector custom = new CustomConnector(doc, ElementId, SystemType);
@@ -486,6 +520,14 @@ namespace AirTreeV1
                                     continue; // Игнорируем те же элементы
                                 }
                                 else if (connect.Owner.Id == NextElementId)
+                                {
+                                    continue;
+                                }
+                                if (Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                                {
+                                    continue;
+                                }
+                                if (doc.GetElement(connector.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
                                 {
                                     continue;
                                 }
@@ -681,6 +723,15 @@ namespace AirTreeV1
                             {
                                 continue;
                             }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                            {
+                                continue;
+                            }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
+                            {
+                                continue;
+                            }
+
                             else
                             {
                                 SystemType = connect.DuctSystemType;
@@ -711,7 +762,7 @@ namespace AirTreeV1
                                 {
                                     continue;
                                 }
-
+                                
                                 else if (ShortSystemName.Contains(ShortSystemName))
                                 {
                                     if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
@@ -719,7 +770,7 @@ namespace AirTreeV1
 
                                         if (SystemType == DuctSystemType.SupplyAir)
                                         {
-
+                                            
                                             if (connect.Direction == FlowDirectionType.Out)
                                             {
                                                 custom.Flow = connect.Flow;
