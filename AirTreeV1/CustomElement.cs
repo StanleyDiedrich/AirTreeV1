@@ -89,7 +89,8 @@ namespace AirTreeV1
             RectRoundContraction,
             RoundRectContraction,
 
-
+            MechanicalSystem,
+            DuctInsulation,
 
             DuctTap,
 
@@ -182,11 +183,11 @@ namespace AirTreeV1
 
             if (Element is MechanicalSystem)
             {
-
+                DetailType = Detail.MechanicalSystem;
             }
             if(Element is DuctInsulation)
             {
-
+                DetailType = Detail.DuctInsulation;
             }
             if (Element is Duct)
             {
