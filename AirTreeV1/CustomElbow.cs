@@ -276,7 +276,19 @@ namespace AirTreeV1
                 {
                     Angle = 90;
                 }
-                RW = Document.GetElement(ElementId).LookupParameter("AirTree_Elbow_RW").AsDouble();
+                bool RWexist = false;
+                if (Document.GetElement(ElementId).LookupParameter("AirTree_Elbow_RW")!=null)
+                {
+                    RWexist = true;
+                }
+                try
+                {
+                    RW = Document.GetElement(ElementId).LookupParameter("AirTree_Elbow_RW").AsDouble();
+                }
+                catch
+                {
+
+                }
                 Radius = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
                 Diameter = Document.GetElement(ElementId).LookupParameter("Центр и радиус").AsDouble()*304.8/1000;
                 Velocity = OutletConnector.Velocity;
@@ -295,7 +307,7 @@ namespace AirTreeV1
                     {
                         Width = OutletConnector.Width;
                         Height = OutletConnector.Height;
-                        if (RW == 0)
+                        if (RW == 0 || RWexist==false)
                         {
                             rw = Radius / Width;
                         }
@@ -309,9 +321,9 @@ namespace AirTreeV1
                     }
                     else
                     {
-                        Height = OutletConnector.Height;
+                         Height = OutletConnector.Height;
                          Width = OutletConnector.Width;
-                        if (RW == 0)
+                        if (RW == 0 || RWexist==false)
                         {
                             rw = Radius / Width;
                         }
