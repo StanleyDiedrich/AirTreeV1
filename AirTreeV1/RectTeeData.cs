@@ -334,7 +334,38 @@ namespace AirTreeV1
             List<double> indexA = new List<double>();
             if (SystemType == DuctSystemType.ExhaustAir && IsStraight == true)
             {
+                if (A <= 0.35)
+                {
+                    Coeff = 1;
+                }
+                else if (A > 0.35 && Q <= 0.4)
+                {
+                    Coeff = 0.9 * (1 - Q);
+                }
+                else if (A > 0.35 && Q > 0.4)
+                {
+                    Coeff = 0.55;
+                }
                 LocRes = 1.55 * (1 - Q) - Math.Pow((1 - Q), 2);
+               
+                return LocRes;
+            }
+            if (SystemType == DuctSystemType.ExhaustAir && IsStraight == false)
+            {
+                if (A <= 0.35)
+                {
+                    Coeff = 1;
+                }
+                else if (A > 0.35 && Q <= 0.4)
+                {
+                    Coeff = 0.9 * (1 - Q);
+                }
+                else if (A > 0.35 && Q > 0.4)
+                {
+                    Coeff = 0.55;
+                }
+                //LocRes = 1.55 * (1 - Q) - Math.Pow((1 - Q), 2);
+                LocRes = Coeff * (1 + Math.Pow((Q * 1 / A), 2) - 2 * Math.Pow((1 - Q), 2));
                 return LocRes;
             }
 
