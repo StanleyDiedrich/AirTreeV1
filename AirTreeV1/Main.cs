@@ -369,6 +369,28 @@ namespace AirTreeV1
         }
 
         static AddInId AddInId = new AddInId(new Guid("05B398F6-85A5-4AAF-8EDC-CD14C2DF8E73"));
+
+        public string GetFileName(Document doc)
+        {
+            string fileName = doc.Title;
+            string resname = "";
+            string[] arr = fileName.Split('_');
+            if(arr.Length<5)
+            {
+                return resname;
+            }
+            if (fileName.Contains("отсоединено"))
+            {
+                
+                resname = "_"+arr[5] + "_ОТКРЕП";
+                return resname;
+            }
+            return "_" + arr[5];
+
+            //SLAVA23_VENT_PP_PD_R21_STLB
+
+
+        }
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIApplication uiapp = commandData.Application;
@@ -448,18 +470,20 @@ namespace AirTreeV1
                     collection.OrderCollection();
                     collection.GetUniqueElements();
                     collection.MarkFirstBranch();
-                   
-                   
+
+
 
 
 
 
                     //collection.MarkCollection(selectedbranch);
+                    
                     string content = collection.GetContent();
                     string filemname = collection.FirstElement;
+                    string resName = GetFileName(doc);
                     try
                     {
-                        collection.SaveFile(content);
+                        collection.SaveFile(resName,content);
 
                     }
                     catch

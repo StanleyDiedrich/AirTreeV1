@@ -576,12 +576,12 @@ namespace AirTreeV1
 
             return csvcontent.ToString();
         }
-        public void SaveFile(string content) // спрятали функцию сохранения 
+        public void SaveFile(string resName,string content) // спрятали функцию сохранения 
         {
             System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             saveFileDialog.Filter = "CSV files (*.csv)|*.csv";
             saveFileDialog.Title = "Save CSV File";
-            saveFileDialog.FileName = Collection.First().Elements.First().SystemName + ".csv";
+            saveFileDialog.FileName = Collection.First().Elements.First().SystemName+$"{resName}" + ".csv";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
