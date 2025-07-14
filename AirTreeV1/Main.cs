@@ -375,19 +375,31 @@ namespace AirTreeV1
             string fileName = doc.Title;
             string resname = "";
             string[] arr = fileName.Split('_');
-            if(arr.Length<5)
+
+            int i = 0;
+           /* for (int j=0;j<arr.Count();j++)
+            {
+                if (arr[j].Contains("mep"))
+                {
+                    i = j;
+                    break;
+                }
+            }*/
+            
+           /* if(arr.Length<5)
             {
                 return resname;
-            }
-            if (fileName.Contains("отсоединено"))
+            }*/
+            if (fileName.Contains("mep"))
             {
                 
-                resname = "_"+arr[5] + "_ОТКРЕП";
+                resname = "_"+arr[4]+ "_" + arr[5] ;
                 return resname;
             }
-            return "_" + arr[5];
+            return "_" + arr[4] + "_" + arr[5] + "_ОТКРЕП";
 
-            //SLAVA23_VENT_PP_PD_R21_STLB
+            //SLAVA23_VENT_PP_PD_R21_STLB_ВЗБ
+            //SLAVA23_VENT_PP_PD_R21_PRK_В - С - 3_6.32 2
 
 
         }

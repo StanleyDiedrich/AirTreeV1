@@ -824,7 +824,7 @@ namespace AirTreeV1
                         {
                             try
                             {
-                                if (element.ElementId.IntegerValue == 10615595)
+                                if (element.ElementId.IntegerValue == 5897783)
                                 {
                                     var element2 = element;
                                 }
@@ -931,7 +931,7 @@ namespace AirTreeV1
                         CustomElement previous = GetPrevious(mainTee);
                         try
                         {
-                            if (element.ElementId.IntegerValue == 10616318)
+                            if (element.ElementId.IntegerValue == 5897783)
                             {
                                 var detailType = element.DetailType;
                                 var element2 = element;
@@ -967,7 +967,7 @@ namespace AirTreeV1
                         foreach (var el in elements)
                         {
                             CustomElement prev = GetPrevious(el);
-                            if (element.ElementId.IntegerValue == 7782571)
+                            if (element.ElementId.IntegerValue == 5897783)
                             {
                                 var detailType = element.DetailType;
                                 var element2 = element;
@@ -1002,6 +1002,23 @@ namespace AirTreeV1
                             }
                             if (el.DetailType.ToString().Contains("Insert"))
                             {
+                               /* CustomDuctInsert3 customDuctInsert = new CustomDuctInsert3(Document, el, Collection, false);
+                                el.DetailType = customDuctInsert.Detail;
+                                el.IA = customDuctInsert.IA;
+                                el.IQ = customDuctInsert.IQ;
+                                el.IC = customDuctInsert.IC;
+                                el.O1A = customDuctInsert.O1A;
+                                el.O1Q = customDuctInsert.O1Q;
+                                el.O1C = customDuctInsert.O1C;
+                                el.O2A = customDuctInsert.O2A;
+                                el.O2Q = customDuctInsert.O2Q;
+                                el.RA = customDuctInsert.RA;
+                                el.RQ = customDuctInsert.RQ;
+                                el.RC = customDuctInsert.RC;
+                                el.LocRes = customDuctInsert.LocRes;
+                                el.PDyn = Density * Math.Pow(customDuctInsert.Velocity, 2) / 2 * el.LocRes;
+                                collection.CalculateBranchById(element);
+                                collection.SelectMainBranchByControlPressure();*/
                                 continue;
                             }
                             else 

@@ -80,7 +80,7 @@ namespace AirTreeV1
 
 
 
-            NextElement = TryGetNextElement(Element, collection);
+            //NextElement = TryGetNextElement(Element, collection);
             DuctSystemType systemType = Element.SystemType;
             (OutletConnectors, InletConnector) = GetConnectors(Document,Element, NextElement, collection, systemType );
             if (OutletBranch != null || OutletStraight != null)
@@ -99,6 +99,15 @@ namespace AirTreeV1
                 {
                      neighbour1= GetNeighbourInBranch(Element, OutletStraight.NextOwnerId, collection);
                      neighbour2 = GetNeighbourInBranch(Element, OutletBranch.NextOwnerId, collection);
+                   /* try
+                    {
+                       
+                    }
+                     
+                    catch
+                    {
+                        neighbour2 = GetNextNeighbourInBranch(Element, InletConnector.NextOwnerId, collection);
+                    }*/
                 }
                 catch
                 {
@@ -1413,6 +1422,7 @@ namespace AirTreeV1
             CustomConnector OutletConnector = null;
             CustomConnector InletConnector = null;
             List<CustomConnector> OutletConnectors = new List<CustomConnector>();
+
             if (Element.DetailType == CustomElement.Detail.DuctTap || (Element.DetailType.ToString().Contains("Duct") && Element.OwnConnectors.Size==3))
            
             {
@@ -1567,6 +1577,10 @@ namespace AirTreeV1
                             {
                                 continue;
                             }
+                            if (connect.Owner.Id.IntegerValue==element.ElementId.IntegerValue)
+                            {
+                                continue;
+                            }
                             else
                             {
 
@@ -1574,10 +1588,10 @@ namespace AirTreeV1
                                 {
                                     continue;
                                 }
-                                /* else if (connect.Owner.Id == NextElementId)
-                                 {
-                                     continue;
-                                 }*/
+                               /* else if (connect.Owner.Id == NextElementId)
+                                {
+                                    continue;
+                                }*/
                                 if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
                                 {
                                     if (systemType == DuctSystemType.ExhaustAir)
@@ -1636,34 +1650,38 @@ namespace AirTreeV1
                                         }
                                         if (connect.Direction == FlowDirectionType.In)
                                         {
-                                            custom.NextOwnerId = connect.Owner.Id;
-                                            custom.ConnectorType = connector.ConnectorType;
+                                            
+                                                custom.NextOwnerId = connect.Owner.Id;
+                                                custom.ConnectorType = connector.ConnectorType;
 
-                                            try
-                                            {
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
-                                                custom.Width = connect.Width * 304.8 / 1000;
-                                                custom.Height = connect.Height * 304.8 / 1000;
+                                                try
+                                                {
+                                                    custom.Width = connect.Width * 304.8 / 1000;
+                                                    custom.Height = connect.Height * 304.8 / 1000;
+                                                    custom.Width = connect.Width * 304.8 / 1000;
+                                                    custom.Height = connect.Height * 304.8 / 1000;
 
-                                                custom.Area = custom.Width * custom.Height;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                                custom.Shape = ConnectorProfileType.Rectangular;
-                                            }
-                                            catch
-                                            {
-                                                custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
-                                                custom.EquiDiameter = custom.Diameter;
-                                                custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
-                                                custom.Velocity = custom.Flow / (3600 * custom.Area);
-                                                custom.Shape = ConnectorProfileType.Round;
-                                            }
+                                                    custom.Area = custom.Width * custom.Height;
+                                                    custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    custom.Shape = ConnectorProfileType.Rectangular;
+                                                }
+                                                catch
+                                                {
+                                                    custom.Diameter = connect.Radius * 2 * 304.8 / 1000;
+                                                    custom.EquiDiameter = custom.Diameter;
+                                                    custom.Area = Math.PI * Math.Pow(custom.Diameter, 2) / 4;
+                                                    custom.Velocity = custom.Flow / (3600 * custom.Area);
+                                                    custom.Shape = ConnectorProfileType.Round;
+                                                }
 
-                                            custom.Coefficient = connect.Coefficient;
-                                            custom.Origin = connect.Origin;
-                                            custom.PressureDrop = connect.PressureDrop;
-                                            InletConnector = custom;
-                                            InletConnector.AInlet = custom.Area;
+                                                custom.Coefficient = connect.Coefficient;
+                                                custom.Origin = connect.Origin;
+                                                custom.PressureDrop = connect.PressureDrop;
+                                                InletConnector = custom;
+                                                InletConnector.AInlet = custom.Area;
+                                            
+                                            
+                                           
 
                                         }
 
@@ -1712,6 +1730,11 @@ namespace AirTreeV1
                     {
                         if (branch.Elements[i].ElementId.IntegerValue == element.ElementId.IntegerValue)
                         {
+                            // дополнительная проверка на одинаковость
+                            if (branch.Elements[i+1].ElementId==element.NextElementId)
+                            {
+                                return branch.Elements[i+1];
+                            }
                             return branch.Elements[i + 1];
                         }
                     }
@@ -1788,7 +1811,37 @@ namespace AirTreeV1
             }
             return null; // если не найден, просто возвращаем null
         }
+        private CustomElement GetNextNeighbourInBranch(CustomElement element, ElementId owner, List<CustomBranch> collection)
+        {
+            int branchNumber = element.BranchNumber;
 
+
+            foreach (var branch in collection)
+            {
+                if (branch.Elements.First().BranchNumber == branchNumber)
+                {
+                    for (int i = 1; i < branch.Elements.Count; i++)
+                    {
+                        if (branch.Elements[i].ElementId == owner)
+                        {
+                            return branch.Elements[i + 1];
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i < branch.Elements.Count; i++)
+                    {
+                        if (branch.Elements[i].ElementId == owner)
+                        {
+                            return branch.Elements[i + 1];
+                        }
+                    }
+                }
+
+            }
+            return null; // если не найден, просто возвращаем null
+        }
     }
 
 
