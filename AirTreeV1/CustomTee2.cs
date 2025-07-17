@@ -290,7 +290,7 @@ namespace AirTreeV1
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeStraight;
                                     /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                 }
                                 element.IsReversed = true;
                             }
@@ -307,7 +307,7 @@ namespace AirTreeV1
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeBranch;
                                     /*LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
-                                    LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    LocRes = roundTeeData.Interpolation2(relA, relC,relC);
                                 }
                             }
 
@@ -328,7 +328,7 @@ namespace AirTreeV1
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeBranch;
                                     /*LocRes = roundTeeData.Interpolation(100000, relA, relC);*/
-                                    LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    LocRes = roundTeeData.Interpolation2(relA, relC,relC);
                                 }
                                 element.IsReversed = true;
                             }
@@ -345,7 +345,7 @@ namespace AirTreeV1
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeStraight;
                                     /* LocRes = roundTeeData.Interpolation(100000, relA, relQ);*/
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                 }
                             }
                         }
@@ -878,7 +878,7 @@ namespace AirTreeV1
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeStraight;
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                 }
                                 element.IsReversed = true;
                             }
@@ -895,7 +895,7 @@ namespace AirTreeV1
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeBranch;
-                                    LocRes = roundTeeData.Interpolation2(relA, relC);
+                                    LocRes = roundTeeData.Interpolation2(relA, relC,relC);
                                 }
                             }
 
@@ -914,7 +914,7 @@ namespace AirTreeV1
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeBranch;
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                 }
                                 element.IsReversed = true;
                             }
@@ -930,7 +930,7 @@ namespace AirTreeV1
                                 if (element.DetailType != CustomElement.Detail.AirTerminalConnection)
                                 {
                                     element.DetailType = CustomElement.Detail.RectTeeStraight;
-                                    LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                    LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                 }
                             }
 

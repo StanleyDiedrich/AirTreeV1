@@ -324,7 +324,7 @@ namespace AirTreeV1
         }
 
 
-        public double Interpolation2 (double A, double Q)
+        public double Interpolation2 (double A, double Q, double C)
         {
             LocRes = 0;
            
@@ -352,6 +352,10 @@ namespace AirTreeV1
                 else if (A > 0.35 && Q > 0.4)
                 {
                     Coeff = 0.55;
+                }
+                if (A<0.25 && C<2)
+                {
+                    return LocRes = 0.5;
                 }
                 //LocRes = 1.55 * (1 - Q) - Math.Pow((1 - Q), 2);
                 LocRes = Coeff * (1 + Math.Pow((Q * 1 / A), 2) - 2 * Math.Pow((1 - Q), 2));

@@ -370,39 +370,78 @@ namespace AirTreeV1
 
         static AddInId AddInId = new AddInId(new Guid("05B398F6-85A5-4AAF-8EDC-CD14C2DF8E73"));
 
-        public string GetFileName(Document doc)
-        {
-            string fileName = doc.Title;
-            string resname = "";
-            string[] arr = fileName.Split('_');
-
-            int i = 0;
-           /* for (int j=0;j<arr.Count();j++)
+       
+            public string GetFileName(Document doc)
             {
-                if (arr[j].Contains("mep"))
+                string fileName = doc.Title;
+                string resultName = "";
+                string[] parts = fileName.Split('_');
+                int startIndex = -1;
+                int endIndex = -1;
+                bool isDetached = false;
+                // Найти индекс начала и конца
+                for (int k = 0; k < parts.Length; k++)
                 {
-                    i = j;
-                    break;
+                    if (parts[k].StartsWith("R2"))
+                    {
+                        startIndex = k;
+                    }
+
+                    if (parts[k].Contains("mep"))
+                    {
+                        isDetached = false;
+                        endIndex = k;
+                        break;
+                    }
+                    if (parts[k].Contains("отсоединено"))
+                    {
+                        isDetached = true;
+                        endIndex = k;
+                        break;
+                    }
+                    
+
+                    /*if (parts[k].Contains("mep"))
+                    {
+                        endIndex = k;
+                        break;
+                    }
+                    if (parts[k].Contains("отсоединено"))
+                    {
+                        endIndex = k;
+                        break;
+                    }*/
+
                 }
-            }*/
-            
-           /* if(arr.Length<5)
-            {
-                return resname;
-            }*/
-            if (fileName.Contains("mep"))
-            {
+
+                // Если не найден индекс конца, добавим "_ОТКРЕП"
+                if (endIndex == -1)
+                {
+                    endIndex = parts.Length;
+                    resultName += "_ОТКРЕП";
+                }
+
+                // Формируем результат
+                resultName = "_";
+                for (int g = startIndex; g < endIndex; g++)
+                {
+                    resultName += parts[g];
+                    if (g < endIndex - 1)
+                    { // добавляем "_" между частями
+                        resultName += "_";
+                    }
+                }
+                if (!fileName.Contains("mep"))
+                {
+                    resultName += "_ОТКРЕП";
+                }
                 
-                resname = "_"+arr[4]+ "_" + arr[5] ;
-                return resname;
+            
+
+            return resultName;
             }
-            return "_" + arr[4] + "_" + arr[5] + "_ОТКРЕП";
 
-            //SLAVA23_VENT_PP_PD_R21_STLB_ВЗБ
-            //SLAVA23_VENT_PP_PD_R21_PRK_В - С - 3_6.32 2
-
-
-        }
+        
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIApplication uiapp = commandData.Application;

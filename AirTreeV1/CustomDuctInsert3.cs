@@ -148,7 +148,7 @@ namespace AirTreeV1
                                     {
                                         Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
 
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                     }
 
                                 }
@@ -167,7 +167,7 @@ namespace AirTreeV1
                                     {
                                         Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
 
-                                        LocRes = roundTeeData.Interpolation2(relA, relC);
+                                        LocRes = roundTeeData.Interpolation2(relA, relC,relC);
                                     }
                                 }
                             }
@@ -190,7 +190,7 @@ namespace AirTreeV1
                                     {
                                         Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
 
-                                        LocRes = roundTeeData.Interpolation2(relA, relC);
+                                        LocRes = roundTeeData.Interpolation2(relA, relC,relC);
                                     }
 
                                 }
@@ -207,7 +207,7 @@ namespace AirTreeV1
                                     {
                                         Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
 
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                     }
                                 }
                             }
@@ -773,7 +773,7 @@ namespace AirTreeV1
                                         Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
                                         /*element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
                                         Detail = element.DetailType;*/
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                     }
 
                                 }
@@ -791,7 +791,7 @@ namespace AirTreeV1
                                         Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
                                         /*element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
                                         Detail = element.DetailType;*/
-                                        LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                     }
                                 }
                             }
@@ -811,7 +811,7 @@ namespace AirTreeV1
                                         Detail = CustomElement.Detail.RectInRectDuctInsertBranch;
                                         /* element.DetailType = CustomElement.Detail.RectInRectDuctInsertBranch;
                                          Detail = element.DetailType;*/
-                                        LocRes = roundTeeData.Interpolation2(relC, relQ);
+                                        LocRes = roundTeeData.Interpolation2(relC, relQ,relC);
                                     }
 
                                 }
@@ -829,7 +829,7 @@ namespace AirTreeV1
                                         Detail = CustomElement.Detail.RectInRectDuctInsertStraight;
                                         /* element.DetailType = CustomElement.Detail.RectInRectDuctInsertStraight;
                                          Detail = element.DetailType;*/
-                                        LocRes = roundTeeData.Interpolation2(relA, relQ);
+                                        LocRes = roundTeeData.Interpolation2(relA, relQ,relC);
                                     }
                                 }
 
