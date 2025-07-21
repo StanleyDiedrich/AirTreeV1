@@ -374,6 +374,8 @@ namespace AirTreeV1
             public string GetFileName(Document doc)
             {
                 string fileName = doc.Title;
+            try
+            {
                 string resultName = "";
                 string[] parts = fileName.Split('_');
                 int startIndex = -1;
@@ -399,7 +401,7 @@ namespace AirTreeV1
                         endIndex = k;
                         break;
                     }
-                    
+
 
                     /*if (parts[k].Contains("mep"))
                     {
@@ -435,10 +437,16 @@ namespace AirTreeV1
                 {
                     resultName += "_ОТКРЕП";
                 }
-                
-            
 
-            return resultName;
+
+
+                return resultName;
+            }
+            catch
+            {
+                return fileName+"_";
+            }
+               
             }
 
         
