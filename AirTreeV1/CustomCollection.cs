@@ -553,9 +553,10 @@ namespace AirTreeV1
             csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
             foreach (var branch in Collection)
             {
-
-                foreach (var element in branch.Elements)
+                for (int i=0; i<51;i++)
+                //foreach (var element in branch.Elements)
                 {
+                    var element = branch.Elements[i];
                     if (element.IsNonPrinted == false)
                     {
 
