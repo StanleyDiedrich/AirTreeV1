@@ -549,30 +549,40 @@ namespace AirTreeV1
         {
 
             var csvcontent = new StringBuilder();
+            int maxLines = 50;       // Максимальное количество строк
+            int linesCount = 0;      // Счётчик добавленных строк
             //csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;IA;IQ;IC;O1A;O1Q;O1C;O2A;O2Q;O2C;RA;RQ;RC;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
             csvcontent.AppendLine("ElementId;DetailType;ElementName;SystemName;Level;BranchNumber;SectionNumber;Volume;Length;Width;Height;Diameter;HydraulicDiameter;HydraulicArea;Velocity;PStat;KMS;PDyn;Ptot;Code;MainTrack");
             foreach (var branch in Collection)
             {
-                for (int i=0; i<51;i++)
-                //foreach (var element in branch.Elements)
+                //for (int i=0; i<51;i++)
+                foreach (var element in branch.Elements)
                 {
-                    var element = branch.Elements[i];
-                    if (element.IsNonPrinted == false)
-                    {
+                    
+                        //var element = branch.Elements[i];
+                        if (element.IsNonPrinted == false)
+                        {
 
 
 
-                        element.NewModelWidth = Convert.ToString(Convert.ToDouble(element.ModelWidth));
-                        element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
-                        element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
-                        element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
-                        string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
-                            $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
+                            element.NewModelWidth = Convert.ToString(Convert.ToDouble(element.ModelWidth));
+                            element.NewModelHeight = Convert.ToString(Convert.ToDouble(element.ModelHeight));
+                            element.ModelVelocity = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelVelocity), 2));
+                            element.ModelDiameter = Convert.ToString(Math.Round(Convert.ToDouble(element.ModelDiameter), 2));
+                            string a = $"{element.ElementId};{element.DetailType};{element.Name};{element.SystemName};{element.Lvl};{element.BranchNumber};{element.TrackNumber};" +
+                                $"{element.Volume};{element.ModelLength};{element.NewModelWidth};{element.NewModelHeight};{element.ModelDiameter};{element.ModelHydraulicDiameter};{element.ModelHydraulicArea};{element.ModelVelocity};{element.PStat};{Math.Round(element.LocRes, 2)};{Math.Round(element.PDyn, 2)};{Math.Round(element.Ptot, 2)};" +
 
-                            $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
-                        csvcontent.AppendLine(a);
-                    }
+                                $"{element.SystemName}-{element.Lvl}-{element.BranchNumber}-{element.TrackNumber};{element.MainTrack}";
+                            csvcontent.AppendLine(a);
+                        }
+
+
+                    linesCount++;
+                    if (linesCount >= maxLines)
+                        return csvcontent.ToString();
                 }
+                if (linesCount >= maxLines)
+                    return csvcontent.ToString();
             }
 
             return csvcontent.ToString();
