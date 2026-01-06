@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Assembly>AirTreeV1/AirTreeV1.dll</Assembly>
+		<FullClassName>AirTreeV1.App</FullClassName>
+		<Name>AirTreeV1</Name>
+		<AddInId>86958172-500E-4115-9BE7-4FA2AEBFC33E</AddInId>
+		<VendorId>ADSK</VendorId>
+		<VendorDescription>Autodesk,www.autodesk.com</VendorDescription>
+	</AddIn>
+</RevitAddIns>

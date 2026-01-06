@@ -8,7 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AirTreeV1.addin" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Revit_All_Main_Versions_API_x64" Version="2025.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="AirTreeV1.addin" />
+    <Resource Include="Images\air32.ico" />
   </ItemGroup>
 
   

@@ -368,7 +368,7 @@ namespace AirTreeV1
             return resultterminals;
         }
 
-        static AddInId AddInId = new AddInId(new Guid("05B398F6-85A5-4AAF-8EDC-CD14C2DF8E73"));
+       // static AddInId AddInId = new AddInId(new Guid("05B398F6-85A5-4AAF-8EDC-CD14C2DF8E73"));
 
        
             public string GetFileName(Document doc)
