@@ -577,12 +577,12 @@ namespace AirTreeV1
                         }
 
 
-                    linesCount++;
-                    if (linesCount >= maxLines)
-                        return csvcontent.ToString();
+                    //linesCount++;
+                    /*if (linesCount >= maxLines)
+                        return csvcontent.ToString();*/
                 }
-                if (linesCount >= maxLines)
-                    return csvcontent.ToString();
+               /* if (linesCount >= maxLines)
+                    return csvcontent.ToString();*/
             }
 
             return csvcontent.ToString();

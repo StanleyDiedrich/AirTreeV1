@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <Resource Include="AirTreeV1.addin" />
-    <Resource Include="Images\air32.ico" />
+    <Resource Include="Image26\air32.ico" />
   </ItemGroup>
 
   

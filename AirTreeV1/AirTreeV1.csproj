@@ -54,6 +54,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="Branch.cs" />
     <Compile Include="CalculationMode.cs" />
     <Compile Include="CustomAirTerminal.cs" />
@@ -95,6 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AirTreeV1.addin" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Image24\air32.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
