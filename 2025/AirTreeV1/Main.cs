@@ -4,6 +4,7 @@ using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.UI;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Windows.Controls;
 
 namespace AirTreeV1
 {
@@ -431,7 +432,78 @@ namespace AirTreeV1
                
             }
 
-        
+        public void RegularCalculation(MainViewModel mainViewModel)
+        {
+            List<ElementId> elIds = new List<ElementId>();
+            var systemnames = mainViewModel.SystemNumbersList.Select(x => x).Where(x => x.IsSelected == true);
+
+
+            List<ElementId> startelements = new List<ElementId>();
+            List<ElementId> selectedterminals = new List<ElementId>();
+            List<ElementId> selectedelements = new List<ElementId>();
+            //Ну тут вроде норм
+            string systemName = null;
+            foreach (var systemname in systemnames)
+            {
+                systemName = systemname.SystemName;
+
+                //var maxpipe = GetStartDuct(doc, systemName);
+
+                selectedterminals = GetAirTerminals(mainViewModel.Document, systemName);
+                if (selectedterminals.Count != 0)
+                {
+                    CustomCollection collection = GetCollection(mainViewModel.Document, selectedterminals);
+
+
+                    try
+                    {
+                        collection.Calcualate(mainViewModel.Density);
+                    }
+                    catch
+                    {
+                        CustomElement element = collection.ActiveElement;
+                        TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
+                    }
+
+                    collection.ResCalculate();
+                    collection.MarkBranches();
+
+                    collection.SelectMainBranch();
+                    collection.TeeReCalc(collection);
+
+                    collection.ResCalculate();
+                    collection.OrderCollection();
+                    collection.GetUniqueElements();
+                    collection.MarkFirstBranch();
+
+
+
+
+
+
+                    //collection.MarkCollection(selectedbranch);
+
+                    string content = collection.GetContent();
+                    string filemname = collection.FirstElement;
+                    string resName = GetFileName(mainViewModel.Document);
+                    try
+                    {
+                        collection.SaveFile(resName, content);
+
+                    }
+                    catch
+                    {
+                        TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
+                    }
+                }
+                else
+                {
+                    TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей");
+                }
+
+
+            }
+        }
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIApplication uiapp = commandData.Application;
@@ -470,79 +542,25 @@ namespace AirTreeV1
             MainViewModel mainViewModel = new MainViewModel(doc, window, sysNums);
             window.DataContext = mainViewModel;
             window.ShowDialog();
-            List<ElementId> elIds = new List<ElementId>();
-            var systemnames = mainViewModel.SystemNumbersList.Select(x => x).Where(x => x.IsSelected == true);
-
-
-            List<ElementId> startelements = new List<ElementId>();
-            List<ElementId> selectedterminals = new List<ElementId>();
-            List<ElementId> selectedelements = new List<ElementId>();
-            //Ну тут вроде норм
-            string systemName = null;
-            foreach (var systemname in systemnames)
+            if (mainViewModel.CalcCase == CalculationCase.REGULAR)
             {
-                systemName = systemname.SystemName;
-
-                //var maxpipe = GetStartDuct(doc, systemName);
-
-                selectedterminals = GetAirTerminals(doc, systemName);
-                if (selectedterminals.Count != 0)
-                {
-                    CustomCollection collection = GetCollection(doc, selectedterminals);
-
-
-                    try
-                    {
-                        collection.Calcualate(mainViewModel.Density);
-                    }
-                    catch
-                    {
-                        CustomElement element = collection.ActiveElement;
-                        TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
-                    }
-
-                    collection.ResCalculate();
-                    collection.MarkBranches();
-
-                    collection.SelectMainBranch();
-                    collection.TeeReCalc(collection);
-
-                    collection.ResCalculate();
-                    collection.OrderCollection();
-                    collection.GetUniqueElements();
-                    collection.MarkFirstBranch();
-
-
-
-
-
-
-                    //collection.MarkCollection(selectedbranch);
-                    
-                    string content = collection.GetContent();
-                    string filemname = collection.FirstElement;
-                    string resName = GetFileName(doc);
-                    try
-                    {
-                        collection.SaveFile(resName,content);
-
-                    }
-                    catch
-                    {
-                        TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
-                    }
-                }
-                else
-                {
-                    TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей");
-                }
-
+                RegularCalculation(mainViewModel);
+            }
+            if (mainViewModel.CalcCase== CalculationCase.ANTISMOKE)
+            {
+                AntiSmokeCalculation(mainViewModel);
                
             }
+
+
+            
             return Result.Succeeded;
         }
 
-       
+        private void AntiSmokeCalculation(MainViewModel mainViewModel)
+        {
+            throw new NotImplementedException();
+        }
     }
   
 }

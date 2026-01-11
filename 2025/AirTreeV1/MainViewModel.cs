@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 using System.Windows.Input;
+using Autodesk.Internal.Windows;
 
 namespace AirTreeV1
 {
@@ -70,6 +71,18 @@ namespace AirTreeV1
                 OnPropertyChanged("Window");
             }
         }
+
+        private SettingsControl settingsWindow;
+        public SettingsControl SettingsWindow
+        {
+            get { return settingsWindow; }
+            set
+            {
+                settingsWindow = value;
+                OnPropertyChanged("SettingsWindow");
+            }
+        }
+
         private string _searchText = "Выберите систему";
         public string SearchText
         {
@@ -150,7 +163,15 @@ namespace AirTreeV1
             }
 
         }
+        public ICommand AntiSmokeSettingsCommand { get; }
+        public void AntiSmokeSettings(object param)
+        {
+            CalcCase = CalculationCase.ANTISMOKE;
+            Window.Close();
+            SettingsWindow = new SettingsControl();
+            SettingsWindow.ShowDialog();
 
+        }
         public ICommand ShowSelectedSystemsCommand { get; }
 
         public void ShowSelectedSystems(object param)
@@ -166,6 +187,7 @@ namespace AirTreeV1
         {
             var selectedItems = SystemNumbersList.Where(x => x.IsSelected).Select(x => x.SystemName).ToList();
             SelectedSystems = string.Join(", ", selectedItems);
+            CalcCase = CalculationCase.REGULAR;
             Window.Close();
         }
 
@@ -180,7 +202,18 @@ namespace AirTreeV1
             }
         }
 
-        
+        private CalculationCase calcCase;
+        public CalculationCase CalcCase
+        {
+            get {return calcCase; }
+            set
+            {
+                calcCase = value;
+                OnPropertyChanged("CalcCase");
+            }
+            
+        }
+
 
 
 
@@ -233,6 +266,7 @@ namespace AirTreeV1
             StartCommand = new RelayCommand(StartCalculate);
             SelectAllCommand = new RelayCommand(SelectAll);
             CancelAllCommand = new RelayCommand(CancelAll);
+            AntiSmokeSettingsCommand = new RelayCommand(AntiSmokeSettings);
             CalculationModes = new ObservableCollection<CalculationMode>
         {
             new CalculationMode { CalculationName = "Обход системы вентиляции", CalculationId=0, IsMode = false },

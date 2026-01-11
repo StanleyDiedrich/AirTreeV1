@@ -32,6 +32,8 @@
                 <Button Grid.Column="0" Content="Выбрать всё" Command="{Binding SelectAllCommand}" Margin="10" Background="#5B9BD5" Foreground="White" Padding="10" HorizontalAlignment="Stretch" Width="120" />
                 <Button Grid.Column="1" Content="Начать" Command="{Binding StartCommand}" Margin="10" Background="#5B9BD5" Foreground="White" Padding="10" HorizontalAlignment="Stretch" Width="120" />
                 <Button Grid.Column="2" Content="Отменить всё" Command="{Binding CancelAllCommand}" Margin="10" Background="#5B9BD5" Foreground="White" Padding="10" HorizontalAlignment="Stretch" Width="120" />
+                <Button Grid.Column="3" Content="Считать как ДУ/КДУ" Command="{Binding AntiSmokeSettingsCommand}" Margin="10" Background="#5B9BD5" Foreground="White" Padding="10" HorizontalAlignment="Stretch" Width="120" />
+
             </StackPanel>
             <StackPanel>
                 <TextBlock Text="Температура воздуха в системе, C" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" TextAlignment="Center"/>
