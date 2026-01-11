@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,13 +30,13 @@ namespace AirTreeV1
 
 
 
-    
+
     public class Main : IExternalCommand
     {
 
 
 
-        public static Branch  GetNewAdditionalBranches (Document doc, ElementId elementId, List<Branch> mainnodes)
+        public static Branch GetNewAdditionalBranches(Document doc, ElementId elementId, List<Branch> mainnodes)
         {
             int counter = 0;
             bool mode = true;
@@ -58,7 +59,7 @@ namespace AirTreeV1
                 foreach (Connector connector in connectors)
                 {
                     systemtype = connector.DuctSystemType;
-                    Node newnode = new Node(doc, doc.GetElement(elementId), systemtype, shortsystemname, mode,mainnodes);
+                    Node newnode = new Node(doc, doc.GetElement(elementId), systemtype, shortsystemname, mode, mainnodes);
                     additionalNodes.Add(newnode);
                 }
             }
@@ -76,7 +77,7 @@ namespace AirTreeV1
                     shortsystemname2 = (doc.GetElement(elementId) as Duct).LookupParameter("Сокращение для системы").AsString();
                     Node newnode = new Node(doc, doc.GetElement(elementId), systemtype2, shortsystemname2, mode, mainnodes);
                     additionalNodes.Add(newnode);
-                   
+
                 }
                 else if (doc.GetElement(elementId) is FamilyInstance)
                 {
@@ -87,7 +88,7 @@ namespace AirTreeV1
                         systemtype2 = connector.DuctSystemType;
                         Node newnode = new Node(doc, doc.GetElement(elementId), systemtype2, shortsystemname2, mode, mainnodes);
                         additionalNodes.Add(newnode);
-                        
+
 
                     }
                 }
@@ -99,19 +100,7 @@ namespace AirTreeV1
                     var nextElement = doc.GetElement(lastnode.NextOwnerId);
                     Node newnode = new Node(doc, nextElement, lastnode.DuctSystemType, shortsystemname2, mode, mainnodes);
                     additionalNodes.Add(newnode);
-                    /*foreach (var node in additionalNodes.Nodes)
-                    {
-                        if (node.AdditionalNodes.Count > 0)
-                        {
-                            foreach (var branch in node.AdditionalNodes)
-                            {
-                                mainnodes.Add(branch);
-                            }
-
-                        }
-                    }*/
-                    // Add the new node to the nodes list
-                    //lastnode =additionalNodes.Nodes.Last();
+                  
                 }
                 catch
                 {
@@ -122,9 +111,9 @@ namespace AirTreeV1
 
             }
             while (lastnode.NextOwnerId != null);
-            
+
             return additionalNodes;
-            
+
         }
 
         public void SelectAllNodes(UIDocument uidoc, List<Branch> mainnodes)
@@ -145,7 +134,7 @@ namespace AirTreeV1
             uidoc.Selection.SetElementIds(totalids);
         }
 
-        
+
 
         private ElementId GetStartDuct(Autodesk.Revit.DB.Document document, string selectedSystemNumber)
         {
@@ -157,8 +146,8 @@ namespace AirTreeV1
             foreach (var duct in ducts)
             {
                 //var newpipe = duct as Duct;
-              // var fI = newpipe as MEPCurve;
-              try
+                // var fI = newpipe as MEPCurve;
+                try
                 {
                     if (duct.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString().Equals(selectedSystemNumber))
                     {
@@ -167,7 +156,7 @@ namespace AirTreeV1
                 }
                 catch
                 { }
-                
+
             }
 
             double maxflow = -100000000;
@@ -207,9 +196,9 @@ namespace AirTreeV1
 
             }
 
-            
 
-           
+
+
             return mainnodes;
         }
 
@@ -228,7 +217,7 @@ namespace AirTreeV1
                 systemtype = ((((doc.GetElement(elementId) as Duct) as MEPCurve).MEPSystem as MechanicalSystem)).SystemType;
                 shortsystemname = (doc.GetElement(elementId) as Duct).LookupParameter("Сокращение для системы").AsString();
                 Node newnode = new Node(doc, doc.GetElement(elementId), systemtype, shortsystemname, mode, mainnodes);
-                
+
                 mainnode.Add(newnode);
                 if (newnode.AdditionalNodes.Count > 0)
                 {
@@ -264,7 +253,7 @@ namespace AirTreeV1
             {
                 lastnode = mainnode.Nodes.Last(); // Get the last added node
                 DuctSystemType systemtype2;
-                string shortsystemname2="";
+                string shortsystemname2 = "";
                 if (doc.GetElement(elementId) is Duct)
                 {
                     systemtype2 = ((((doc.GetElement(elementId) as Duct) as MEPCurve).MEPSystem as MechanicalSystem)).SystemType;
@@ -334,189 +323,6 @@ namespace AirTreeV1
             return (mainnodes, additionalNodes);
         }
 
-        static AddInId AddInId = new AddInId(new Guid("05B398F6-85A5-4AAF-8EDC-CD14C2DF8E73"));
-        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
-        {
-            UIApplication uiapp = commandData.Application;
-            UIDocument uIDocument = uiapp.ActiveUIDocument;
-            Autodesk.Revit.DB.Document doc = uIDocument.Document;
-
-            List<string> systemnumbers = new List<string>();
-
-            IList<Element> ducts = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctCurves).WhereElementIsNotElementType().ToElements();
-
-            foreach (Element duct in ducts)
-            {
-                var newduct = duct as Duct;
-
-                try
-                {
-                    if (newduct!=null)
-                    {
-                        if (!systemnumbers.Contains(newduct.LookupParameter("Имя системы").AsString()))
-                        {
-                            systemnumbers.Add(newduct.LookupParameter("Имя системы").AsString());
-                        }
-                    }
-                }
-                catch(Exception ex)
-                {
-                    TaskDialog.Show("Revit", ex.ToString());
-                }
-            }
-
-            ObservableCollection<SystemNumber> sysNums = new ObservableCollection<SystemNumber>();
-            foreach (var systemnumber in systemnumbers)
-            {
-                SystemNumber system = new SystemNumber(systemnumber);
-                sysNums.Add(system);
-            }
-            var sortedSysNums = new ObservableCollection<SystemNumber>(sysNums.OrderBy(x => x.SystemName));
-
-            // Присвоение отсортированной коллекции обратно (если необходимо)
-            sysNums = sortedSysNums;
-
-
-            UserControl1 window = new UserControl1();
-            MainViewModel mainViewModel = new MainViewModel(doc, window, sysNums);
-
-            window.DataContext = mainViewModel;
-            window.ShowDialog();
-
-            //var selected_workset = mainViewModel.SelectedWorkSet.Name;
-
-
-
-
-            List<ElementId> elIds = new List<ElementId>();
-            var systemnames = mainViewModel.SystemNumbersList.Select(x => x).Where(x => x.IsSelected == true);
-            //var systemelements = mainViewModel.SystemElements;
-
-            List<ElementId> startelements = new List<ElementId>();
-            List<ElementId> selectedterminals = new List<ElementId>();
-            List<ElementId> selectedelements = new List<ElementId>();
-            //Ну тут вроде норм
-            string systemName = null;
-            foreach (var systemname in systemnames)
-            {
-                 systemName = systemname.SystemName;
-
-                //var maxpipe = GetStartDuct(doc, systemName);
-
-                selectedterminals = GetAirTerminals(doc, systemName);
-                if (selectedterminals.Count!=0)
-                {
-                    CustomCollection collection = GetCollection(doc, selectedterminals);
-
-                    //selectedelements = collection.ShowElements(0);
-                    //collection.MarkCollection();
-                    try
-                    {
-                        collection.Calcualate(mainViewModel.Density);
-                    }
-                    catch
-                    {
-                        CustomElement element = collection.ActiveElement;
-                        TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
-                    }
-                    //collection.Calcualate(mainViewModel.Density);
-
-
-                    //collection.Calcualate(mainViewModel.Density);
-
-                    //collection.ResCalculate();
-                    //CustomBranch selectedbranch = collection.SelectMainBranch();
-                    /*foreach (var element in selectedbranch.Elements)
-                    {
-                        selectedelements.Add(element.ElementId);
-                    }*/
-
-                    //collection.MarkCollection(selectedbranch);
-
-                    //collection.MarkCollection();
-                    //collection.ResCalculate();
-                    //Tree tree = new Tree(collection);
-                    //tree.AddNodes(collection);
-                    //tree.MatrixCalc();
-                    //string matrixcontent = tree.PrintMatrix();
-
-                    //tree.SaveFile(matrixcontent);
-                    collection.Collection = collection.Collection.OrderByDescending(x => x.PBTot).ToList() ;
-                    CustomBranch selectedbranch = collection.SelectMainBranch();
-                    
-                    (collection.Collection, selectedbranch) = collection.TeeSolver();
-                    collection.SecondaryBranchSolver(selectedbranch);
-                    
-                    //collection.TeeFinder();
-                    //selectedbranch = collection.SelectMainBranch();
-                    //collection.ReMarkCollection(selectedbranch);
-
-                    // ЭТО ВАЖНО!!!!
-
-
-                    string content = collection.GetContent();
-                    string filemname = collection.FirstElement;
-                    try
-                    {
-                        collection.SaveFile(content);
-
-                    }
-                    catch
-                    {
-                        TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
-                    }
-
-
-                    //ВЕРНИ КАК БЫЛО!
-                }
-                else
-                {
-                    TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей"); 
-                }
-                
-                //selectedelements=  collection.ShowElements();
-                
-                //selectedelements = collection.ShowControlElements();
-                //selectedelements = collection;
-            }
-
-            
-            //uIDocument.Selection.SetElementIds(selectedelements);
-
-            // List<Branch> mainnodes = new List<Branch>();
-
-
-            // mainnodes = AlgorithmDuctTraverse(doc, startelements);
-
-
-            //SelectAllNodes(uIDocument, mainnodes);
-            /*var selectedMode = mainViewModel.CalculationModes
-            .FirstOrDefault(x => x.IsMode == true);
-
-            if (selectedMode != null)
-            {
-                int mode = selectedMode.CalculationId;  // Получаем Id расчета
-                                                        // Инициализируем список для главных узлов
-
-                switch (mode)
-                {
-                    case 0:
-                        mainnodes = AlgorithmDuctTraverse(doc, startelements);
-                        SelectAllNodes(uIDocument, mainnodes);
-                        //string csvcontent = GetContent(doc, mainnodes);
-                        //SaveFile(csvcontent);
-                        break;  // Обязательно добавляем break для правильного выполнения
-
-                    
-
-                    default:  // Обработка случая, если mode не совпадает ни с одним из вышеуказанных
-                        throw new InvalidOperationException($"Неизвестный режим расчета: {mode}");
-                }
-            }*/
-
-            return Result.Succeeded;
-        }
-
         private CustomCollection GetCollection(Document doc, List<ElementId> selectedterminals)
         {
             CustomCollection collection = new CustomCollection(doc);
@@ -524,7 +330,7 @@ namespace AirTreeV1
             {
                 collection.CreateBranch(doc, terminal);
             }
-            
+
             return collection;
         }
 
@@ -534,14 +340,14 @@ namespace AirTreeV1
             var airterminals = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctTerminal).WhereElementIsNotElementType().ToElementIds().ToList();
             foreach (var airterminal in airterminals)
             {
-                if (airterminal.IntegerValue== 5982031)
+                if (airterminal.IntegerValue == 5982031)
                 {
-                   var airterminal2 = airterminal;
+                    var airterminal2 = airterminal;
                 }
-                if (doc.GetElement(airterminal)!=null)
+                if (doc.GetElement(airterminal) != null)
                 {
                     FamilyInstance fI = doc.GetElement(airterminal) as FamilyInstance;
-                    if (fI!=null)
+                    if (fI != null)
                     {
                         var checksystem = fI.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
                         if (checksystem == null)
@@ -561,5 +367,200 @@ namespace AirTreeV1
             }
             return resultterminals;
         }
+
+       // static AddInId AddInId = new AddInId(new Guid("05B398F6-85A5-4AAF-8EDC-CD14C2DF8E73"));
+
+       
+            public string GetFileName(Document doc)
+            {
+                string fileName = doc.Title;
+            try
+            {
+                string resultName = "";
+                string[] parts = fileName.Split('_');
+                int startIndex = -1;
+                int endIndex = -1;
+                bool isDetached = false;
+                // Найти индекс начала и конца
+                for (int k = 0; k < parts.Length; k++)
+                {
+                    if (parts[k].StartsWith("R2"))
+                    {
+                        startIndex = k;
+                    }
+
+                    if (parts[k].Contains("mep"))
+                    {
+                        isDetached = false;
+                        endIndex = k;
+                        break;
+                    }
+                    if (parts[k].Contains("отсоединено"))
+                    {
+                        isDetached = true;
+                        endIndex = k;
+                        break;
+                    }
+
+
+                    /*if (parts[k].Contains("mep"))
+                    {
+                        endIndex = k;
+                        break;
+                    }
+                    if (parts[k].Contains("отсоединено"))
+                    {
+                        endIndex = k;
+                        break;
+                    }*/
+
+                }
+
+                // Если не найден индекс конца, добавим "_ОТКРЕП"
+                if (endIndex == -1)
+                {
+                    endIndex = parts.Length;
+                    resultName += "_ОТКРЕП";
+                }
+
+                // Формируем результат
+                resultName = "_";
+                for (int g = startIndex; g < endIndex; g++)
+                {
+                    resultName += parts[g];
+                    if (g < endIndex - 1)
+                    { // добавляем "_" между частями
+                        resultName += "_";
+                    }
+                }
+                if (!fileName.Contains("mep"))
+                {
+                    resultName += "_ОТКРЕП";
+                }
+
+
+
+                return resultName;
+            }
+            catch
+            {
+                return fileName+"_";
+            }
+               
+            }
+
+        
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            UIApplication uiapp = commandData.Application;
+            UIDocument uIDocument = uiapp.ActiveUIDocument;
+            Autodesk.Revit.DB.Document doc = uIDocument.Document;
+            List<string> systemnumbers = new List<string>();
+            IList<Element> ducts = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_DuctCurves).WhereElementIsNotElementType().ToElements();
+            foreach (Element duct in ducts)
+            {
+                var newduct = duct as Duct;
+
+                try
+                {
+                    if (newduct != null)
+                    {
+                        if (!systemnumbers.Contains(newduct.LookupParameter("Имя системы").AsString()))
+                        {
+                            systemnumbers.Add(newduct.LookupParameter("Имя системы").AsString());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TaskDialog.Show("Revit", ex.ToString());
+                }
+            }
+            ObservableCollection<SystemNumber> sysNums = new ObservableCollection<SystemNumber>();
+            foreach (var systemnumber in systemnumbers)
+            {
+                SystemNumber system = new SystemNumber(systemnumber);
+                sysNums.Add(system);
+            }
+            var sortedSysNums = new ObservableCollection<SystemNumber>(sysNums.OrderBy(x => x.SystemName));
+            sysNums = sortedSysNums;
+            UserControl1 window = new UserControl1();
+            MainViewModel mainViewModel = new MainViewModel(doc, window, sysNums);
+            window.DataContext = mainViewModel;
+            window.ShowDialog();
+            List<ElementId> elIds = new List<ElementId>();
+            var systemnames = mainViewModel.SystemNumbersList.Select(x => x).Where(x => x.IsSelected == true);
+
+
+            List<ElementId> startelements = new List<ElementId>();
+            List<ElementId> selectedterminals = new List<ElementId>();
+            List<ElementId> selectedelements = new List<ElementId>();
+            //Ну тут вроде норм
+            string systemName = null;
+            foreach (var systemname in systemnames)
+            {
+                systemName = systemname.SystemName;
+
+                //var maxpipe = GetStartDuct(doc, systemName);
+
+                selectedterminals = GetAirTerminals(doc, systemName);
+                if (selectedterminals.Count != 0)
+                {
+                    CustomCollection collection = GetCollection(doc, selectedterminals);
+
+
+                    try
+                    {
+                        collection.Calcualate(mainViewModel.Density);
+                    }
+                    catch
+                    {
+                        CustomElement element = collection.ActiveElement;
+                        TaskDialog.Show("Ошибка", $"ошибка в элементе{element.ElementId}");
+                    }
+
+                    collection.ResCalculate();
+                    collection.MarkBranches();
+
+                    collection.SelectMainBranch();
+                    collection.TeeReCalc(collection);
+
+                    collection.ResCalculate();
+                    collection.OrderCollection();
+                    collection.GetUniqueElements();
+                    collection.MarkFirstBranch();
+
+
+
+
+
+
+                    //collection.MarkCollection(selectedbranch);
+                    
+                    string content = collection.GetContent();
+                    string filemname = collection.FirstElement;
+                    string resName = GetFileName(doc);
+                    try
+                    {
+                        collection.SaveFile(resName,content);
+
+                    }
+                    catch
+                    {
+                        TaskDialog.Show("R", $"Система {filemname} имеет ошибку ");
+                    }
+                }
+                else
+                {
+                    TaskDialog.Show("AirTree", $"Система {systemName} не имеет воздухораспределителей");
+                }
+
+               
+            }
+            return Result.Succeeded;
+        }
+
+       
     }
+  
 }

@@ -5,6 +5,10 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirTreeV1", "AirTreeV1\AirTreeV1.csproj", "{9CE976AE-5BF4-4CBE-95A8-62945C3FC976}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2025", "2025", "{A4D1AF6A-DFA6-4846-997B-12AF1DF1AFA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirTreeV1", "2025\AirTreeV1\AirTreeV1.csproj", "{24A13980-C5AC-4B47-8B3B-7E7D16E0ECEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{9CE976AE-5BF4-4CBE-95A8-62945C3FC976}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CE976AE-5BF4-4CBE-95A8-62945C3FC976}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CE976AE-5BF4-4CBE-95A8-62945C3FC976}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24A13980-C5AC-4B47-8B3B-7E7D16E0ECEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24A13980-C5AC-4B47-8B3B-7E7D16E0ECEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24A13980-C5AC-4B47-8B3B-7E7D16E0ECEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24A13980-C5AC-4B47-8B3B-7E7D16E0ECEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{24A13980-C5AC-4B47-8B3B-7E7D16E0ECEE} = {A4D1AF6A-DFA6-4846-997B-12AF1DF1AFA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68480A97-D39E-4657-8D05-8FAEB2E89C43}

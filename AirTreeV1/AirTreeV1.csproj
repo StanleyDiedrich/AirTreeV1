@@ -34,11 +34,11 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2024\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2024\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -54,18 +54,18 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="Branch.cs" />
     <Compile Include="CalculationMode.cs" />
     <Compile Include="CustomAirTerminal.cs" />
     <Compile Include="CustomBranch.cs" />
     <Compile Include="CustomCollection.cs" />
     <Compile Include="CustomConnector.cs" />
-    <Compile Include="CustomDuctInsert.cs" />
     <Compile Include="CustomDuctInsert2.cs" />
+    <Compile Include="CustomDuctInsert3.cs" />
     <Compile Include="CustomElbow.cs" />
     <Compile Include="CustomElement.cs" />
     <Compile Include="CustomMultiport.cs" />
-    <Compile Include="CustomTee.cs" />
     <Compile Include="CustomTee2.cs" />
     <Compile Include="CustomTransition.cs" />
     <Compile Include="CustomValve.cs" />
@@ -95,6 +95,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AirTreeV1.addin" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Image24\air32.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

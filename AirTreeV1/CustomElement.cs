@@ -15,8 +15,8 @@ using System.Windows.Controls;
 namespace AirTreeV1
 {
 
-    
-    
+
+
     public class CustomElement
     {
         static int _id = 0;
@@ -24,6 +24,7 @@ namespace AirTreeV1
         public Element Element { get; set; }
         public ElementId ElementId { get; set; }
         public ElementId NextElementId { get; set; }
+        public ElementId TapId { get; set; }
         public MEPSystem MSystem { get; set; }
         public MEPModel Model { get; set; }
         public string Name { get; set; }
@@ -36,25 +37,27 @@ namespace AirTreeV1
         public List<CustomConnector> SecondaryConnectors { get; set; }
 
         public ConnectorSet OwnConnectors { get; set; }
-        public string Volume { get; set; }
-        public string ModelWidth { get; set; }
-        public string ModelHeight { get; set; }
+        public string Volume { get; set; } = "0";
+        public string ModelWidth { get; set; } = "0";
+        public string ModelHeight { get; set; } = "0";
 
-        public string NewModelWidth { get; set; }
-        public string NewModelHeight { get; set; }
-        public string ModelLength { get; set; }
-        public string ModelDiameter { get; set; }
-        public string ModelVelocity { get; set; }
-        public string ModelHydraulicDiameter { get; set; }
+        public string NewModelWidth { get; set; } = "0";
+        public string NewModelHeight { get; set; } = "0";
+        public string ModelLength { get; set; } = "0";
+        public string ModelDiameter { get; set; } = "0";
+        public string ModelVelocity { get; set; } = "0";
+        public string ModelHydraulicDiameter { get; set; } = "0";
         public double EquiDiameter { get; set; }
-        public string ModelHydraulicArea { get; set; }
+        public string ModelHydraulicArea { get; set; } = "0";
         public double LocRes { get; set; }
         public double PDyn { get; set; }
         public double PStat { get; set; }
         public double Ptot { get; set; }
+        public double PtotControl { get; set; }
         public double AirTree_Area { get; set; }
-        public bool IsReversed { get; set; } 
-
+        public bool IsReversed { get; set; }
+        public bool IsStartPart { get; set; }
+        public bool IsPart { get; set; }
         public enum Detail
         {
             RectangularDuct,
@@ -86,9 +89,10 @@ namespace AirTreeV1
             RectRoundContraction,
             RoundRectContraction,
 
+            MechanicalSystem,
+            DuctInsulation,
 
-
-            
+            DuctTap,
 
 
             RoundFlexDuct,
@@ -114,11 +118,11 @@ namespace AirTreeV1
             Union,
             Equipment
 
-            
+
         }
         public bool IsTee { get; set; }
         public bool IsTapAdjustable { get; set; }
-        public Detail DetailType { get;  set; }
+        public Detail DetailType { get; set; }
         public int TrackNumber { get; set; }
         public int BranchNumber { get; set; }
         public bool MainTrack { get; set; }
@@ -135,8 +139,8 @@ namespace AirTreeV1
         public double RQ { get; set; }
         public double RC { get; set; }
         public bool IsNonPrinted { get; set; }
+        public bool IsVisited { get; internal set; }
 
-        
         private string GetValue(string primaryvolume)
         {
             // Используем регулярное выражение, чтобы найти и вернуть только числовую часть
@@ -152,23 +156,39 @@ namespace AirTreeV1
                 return;
             }
             ElementId = elementId;
+            if (elementId.IntegerValue == 10562992)
+            {
+                var el = Element;
+            }
             Element = doc.GetElement(ElementId);
+           
             SystemName = Element.get_Parameter(BuiltInParameter.RBS_SYSTEM_NAME_PARAM).AsString();
-
-            if (Element.LookupParameter("Базовый уровень") != null)
+            try
             {
-                Lvl = Element.LookupParameter("Базовый уровень").AsValueString();
-            }
+                if (Element.LookupParameter("Базовый уровень") != null)
+                {
+                    Lvl = Element.LookupParameter("Базовый уровень").AsValueString();
+                }
 
-            else
+                else
+                {
+                    Lvl = Element.LookupParameter("Уровень").AsValueString();
+                }
+            }
+            catch
+            { }
+           
+
+
+
+            if (Element is MechanicalSystem)
             {
-                Lvl = Element.LookupParameter("Уровень").AsValueString();
+                DetailType = Detail.MechanicalSystem;
             }
-
-
-
-
-
+            if(Element is DuctInsulation)
+            {
+                DetailType = Detail.DuctInsulation;
+            }
             if (Element is Duct)
             {
                 MSystem = (Element as MEPCurve).MEPSystem;
@@ -180,9 +200,11 @@ namespace AirTreeV1
                 Volume = GetValue(primaryvolume);
                 string primarylength = Element.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsValueString();
                 ModelLength = primarylength;
-                string primaryvelocity = Convert.ToString(Math.Round(Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsDouble()/3.25,2));
+                string primaryvelocity = Convert.ToString(Math.Round(Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsDouble() / 3.25, 2));
                 //string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
                 ModelVelocity = primaryvelocity;
+                int curveCounter = 0;
+
                 //ModelVelocity = GetValue(primaryvelocity);
                 foreach (Connector connector in OwnConnectors)
                 {
@@ -192,7 +214,15 @@ namespace AirTreeV1
                     {
                         continue;
                     }
-                    else
+                    if (Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                    {
+                        continue;
+                    }
+                    if (doc.GetElement(connector.Owner.Id).Category.Id.IntegerValue== -2008015) // Механическая система
+                    {
+                        continue;
+                    }    
+                     if (connector.ConnectorType == ConnectorType.End)
                     {
                         foreach (Connector connect in nextconnectors)
                         {
@@ -237,7 +267,14 @@ namespace AirTreeV1
 
                                         if (SystemType == DuctSystemType.SupplyAir)
                                         {
-
+                                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                                            {
+                                                continue;
+                                            }
+                                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
+                                            {
+                                                continue;
+                                            }
                                             if (connect.Direction == FlowDirectionType.Out)
                                             {
                                                 custom.Flow = connect.Flow;
@@ -286,7 +323,7 @@ namespace AirTreeV1
                                                     string primaryheight = Element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM).AsValueString();
                                                     ModelHeight = primaryheight;
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
-                                                    ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000),5).ToString();
+                                                    ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
                                                 }
                                                 custom.Coefficient = connect.Coefficient;
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
@@ -322,7 +359,7 @@ namespace AirTreeV1
                                                         double d = custom.Diameter * 304.8;
                                                         ModelDiameter = d.ToString();
                                                     }
-                                                   
+
                                                     ModelHydraulicDiameter = Element.get_Parameter(BuiltInParameter.RBS_HYDRAULIC_DIAMETER_PARAM).AsValueString();
                                                     ModelHydraulicArea = Math.Round(((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000), 5).ToString();
                                                     //ModelHydraulicArea = ((Math.PI * Math.Pow(Convert.ToDouble(ModelHydraulicDiameter), 2) / 4) / 1000000).ToString();
@@ -362,6 +399,10 @@ namespace AirTreeV1
                                                 custom.PressureDrop = connect.PressureDrop; // Вот это добавлено в версии 4.1
                                                 custom.NextOwnerId = custom.NextOwnerId;
                                                 NextElementId = custom.NextOwnerId;
+                                                /*if (custom.Flow ==0)
+                                                {
+                                                    NextElementId == null;
+                                                }*/
                                                 EquiDiameter = custom.EquiDiameter * 304.8;
                                                 //SecondaryConnectors.Add(custom);
                                             }
@@ -377,8 +418,39 @@ namespace AirTreeV1
 
 
                     }
+                     if (connector.ConnectorType == ConnectorType.Curve)
+                    {
+                        foreach (Connector nextconnector in connector.AllRefs)
+                        {
+                            if (nextconnector.Owner.Id == connector.Owner.Id)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                TapId = nextconnector.Owner.Id;
+                                DetailType = CustomElement.Detail.DuctTap;
+                                if (NextElementId == null)
+                                {
+                                    NextElementId = TapId;
+                                }
+                            }
+                        }
+                    }
                 }
+                foreach (Connector conn in OwnConnectors)
+                {
 
+                    if (conn.ConnectorType == ConnectorType.Curve)
+                    {
+                        curveCounter++;
+                    }
+                }
+                if (curveCounter != 0)
+                {
+                    DetailType = Detail.DuctTap;
+
+                }
 
 
             }
@@ -398,7 +470,7 @@ namespace AirTreeV1
                 //string primaryvelocity = Element.get_Parameter(BuiltInParameter.RBS_VELOCITY).AsValueString();
                 ModelVelocity = primaryvelocity;
                 //ModelVelocity = GetValue(primaryvelocity);
-                
+
                 foreach (Connector connector in OwnConnectors)
                 {
                     ConnectorSet nextconnectors = connector.AllRefs;
@@ -412,6 +484,14 @@ namespace AirTreeV1
                         foreach (Connector connect in nextconnectors)
                         {
                             if (connect.Domain != Domain.DomainHvac)
+                            {
+                                continue;
+                            }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                            {
+                                continue;
+                            }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
                             {
                                 continue;
                             }
@@ -441,6 +521,14 @@ namespace AirTreeV1
                                     continue; // Игнорируем те же элементы
                                 }
                                 else if (connect.Owner.Id == NextElementId)
+                                {
+                                    continue;
+                                }
+                                if (Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                                {
+                                    continue;
+                                }
+                                if (doc.GetElement(connector.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
                                 {
                                     continue;
                                 }
@@ -579,6 +667,7 @@ namespace AirTreeV1
                     }
                     else if ((Model as MechanicalFitting).PartType == PartType.TapAdjustable)
                     {
+                       
                         DetailType = Detail.TapAdjustable;
                     }
                     else if ((Model as MechanicalFitting).PartType == PartType.Transition)
@@ -591,16 +680,16 @@ namespace AirTreeV1
                     }
 
                     // Добавил 18.12.24
-                    else if ((Model as MechanicalFitting).PartType==PartType.MultiPort)
+                    else if ((Model as MechanicalFitting).PartType == PartType.MultiPort)
                     {
-                        DetailType = Detail.Multiport; 
-                    }    
+                        DetailType = Detail.Multiport;
+                    }
 
                 }
                 else if (Element.Category.Id.IntegerValue == -2008016)
                 {
                     DetailType = Detail.FireProtectValve;
-                   
+
 
                 }
                 else if (Element.Category.Id.IntegerValue == -2008013)
@@ -608,7 +697,7 @@ namespace AirTreeV1
                     DetailType = Detail.AirTerminal;
                 }
                 else if (Element.Category.Id.IntegerValue == -2001140)
-                { 
+                {
                     DetailType = Detail.Equipment;
                 }
                 /*else if (Element.LookupParameter("ТипДетали").AsString())
@@ -635,6 +724,15 @@ namespace AirTreeV1
                             {
                                 continue;
                             }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctInsulations)
+                            {
+                                continue;
+                            }
+                            if (doc.GetElement(connect.Owner.Id).Category.Id.IntegerValue == -2008015) // Механическая система
+                            {
+                                continue;
+                            }
+
                             else
                             {
                                 SystemType = connect.DuctSystemType;
@@ -665,7 +763,7 @@ namespace AirTreeV1
                                 {
                                     continue;
                                 }
-
+                                
                                 else if (ShortSystemName.Contains(ShortSystemName))
                                 {
                                     if (connect.Domain == Autodesk.Revit.DB.Domain.DomainHvac || connect.Domain == Autodesk.Revit.DB.Domain.DomainPiping)
@@ -673,7 +771,7 @@ namespace AirTreeV1
 
                                         if (SystemType == DuctSystemType.SupplyAir)
                                         {
-
+                                            
                                             if (connect.Direction == FlowDirectionType.Out)
                                             {
                                                 custom.Flow = connect.Flow;
@@ -775,6 +873,6 @@ namespace AirTreeV1
 
         }
 
-
+       
     }
 }
