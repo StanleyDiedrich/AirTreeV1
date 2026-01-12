@@ -834,7 +834,11 @@ namespace AirTreeV1
                                                     }
                                                     catch
                                                     {
-
+                                                        ModelWidth = doc.GetElement(ElementId).LookupParameter("Ширина").AsValueString();
+                                                        ModelHeight = doc.GetElement(ElementId).LookupParameter("Высота").AsValueString();
+                                                        double mwidth = Convert.ToDouble(ModelWidth);
+                                                        double mheight = Convert.ToDouble(ModelHeight);
+                                                        ModelHydraulicDiameter = Convert.ToInt32(2 * mwidth * mheight / (mwidth + mheight)).ToString();
                                                     }
                                                 }
                                                 custom.Coefficient = connect.Coefficient;

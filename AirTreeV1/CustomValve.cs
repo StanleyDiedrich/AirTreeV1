@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 
 namespace AirTreeV1
 {
@@ -40,6 +41,27 @@ namespace AirTreeV1
             Element = element;
             ElementId = element.ElementId;
             SystemType = element.SystemType;
+
+
+            Parameter pKZHS = Element.Element.LookupParameter("AirTree_КЖС");
+           // Parameter pSpec = Element.Element.LookupParameter("AirTree_Спецрешетка");
+            Parameter pFKMS = Element.Element.LookupParameter("AirTree_F(КМС)");
+            Parameter pkMS = Element.Element.LookupParameter("AirTree_КМС");
+            Parameter pdP = Element.Element.LookupParameter("AirTree_dP");
+
+            // Проверка на отсутствие
+            if (pKZHS == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_КЖС не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+
+            /*if (pSpec == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_Спецрешетка не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");*/
+            if (pkMS == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_КМС не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+            if (pdP == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_dP не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+            if (pFKMS == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_F(КМС) не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+
 
             bool KZHS = false;
             bool FKMS = false;

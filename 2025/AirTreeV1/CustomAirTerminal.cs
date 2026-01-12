@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.UI;
 
 namespace AirTreeV1
 {
@@ -37,6 +38,39 @@ namespace AirTreeV1
             bool FKMS = false;
             bool kMS = false;
             bool dP = false;
+
+
+            Parameter pKZHS = Element.Element.LookupParameter("AirTree_КЖС");
+            Parameter pSpec = Element.Element.LookupParameter("AirTree_Спецрешетка");
+            Parameter pFKMS = Element.Element.LookupParameter("AirTree_F(КМС)");
+            Parameter pkMS = Element.Element.LookupParameter("AirTree_КМС");
+            Parameter pdP = Element.Element.LookupParameter("AirTree_dP");
+
+            // Проверка на отсутствие
+            if (pKZHS == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_КЖС не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+
+            if (pSpec == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_Спецрешетка не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+            if (pkMS == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_КМС не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+            if (pdP == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_dP не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+            if (pFKMS == null)
+                TaskDialog.Show("AirTree", "Параметр AirTree_F(КМС) не добавлен из ФОП для воздухораспределителя и Арматуры воздуховодов");
+
+
+
+            if (Element.Element.LookupParameter("AirTree_КЖС").Equals(null))
+            {
+                TaskDialog.Show("AirTree", $"Параметр AirTree_КЖС не добавлен из ФОП для воздухораспределителя");
+            }
+            if (Element.Element.LookupParameter("AirTree_Спецрешетка").Equals(null))
+            {
+                TaskDialog.Show("AirTree", $"Параметр AirTree_Спецрешетка не добавлен из ФОП для воздухораспределителя");
+            }
+
+
 
             if (Element.Element.LookupParameter("AirTree_КЖС").AsDouble() != 0)
             {
